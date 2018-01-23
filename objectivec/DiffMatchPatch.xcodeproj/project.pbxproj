@@ -1,0 +1,771 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3D08D25412A71B9C007A5316 /* NSString+UnicharUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D08D25212A71B9C007A5316 /* NSString+UnicharUtilities.m */; };
+		3D0D3FAB128CBD350093B0C7 /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */; };
+		3D5BBFDF128C416900B8F5FF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
+		3D5BC080128C44A700B8F5FF /* DiffMatchPatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5BC07E128C44A700B8F5FF /* DiffMatchPatch.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D5BC081128C44A700B8F5FF /* DiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5BC07F128C44A700B8F5FF /* DiffMatchPatch.m */; };
+		3D70BCC9128EDAF80078D1A6 /* NSString+UriCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D70BCC7128EDAF80078D1A6 /* NSString+UriCompatibility.m */; };
+		3D96F3BC12AFC6D800C3E5C0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
+		3D96F44A12AFC82F00C3E5C0 /* speedtest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D96F44912AFC82F00C3E5C0 /* speedtest.m */; };
+		3D96F44F12AFC96A00C3E5C0 /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */; };
+		3DA641D1128DE21D00B33CE9 /* DiffMatchPatchCFUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DA64170128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.c */; };
+		3DA64278128DE8C900B33CE9 /* DiffMatchPatchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */; };
+		3DC87026129FF4B6001F602B /* NSString+JavaSubstring.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */; };
+		3DEE4C73129D484D00885485 /* NSMutableDictionary+DMPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */; };
+		3DFDB2FA12AEC7700084EFE3 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */; };
+		3DFDB2FB12AEC77E0084EFE3 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */; };
+		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3D96F3B812AFC6CD00C3E5C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = DiffMatchPatch;
+		};
+		3DA64279128DE8CD00B33CE9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = DiffMatchPatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		32DBCF5E0370ADEE00C91783 /* DiffMatchPatch_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch_Prefix.pch; sourceTree = "<group>"; };
+		3D08D25112A71B9C007A5316 /* NSString+UnicharUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UnicharUtilities.h"; sourceTree = "<group>"; };
+		3D08D25212A71B9C007A5316 /* NSString+UnicharUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UnicharUtilities.m"; sourceTree = "<group>"; };
+		3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Base+SnowLeopard.xcconfig"; sourceTree = "<group>"; };
+		3D510E1012BEBA44008C7CE7 /* Base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		3D510E1112BEBA44008C7CE7 /* Version.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
+		3D5BC07E128C44A700B8F5FF /* DiffMatchPatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch.h; sourceTree = "<group>"; };
+		3D5BC07F128C44A700B8F5FF /* DiffMatchPatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatch.m; sourceTree = "<group>"; };
+		3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiffMatchPatchTest.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D5BC0B0128CA8E200B8F5FF /* DiffMatchPatchTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DiffMatchPatchTest-Info.plist"; sourceTree = "<group>"; };
+		3D5BC0DD128CAAE400B8F5FF /* DiffMatchPatchTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatchTest.h; sourceTree = "<group>"; };
+		3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatchTest.m; sourceTree = "<group>"; };
+		3D5BC104128CAD6900B8F5FF /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		3D70BCC6128EDAF80078D1A6 /* NSString+UriCompatibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UriCompatibility.h"; sourceTree = "<group>"; };
+		3D70BCC7128EDAF80078D1A6 /* NSString+UriCompatibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UriCompatibility.m"; sourceTree = "<group>"; };
+		3D96F3A212AFC68900C3E5C0 /* speedtest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = speedtest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D96F43E12AFC76600C3E5C0 /* speedtest_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = speedtest_Prefix.pch; path = ../speedtest_Prefix.pch; sourceTree = "<group>"; };
+		3D96F44912AFC82F00C3E5C0 /* speedtest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = speedtest.m; sourceTree = "<group>"; };
+		3DA6416F128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatchCFUtilities.h; sourceTree = "<group>"; };
+		3DA64170128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = DiffMatchPatchCFUtilities.c; sourceTree = "<group>"; };
+		3DA642BC128DEF4900B33CE9 /* MinMaxMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MinMaxMacros.h; sourceTree = "<group>"; };
+		3DC87023129FF4B6001F602B /* NSString+JavaSubstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+JavaSubstring.h"; sourceTree = "<group>"; };
+		3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+JavaSubstring.m"; sourceTree = "<group>"; };
+		3DEE4C70129D484D00885485 /* NSMutableDictionary+DMPExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+DMPExtensions.h"; sourceTree = "<group>"; };
+		3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+DMPExtensions.m"; sourceTree = "<group>"; };
+		3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
+		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DiffMatchPatch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3D5BC0AC128CA8E200B8F5FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D0D3FAB128CBD350093B0C7 /* DiffMatchPatch.framework in Frameworks */,
+				3DFDB2FA12AEC7700084EFE3 /* libstdc++.6.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D96F3A012AFC68900C3E5C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D96F44F12AFC96A00C3E5C0 /* DiffMatchPatch.framework in Frameworks */,
+				3D96F3BC12AFC6D800C3E5C0 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8DC2EF560486A6940098B216 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D5BBFDF128C416900B8F5FF /* Foundation.framework in Frameworks */,
+				3DFDB2FB12AEC77E0084EFE3 /* libstdc++.6.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */,
+				3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */,
+				3D96F3A212AFC68900C3E5C0 /* speedtest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* DiffMatchPatch */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				089C1665FE841158C02AAC07 /* Resources */,
+				3D510E0F12BEBA44008C7CE7 /* Configurations */,
+				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
+				3D5BC0D9128CAA7600B8F5FF /* Tests */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = DiffMatchPatch;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */,
+				1058C7B2FEA5585E11CA2CBB /* Other Frameworks */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		089C1665FE841158C02AAC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8DC2EF5A0486A6940098B216 /* Info.plist */,
+				089C1666FE841158C02AAC07 /* InfoPlist.strings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				3D5BC07E128C44A700B8F5FF /* DiffMatchPatch.h */,
+				3D5BC07F128C44A700B8F5FF /* DiffMatchPatch.m */,
+				3DC87023129FF4B6001F602B /* NSString+JavaSubstring.h */,
+				3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */,
+				3D08D25112A71B9C007A5316 /* NSString+UnicharUtilities.h */,
+				3D08D25212A71B9C007A5316 /* NSString+UnicharUtilities.m */,
+				3D70BCC6128EDAF80078D1A6 /* NSString+UriCompatibility.h */,
+				3D70BCC7128EDAF80078D1A6 /* NSString+UriCompatibility.m */,
+				3DEE4C70129D484D00885485 /* NSMutableDictionary+DMPExtensions.h */,
+				3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7B2FEA5585E11CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0867D6A5FE840307C02AAC07 /* AppKit.framework */,
+				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
+				3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32DBCF5E0370ADEE00C91783 /* DiffMatchPatch_Prefix.pch */,
+				3DA642BC128DEF4900B33CE9 /* MinMaxMacros.h */,
+				3DA6416F128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.h */,
+				3DA64170128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.c */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		3D510E0F12BEBA44008C7CE7 /* Configurations */ = {
+			isa = PBXGroup;
+			children = (
+				3D510E1112BEBA44008C7CE7 /* Version.xcconfig */,
+				3D510E1012BEBA44008C7CE7 /* Base.xcconfig */,
+				3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */,
+			);
+			path = Configurations;
+			sourceTree = "<group>";
+		};
+		3D5BC0D9128CAA7600B8F5FF /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				3D5BC104128CAD6900B8F5FF /* SenTestingKit.framework */,
+				3D5BC0B0128CA8E200B8F5FF /* DiffMatchPatchTest-Info.plist */,
+				3D5BC0DD128CAAE400B8F5FF /* DiffMatchPatchTest.h */,
+				3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */,
+				3D96F43E12AFC76600C3E5C0 /* speedtest_Prefix.pch */,
+				3D96F44912AFC82F00C3E5C0 /* speedtest.m */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		8DC2EF500486A6940098B216 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D5BC080128C44A700B8F5FF /* DiffMatchPatch.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		3D5BC0AE128CA8E200B8F5FF /* DiffMatchPatchTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D5BC0B3128CA8E500B8F5FF /* Build configuration list for PBXNativeTarget "DiffMatchPatchTest" */;
+			buildPhases = (
+				3D5BC0AA128CA8E200B8F5FF /* Resources */,
+				3D5BC0AB128CA8E200B8F5FF /* Sources */,
+				3D5BC0AC128CA8E200B8F5FF /* Frameworks */,
+				3D5BC0AD128CA8E200B8F5FF /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3DA6427A128DE8CD00B33CE9 /* PBXTargetDependency */,
+			);
+			name = DiffMatchPatchTest;
+			productName = DiffMatchPatchTest;
+			productReference = 3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+		3D96F3A112AFC68900C3E5C0 /* speedtest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D96F3B512AFC68E00C3E5C0 /* Build configuration list for PBXNativeTarget "speedtest" */;
+			buildPhases = (
+				3D96F39F12AFC68900C3E5C0 /* Sources */,
+				3D96F3A012AFC68900C3E5C0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3D96F3B912AFC6CD00C3E5C0 /* PBXTargetDependency */,
+			);
+			name = speedtest;
+			productName = speedtest;
+			productReference = 3D96F3A212AFC68900C3E5C0 /* speedtest */;
+			productType = "com.apple.product-type.tool";
+		};
+		8DC2EF4F0486A6940098B216 /* DiffMatchPatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "DiffMatchPatch" */;
+			buildPhases = (
+				8DC2EF500486A6940098B216 /* Headers */,
+				8DC2EF520486A6940098B216 /* Resources */,
+				8DC2EF540486A6940098B216 /* Sources */,
+				8DC2EF560486A6940098B216 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DiffMatchPatch;
+			productInstallPath = "$(HOME)/Library/Frameworks";
+			productName = DiffMatchPatch;
+			productReference = 8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "DiffMatchPatch" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* DiffMatchPatch */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DC2EF4F0486A6940098B216 /* DiffMatchPatch */,
+				3D5BC0AE128CA8E200B8F5FF /* DiffMatchPatchTest */,
+				3D96F3A112AFC68900C3E5C0 /* speedtest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3D5BC0AA128CA8E200B8F5FF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8DC2EF520486A6940098B216 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3D5BC0AD128CA8E200B8F5FF /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3D5BC0AB128CA8E200B8F5FF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DA64278128DE8C900B33CE9 /* DiffMatchPatchTest.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D96F39F12AFC68900C3E5C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D96F44A12AFC82F00C3E5C0 /* speedtest.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8DC2EF540486A6940098B216 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D5BC081128C44A700B8F5FF /* DiffMatchPatch.m in Sources */,
+				3DA641D1128DE21D00B33CE9 /* DiffMatchPatchCFUtilities.c in Sources */,
+				3D70BCC9128EDAF80078D1A6 /* NSString+UriCompatibility.m in Sources */,
+				3DEE4C73129D484D00885485 /* NSMutableDictionary+DMPExtensions.m in Sources */,
+				3DC87026129FF4B6001F602B /* NSString+JavaSubstring.m in Sources */,
+				3D08D25412A71B9C007A5316 /* NSString+UnicharUtilities.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3D96F3B912AFC6CD00C3E5C0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8DC2EF4F0486A6940098B216 /* DiffMatchPatch */;
+			targetProxy = 3D96F3B812AFC6CD00C3E5C0 /* PBXContainerItemProxy */;
+		};
+		3DA6427A128DE8CD00B33CE9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8DC2EF4F0486A6940098B216 /* DiffMatchPatch */;
+			targetProxy = 3DA64279128DE8CD00B33CE9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		089C1666FE841158C02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C1667FE841158C02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB91AE08733DA50010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				PRODUCT_NAME = DiffMatchPatch;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		1DEB91AF08733DA50010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				PRODUCT_NAME = DiffMatchPatch;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
+		1DEB91B208733DA50010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D510E1012BEBA44008C7CE7 /* Base.xcconfig */;
+			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		1DEB91B308733DA50010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D510E1012BEBA44008C7CE7 /* Base.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		3D105A0C12DA601C002111E1 /* Debug 10.6 */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */;
+			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = "Debug 10.6";
+		};
+		3D105A0D12DA601C002111E1 /* Debug 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				PRODUCT_NAME = DiffMatchPatch;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = "Debug 10.6";
+		};
+		3D105A0E12DA601C002111E1 /* Debug 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = DiffMatchPatchTest;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = "Debug 10.6";
+		};
+		3D105A0F12DA601C002111E1 /* Debug 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = speedtest_Prefix.pch;
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = speedtest;
+			};
+			name = "Debug 10.6";
+		};
+		3D105A1012DA6024002111E1 /* Release 10.6 */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */;
+			buildSettings = {
+			};
+			name = "Release 10.6";
+		};
+		3D105A1112DA6024002111E1 /* Release 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				PRODUCT_NAME = DiffMatchPatch;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = "Release 10.6";
+		};
+		3D105A1212DA6024002111E1 /* Release 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = DiffMatchPatchTest;
+				WRAPPER_EXTENSION = octest;
+				ZERO_LINK = NO;
+			};
+			name = "Release 10.6";
+		};
+		3D105A1312DA6024002111E1 /* Release 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = speedtest_Prefix.pch;
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = speedtest;
+				ZERO_LINK = NO;
+			};
+			name = "Release 10.6";
+		};
+		3D5BC0B1128CA8E500B8F5FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = DiffMatchPatchTest;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		3D5BC0B2128CA8E500B8F5FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = DiffMatchPatchTest;
+				WRAPPER_EXTENSION = octest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		3D96F3A412AFC68B00C3E5C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = speedtest_Prefix.pch;
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = speedtest;
+			};
+			name = Debug;
+		};
+		3D96F3A512AFC68B00C3E5C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = speedtest_Prefix.pch;
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = speedtest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "DiffMatchPatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91AE08733DA50010E9CD /* Debug */,
+				3D105A0D12DA601C002111E1 /* Debug 10.6 */,
+				1DEB91AF08733DA50010E9CD /* Release */,
+				3D105A1112DA6024002111E1 /* Release 10.6 */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "DiffMatchPatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91B208733DA50010E9CD /* Debug */,
+				3D105A0C12DA601C002111E1 /* Debug 10.6 */,
+				1DEB91B308733DA50010E9CD /* Release */,
+				3D105A1012DA6024002111E1 /* Release 10.6 */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D5BC0B3128CA8E500B8F5FF /* Build configuration list for PBXNativeTarget "DiffMatchPatchTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D5BC0B1128CA8E500B8F5FF /* Debug */,
+				3D105A0E12DA601C002111E1 /* Debug 10.6 */,
+				3D5BC0B2128CA8E500B8F5FF /* Release */,
+				3D105A1212DA6024002111E1 /* Release 10.6 */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D96F3B512AFC68E00C3E5C0 /* Build configuration list for PBXNativeTarget "speedtest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D96F3A412AFC68B00C3E5C0 /* Debug */,
+				3D105A0F12DA601C002111E1 /* Debug 10.6 */,
+				3D96F3A512AFC68B00C3E5C0 /* Release */,
+				3D105A1312DA6024002111E1 /* Release 10.6 */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

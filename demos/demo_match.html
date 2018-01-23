@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<HEAD>
+  <TITLE>Diff, Match and Patch: Demo of Match</TITLE>
+  <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript" SRC="../javascript/diff_match_patch.js"></SCRIPT>
+</HEAD>
+
+<BODY>
+<H1>Diff, Match and Patch</H1>
+<H2>Demo of Match</H2>
+
+<P>Match looks for a pattern within a larger text.
+This implementation of match is fuzzy, meaning it can find a match even if the
+pattern contains errors and doesn't exactly match what is found in the text.
+This implementation also accepts an expected location, near which the match should be found.
+The candidate matches are scored based on a) the number of spelling differences between the 
+pattern and the text and b) the distance between the candidate match and the expected location.
+The match distance parameter sets the relative importance of these two metrics.</P>
+
+<FORM action="#" onsubmit="return false">
+<H3>Text:</H3>
+<TEXTAREA ID="text" STYLE="width: 100%" ROWS=10 onChange="textchange()">'Twas brillig, and the slithy toves
+Did gyre and gimble in the wabe.
+All mimsy were the borogroves,
+And the mome raths outgrabe.</TEXTAREA>
+
+<H3>Fuzzy pattern:</H3>
+<P><INPUT ID="pattern" SIZE=32 VALUE="slimy tools"> <SPAN ID="maxlengthspan"></SPAN><BR>
+Aproximate pattern to search for in the text.  Due to limitations of the Bitap algorithm, the pattern has a limited length.</P>
+
+<H3>Fuzzy location:</H3>
+<P><INPUT ID="loc" SIZE=4 MAXLENGTH=10 VALUE="30"> <SPAN ID="maxtextspan"></SPAN><BR>
+Aproximately where in the text is the pattern expected to be found?</P>
+
+<H3>Match distance:</H3>
+<P><INPUT TYPE="text" SIZE=3 MAXLENGTH=8 VALUE="1000" ID="distance"><BR>
+Determines how close the match must be to the fuzzy location (specified above).  An exact letter match which is 'distance' characters away from the fuzzy location would
+score as a complete mismatch.  A distance of '0' requires the match be at the exact location specified, a threshold of '1000'
+would require a perfect match to be within 800 characters of the fuzzy location to be found using a 0.8 threshold.</P>
+
+<H3>Match threshold:</H3>
+<P><INPUT TYPE="text" SIZE=3 MAXLENGTH=5 VALUE="0.8" ID="threshold"><BR>
+At what point does the match algorithm give up.  A threshold of '0.0' requires a perfect match (of both letters and location), a threshold of '1.0' would match anything.</P>
+
+<INPUT TYPE="button" onClick="launch()" VALUE="Compute Match">
+</FORM>
+
+<DIV ID="outputdiv"></DIV>
+
+<DIV ID="datediv"></DIV>
+
+<SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">
+var dmp = new diff_match_patch();
+
+function launch() {
+  var text = document.getElementById('text').value;
+  var pattern = document.getElementById('pattern').value;
+  var loc = parseInt(document.getElementById('loc').value, 10);
+
+  dmp.Match_Distance = parseFloat(document.getElementById('distance').value);
+  dmp.Match_Threshold = parseFloat(document.getElementById('threshold').value);
+
+  var ms_start = (new Date()).getTime();
+  var match = dmp.match_main(text, pattern, loc);
+  var ms_end = (new Date()).getTime();
+
+  document.getElementById('datediv').innerHTML = 'Time: ' + (ms_end - ms_start) / 1000  + 's';
+  if (match == -1) {
+    document.getElementById('outputdiv').innerHTML = 'No match found.';
+  } else {
+    var quote = text.substring(match, match + pattern.length);
+    quote = quote.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    quote = quote.replace(/\n/g, '&para;');
+    document.getElementById('outputdiv').innerHTML = 'Match found at character ' + match +
+        ': &nbsp; <CODE>' + quote + '</' + 'CODE>';
+  }
+}
+
+function textchange() {
+  document.getElementById('maxtextspan').innerHTML = '(text is currently ' + document.getElementById('text').value.length + ' characters long)';
+}
+
+textchange();
+document.getElementById('pattern').maxLength = dmp.Match_MaxBits;
+document.getElementById('maxlengthspan').innerHTML = '(maxlength in this browser: ' + dmp.Match_MaxBits + ')';
+</SCRIPT>
+
+<HR>
+Back to <A HREF="http://code.google.com/p/google-diff-match-patch/">Diff, Match and Patch</A>
+
+</BODY>
+</HTML>
