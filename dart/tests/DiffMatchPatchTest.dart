@@ -20,9 +20,9 @@
 // unavailable.  Instead, import all the source files.
 import 'dart:collection';
 import 'dart:math';
-part 'DMPClass.dart';
-part 'DiffClass.dart';
-part 'PatchClass.dart';
+part '../DMPClass.dart';
+part '../DiffClass.dart';
+part '../PatchClass.dart';
 
 // Expect class disappeared from Dart unexpectedly.  Here's a minimal shim.
 class Expect {

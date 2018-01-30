@@ -19,7 +19,6 @@
 library DiffMatchPatch;
 
 import 'dart:math';
-import 'dart:uri';
 
 part 'DMPClass.dart';
 part 'DiffClass.dart';

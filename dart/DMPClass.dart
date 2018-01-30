@@ -178,7 +178,7 @@ class DiffMatchPatch {
     int i = longtext.indexOf(shorttext);
     if (i != -1) {
       // Shorter text is inside the longer text (speedup).
-      int op =
+      Operation op =
           (text1.length > text2.length) ? Operation.delete : Operation.insert;
       diffs.add(new Diff(op, longtext.substring(0, i)));
       diffs.add(new Diff(Operation.equal, shorttext));
