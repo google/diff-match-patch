@@ -18,11 +18,73 @@
 
 // Can't import DiffMatchPatch library since the private functions would be
 // unavailable.  Instead, import all the source files.
+import 'dart:collection';
 import 'dart:math';
-import 'dart:uri';
 part 'DMPClass.dart';
 part 'DiffClass.dart';
 part 'PatchClass.dart';
+
+// Expect class disappeared from Dart unexpectedly.  Here's a minimal shim.
+class Expect {
+  static void equals(var expected, var actual, String msg) {
+    if (expected == actual) return;
+    throw new Exception(
+        'Expect.equals(expected: <$expected>, actual: <$actual> $msg) fails.');
+  }
+
+  static void isNull(actual, String msg) {
+    if (null == actual) return;
+    throw new Exception('Expect.isNull(actual: <$actual>$msg) fails.');
+  }
+
+  static void isTrue(var actual, String msg) {
+    if (identical(actual, true)) return;
+    throw new Exception('Expect.isTrue($actual, $msg) fails.');
+  }
+
+  static void throws(void f(), String msg) {
+    try {
+      f();
+    } catch (e, s) {
+      return;
+    }
+    throw new Exception('Expect.throws($msg) fails');
+  }
+
+  static void listEquals(List expected, List actual, String msg) {
+    int n = (expected.length < actual.length) ? expected.length : actual.length;
+    for (int i = 0; i < n; i++) {
+      if (expected[i] != actual[i]) {
+        throw new Exception('Expect.listEquals(at index $i, '
+            'expected: <${expected[i]}>, actual: <${actual[i]}> $msg) fails');
+      }
+    }
+    // We check on length at the end in order to provide better error
+    // messages when an unexpected item is inserted in a list.
+    if (expected.length != actual.length) {
+      throw new Exception('Expect.listEquals(list length, '
+        'expected: <${expected.length}>, actual: <${actual.length}> $msg) '
+        'fails: Next element <'
+        '${expected.length > n ? expected[n] : actual[n]}>');
+    }
+  }
+
+  static void mapEquals(Map expected, Map actual, String msg) {
+    for (var k in actual.keys) {
+      if (!expected.containsKey(k)) {
+        throw new Exception('Expect.mapEquals(unexpected key <$key> found '
+            'expected: <$expected>, actual: <$actual> $msg) fails');
+      }
+    }
+    for (var k in expected.keys) {
+      if (!actual.containsKey(k)) {
+        throw new Exception('Expect.mapEquals(key <$key> not found '
+            'expected: <$expected>, actual: <$actual> $msg) fails');
+      }
+      Expect.equals(actual[k], expected[k], "$msg [Key: $k]");
+    }
+  }
+}
 
 List<String> _diff_rebuildtexts(diffs) {
   // Construct the two texts which made up the diff originally.
@@ -30,10 +92,10 @@ List<String> _diff_rebuildtexts(diffs) {
   final text2 = new StringBuffer();
   for (int x = 0; x < diffs.length; x++) {
     if (diffs[x].operation != DIFF_INSERT) {
-      text1.add(diffs[x].text);
+      text1.write(diffs[x].text);
     }
     if (diffs[x].operation != DIFF_DELETE) {
-      text2.add(diffs[x].text);
+      text2.write(diffs[x].text);
     }
   }
   return [text1.toString(), text2.toString()];
@@ -125,13 +187,13 @@ void testDiffLinesToChars() {
   StringBuffer charList = new StringBuffer();
   for (int x = 1; x < n + 1; x++) {
     lineList.add('$x\n');
-    charList.add(new String.fromCharCodes([x]));
+    charList.writeCharCode(x);
   }
-  Expect.equals(n, lineList.length);
-  String lines = Strings.join(lineList, '');
+  Expect.equals(n, lineList.length, 'Test initialization fail #1.');
+  String lines = lineList.join();
   String chars = charList.toString();
-  Expect.equals(n, chars.length);
-  lineList.insertRange(0, 1, '');
+  Expect.equals(n, chars.length, 'Test initialization fail #2.');
+  lineList.insert(0, '');
   assertLinesToCharsResultEquals({'chars1': chars, 'chars2': '', 'lineArray': lineList}, dmp._diff_linesToChars(lines, ''), 'diff_linesToChars: More than 256.');
 }
 
@@ -152,13 +214,13 @@ void testDiffCharsToLines() {
   StringBuffer charList = new StringBuffer();
   for (int x = 1; x < n + 1; x++) {
     lineList.add('$x\n');
-    charList.add(new String.fromCharCodes([x]));
+    charList.writeCharCode(x);
   }
-  Expect.equals(n, lineList.length);
-  String lines = Strings.join(lineList, '');
+  Expect.equals(n, lineList.length, 'Test initialization fail #3.');
+  String lines = lineList.join();
   String chars = charList.toString();
-  Expect.equals(n, chars.length);
-  lineList.insertRange(0, 1, '');
+  Expect.equals(n, chars.length, 'Test initialization fail #4.');
+  lineList.insert(0, '');
   diffs = [new Diff(DIFF_DELETE, chars)];
   dmp._diff_charsToLines(diffs, lineList);
   Expect.listEquals([new Diff(DIFF_DELETE, lines)], diffs, 'diff_charsToLines: More than 256.');
@@ -353,13 +415,13 @@ void testDiffDelta() {
   Expect.listEquals(diffs, dmp.diff_fromDelta(text1, delta), 'diff_fromDelta: Normal.');
 
   // Generates error (19 < 20).
-  Expect.throws(() => dmp.diff_fromDelta('${text1}x', delta), null, 'diff_fromDelta: Too long.');
+  Expect.throws(() => dmp.diff_fromDelta(text1 + 'x', delta), 'diff_fromDelta: Too long.');
 
   // Generates error (19 > 18).
-  Expect.throws(() => dmp.diff_fromDelta(text1.substring(1), delta), null, 'diff_fromDelta: Too short.');
+  Expect.throws(() => dmp.diff_fromDelta(text1.substring(1), delta), 'diff_fromDelta: Too short.');
 
   // Generates error (%c3%xy invalid Unicode).
-  Expect.throws(() => dmp.diff_fromDelta('', '+%c3%xy'), null, 'diff_fromDelta: Invalid character.');
+  Expect.throws(() => dmp.diff_fromDelta('', '+%c3%xy'), 'diff_fromDelta: Invalid character.');
 
   // Test deltas with special characters.
   diffs = [new Diff(DIFF_EQUAL, '\u0680 \x00 \t %'), new Diff(DIFF_DELETE, '\u0681 \x01 \n ^'), new Diff(DIFF_INSERT, '\u0682 \x02 \\ |')];
@@ -412,13 +474,13 @@ void testDiffBisect() {
   // If the order changes, tweak this test as required.
   List<Diff> diffs = [new Diff(DIFF_DELETE, 'c'), new Diff(DIFF_INSERT, 'm'), new Diff(DIFF_EQUAL, 'a'), new Diff(DIFF_DELETE, 't'), new Diff(DIFF_INSERT, 'p')];
   // One year should be sufficient.
-  Date deadline = new Date.now().add(new Duration(days : 365));
+  DateTime deadline = new DateTime.now().add(new Duration(days : 365));
   Expect.listEquals(diffs, dmp._diff_bisect(a, b, deadline), 'diff_bisect: Normal.');
 
   // Timeout.
   diffs = [new Diff(DIFF_DELETE, 'cat'), new Diff(DIFF_INSERT, 'map')];
   // Set deadline to one year ago.
-  deadline = new Date.now().subtract(new Duration(days : 365));
+  deadline = new DateTime.now().subtract(new Duration(days : 365));
   Expect.listEquals(diffs, dmp._diff_bisect(a, b, deadline), 'diff_bisect: Timeout.');
 }
 
@@ -471,23 +533,19 @@ void testDiffMain() {
   String b = 'I am the very model of a modern major general,\nI\'ve information vegetable, animal, and mineral,\nI know the kings of England, and I quote the fights historical,\nFrom Marathon to Waterloo, in order categorical.\n';
   // Increase the text lengths by 1024 times to ensure a timeout.
   for (int x = 0; x < 10; x++) {
-    a = '$a$a';
-    b = '$b$b';
+    a += a;
+    b += b;
   }
-  Date startTime = new Date.now();
+  DateTime startTime = new DateTime.now();
   dmp.diff_main(a, b);
-  Date endTime = new Date.now();
+  DateTime endTime = new DateTime.now();
   double elapsedSeconds = endTime.difference(startTime).inMilliseconds / 1000;
   // Test that we took at least the timeout period.
   Expect.isTrue(dmp.Diff_Timeout <= elapsedSeconds, 'diff_main: Timeout min.');
   // Test that we didn't take forever (be forgiving).
   // Theoretically this test could fail very occasionally if the
   // OS task swaps or locks up for a second at the wrong moment.
-  // *************
-  // Dart Note:  Currently (2011) Dart's performance is out of control, so this
-  // diff takes 3.5 seconds on a 0.1 second timeout.  Commented out.
-  // *************
-  // Expect.isTrue(dmp.Diff_Timeout * 2 > elapsedSeconds, 'diff_main: Timeout max.');
+  Expect.isTrue(dmp.Diff_Timeout * 2 > elapsedSeconds, 'diff_main: Timeout max.');
   dmp.Diff_Timeout = 0.0;
 
   // Test the linemode speedup.
@@ -507,26 +565,19 @@ void testDiffMain() {
   Expect.listEquals(texts_textmode, texts_linemode, 'diff_main: Overlap line-mode.');
 
   // Test null inputs.
-  Expect.throws(() => dmp.diff_main(null, null), null, 'diff_main: Null inputs.');
+  Expect.throws(() => dmp.diff_main(null, null), 'diff_main: Null inputs.');
 }
 
 
 //  MATCH TEST FUNCTIONS
 
 void testMatchAlphabet() {
-  void assertMapEquals(Map a, Map b, String error_msg) {
-    Expect.setEquals(a.keys, b.keys, error_msg);
-    for (var x in a.keys) {
-      Expect.equals(a[x], b[x], "$error_msg [Key: $x]");
-    }
-  }
-
   // Initialise the bitmasks for Bitap.
   Map<String, int> bitmask = {'a': 4, 'b': 2, 'c': 1};
-  assertMapEquals(bitmask, dmp._match_alphabet('abc'), 'match_alphabet: Unique.');
+  Expect.mapEquals(bitmask, dmp._match_alphabet('abc'), 'match_alphabet: Unique.');
 
   bitmask = {'a': 37, 'b': 18, 'c': 8};
-  assertMapEquals(bitmask, dmp._match_alphabet('abcaba'), 'match_alphabet: Duplicates.');
+  Expect.mapEquals(bitmask, dmp._match_alphabet('abcaba'), 'match_alphabet: Duplicates.');
 }
 
 void testMatchBitap() {
@@ -593,7 +644,7 @@ void testMatchMain() {
   dmp.Match_Threshold = 0.5;
 
   // Test null inputs.
-  Expect.throws(() => dmp.match_main(null, null, 0), null, 'match_main: Null inputs.');
+  Expect.throws(() => dmp.match_main(null, null, 0), 'match_main: Null inputs.');
 }
 
 
@@ -625,7 +676,7 @@ void testPatchFromText() {
   Expect.equals('@@ -0,0 +1,3 @@\n+abc\n', dmp.patch_fromText('@@ -0,0 +1,3 @@\n+abc\n')[0].toString(), 'patch_fromText: #4.');
 
   // Generates error.
-  Expect.throws(() => dmp.patch_fromText('Bad\nPatch\n'), null, 'patch_fromText: #5.');
+  Expect.throws(() => dmp.patch_fromText('Bad\nPatch\n'), 'patch_fromText: #5.');
 }
 
 void testPatchToText() {
@@ -693,16 +744,16 @@ void testPatchMake() {
 
   final sb = new StringBuffer();
   for (int x = 0; x < 100; x++) {
-    sb.add('abcdef');
+    sb.write('abcdef');
   }
   text1 = sb.toString();
-  text2 = '${text1}123';
+  text2 = text1 + '123';
   expectedPatch = '@@ -573,28 +573,31 @@\n cdefabcdefabcdefabcdefabcdef\n+123\n';
   patches = dmp.patch_make(text1, text2);
   Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Long string with repeats.');
 
   // Test null inputs.
-  Expect.throws(() => dmp.patch_make(null), null, 'patch_make: Null inputs.');
+  Expect.throws(() => dmp.patch_make(null), 'patch_make: Null inputs.');
 }
 
 void testPatchSplitMax() {

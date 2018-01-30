@@ -61,17 +61,18 @@ class Patch {
     // Escape the body of the patch with %xx notation.
     for (Diff aDiff in this.diffs) {
       switch (aDiff.operation) {
-      case DIFF_INSERT:
-        text.add('+');
-        break;
-      case DIFF_DELETE:
-        text.add('-');
-        break;
-      case DIFF_EQUAL:
-        text.add(' ');
-        break;
+        case DIFF_INSERT:
+          text.write('+');
+          break;
+        case DIFF_DELETE:
+          text.write('-');
+          break;
+        case DIFF_EQUAL:
+          text.write(' ');
+          break;
       }
-      text.add(encodeUri(aDiff.text)).add('\n');
+      text.write(Uri.encodeFull(aDiff.text));
+      text.write('\n');
     }
     return text.toString().replaceAll('%20', ' ');
   }
