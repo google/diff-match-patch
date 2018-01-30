@@ -61,13 +61,13 @@ class Patch {
     // Escape the body of the patch with %xx notation.
     for (Diff aDiff in this.diffs) {
       switch (aDiff.operation) {
-        case DIFF_INSERT:
+        case Operation.insert:
           text.write('+');
           break;
-        case DIFF_DELETE:
+        case Operation.delete:
           text.write('-');
           break;
-        case DIFF_EQUAL:
+        case Operation.equal:
           text.write(' ');
           break;
       }

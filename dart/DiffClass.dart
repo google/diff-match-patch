@@ -23,9 +23,9 @@ part of DiffMatchPatch;
  */
 class Diff {
   /**
-   * One of: DIFF_INSERT, DIFF_DELETE or DIFF_EQUAL.
+   * One of: Operation.insert, Operation.delete or Operation.equal.
    */
-  int operation;
+  Operation operation;
   /**
    * The text associated with this diff operation.
    */
@@ -33,7 +33,7 @@ class Diff {
 
   /**
    * Constructor.  Initializes the diff with the provided values.
-   * [operation] is one of DIFF_INSERT, DIFF_DELETE or DIFF_EQUAL.
+   * [operation] is one of Operation.insert, Operation.delete or Operation.equal.
    * [text] is the text being applied.
    */
   Diff(this.operation, this.text);
