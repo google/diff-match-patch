@@ -19,6 +19,7 @@
 * limitations under the License.
 --]]
 
+package.path = package.path .. ';../?.lua'
 local dmp = require 'diff_match_patch'
 
 local DIFF_INSERT = dmp.DIFF_INSERT
