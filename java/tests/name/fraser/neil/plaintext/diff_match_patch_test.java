@@ -16,9 +16,14 @@
  * limitations under the License.
  */
 
-package name.fraser.neil.plaintext;
+/**
+ * Compile from diff-match-patch/java with:
+ * javac -d classes src/name/fraser/neil/plaintext/diff_match_patch.java tests/name/fraser/neil/plaintext/diff_match_patch_test.java
+ * Execute with:
+ * java -classpath classes name/fraser/neil/plaintext/diff_match_patch_test
+ */
 
-import junit.framework.TestCase;
+package name.fraser.neil.plaintext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,27 +32,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import name.fraser.neil.plaintext.diff_match_patch;
 import name.fraser.neil.plaintext.diff_match_patch.Diff;
 import name.fraser.neil.plaintext.diff_match_patch.LinesToCharsResult;
 import name.fraser.neil.plaintext.diff_match_patch.Patch;
 
-public class diff_match_patch_test extends TestCase {
+public class diff_match_patch_test {
 
-  private diff_match_patch dmp;
-  private diff_match_patch.Operation DELETE = diff_match_patch.Operation.DELETE;
-  private diff_match_patch.Operation EQUAL = diff_match_patch.Operation.EQUAL;
-  private diff_match_patch.Operation INSERT = diff_match_patch.Operation.INSERT;
-
-  protected void setUp() {
-    // Create an instance of the diff_match_patch object.
-    dmp = new diff_match_patch();
-  }
+  private static diff_match_patch dmp;
+  private static diff_match_patch.Operation DELETE = diff_match_patch.Operation.DELETE;
+  private static diff_match_patch.Operation EQUAL = diff_match_patch.Operation.EQUAL;
+  private static diff_match_patch.Operation INSERT = diff_match_patch.Operation.INSERT;
 
 
   //  DIFF TEST FUNCTIONS
 
 
-  public void testDiffCommonPrefix() {
+  public static void testDiffCommonPrefix() {
     // Detect any common prefix.
     assertEquals("diff_commonPrefix: Null case.", 0, dmp.diff_commonPrefix("abc", "xyz"));
 
@@ -56,7 +57,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("diff_commonPrefix: Whole case.", 4, dmp.diff_commonPrefix("1234", "1234xyz"));
   }
 
-  public void testDiffCommonSuffix() {
+  public static void testDiffCommonSuffix() {
     // Detect any common suffix.
     assertEquals("diff_commonSuffix: Null case.", 0, dmp.diff_commonSuffix("abc", "xyz"));
 
@@ -65,7 +66,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("diff_commonSuffix: Whole case.", 4, dmp.diff_commonSuffix("1234", "xyz1234"));
   }
 
-  public void testDiffCommonOverlap() {
+  public static void testDiffCommonOverlap() {
     // Detect any suffix/prefix overlap.
     assertEquals("diff_commonOverlap: Null case.", 0, dmp.diff_commonOverlap("", "abcd"));
 
@@ -80,7 +81,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("diff_commonOverlap: Unicode.", 0, dmp.diff_commonOverlap("fi", "\ufb01i"));
   }
 
-  public void testDiffHalfmatch() {
+  public static void testDiffHalfmatch() {
     // Detect a halfmatch.
     dmp.Diff_Timeout = 1;
     assertNull("diff_halfMatch: No match #1.", dmp.diff_halfMatch("1234567890", "abcdef"));
@@ -108,7 +109,7 @@ public class diff_match_patch_test extends TestCase {
     assertNull("diff_halfMatch: Optimal no halfmatch.", dmp.diff_halfMatch("qHilloHelloHew", "xHelloHeHulloy"));
   }
 
-  public void testDiffLinesToChars() {
+  public static void testDiffLinesToChars() {
     // Convert lines down to characters.
     ArrayList<String> tmpVector = new ArrayList<String>();
     tmpVector.add("");
@@ -139,15 +140,15 @@ public class diff_match_patch_test extends TestCase {
       lineList.append(x + "\n");
       charList.append(String.valueOf((char) x));
     }
-    assertEquals(n, tmpVector.size());
+    assertEquals("Test initialization fail #1.", n, tmpVector.size());
     String lines = lineList.toString();
     String chars = charList.toString();
-    assertEquals(n, chars.length());
+    assertEquals("Test initialization fail #2.", n, chars.length());
     tmpVector.add(0, "");
     assertLinesToCharsResultEquals("diff_linesToChars: More than 256.", new LinesToCharsResult(chars, "", tmpVector), dmp.diff_linesToChars(lines, ""));
   }
 
-  public void testDiffCharsToLines() {
+  public static void testDiffCharsToLines() {
     // First check that Diff equality works.
     assertTrue("diff_charsToLines: Equality #1.", new Diff(EQUAL, "a").equals(new Diff(EQUAL, "a")));
 
@@ -172,17 +173,17 @@ public class diff_match_patch_test extends TestCase {
       lineList.append(x + "\n");
       charList.append(String.valueOf((char) x));
     }
-    assertEquals(n, tmpVector.size());
+    assertEquals("Test initialization fail #3.", n, tmpVector.size());
     String lines = lineList.toString();
     String chars = charList.toString();
-    assertEquals(n, chars.length());
+    assertEquals("Test initialization fail #4.", n, chars.length());
     tmpVector.add(0, "");
     diffs = diffList(new Diff(DELETE, chars));
     dmp.diff_charsToLines(diffs, tmpVector);
     assertEquals("diff_charsToLines: More than 256.", diffList(new Diff(DELETE, lines)), diffs);
   }
 
-  public void testDiffCleanupMerge() {
+  public static void testDiffCleanupMerge() {
     // Cleanup a messy diff.
     LinkedList<Diff> diffs = diffList();
     dmp.diff_cleanupMerge(diffs);
@@ -233,7 +234,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("diff_cleanupMerge: Slide edit right recursive.", diffList(new Diff(EQUAL, "xca"), new Diff(DELETE, "cba")), diffs);
   }
 
-  public void testDiffCleanupSemanticLossless() {
+  public static void testDiffCleanupSemanticLossless() {
     // Slide diffs to match logical boundaries.
     LinkedList<Diff> diffs = diffList();
     dmp.diff_cleanupSemanticLossless(diffs);
@@ -268,7 +269,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("diff_cleanupSemanticLossless: Sentence boundaries.", diffList(new Diff(EQUAL, "The xxx."), new Diff(INSERT, " The zzz."), new Diff(EQUAL, " The yyy.")), diffs);
   }
 
-  public void testDiffCleanupSemantic() {
+  public static void testDiffCleanupSemantic() {
     // Cleanup semantically trivial equalities.
     LinkedList<Diff> diffs = diffList();
     dmp.diff_cleanupSemantic(diffs);
@@ -315,7 +316,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("diff_cleanupSemantic: Two overlap eliminations.", diffList(new Diff(DELETE, "abcd"), new Diff(EQUAL, "1212"), new Diff(INSERT, "efghi"), new Diff(EQUAL, "----"), new Diff(DELETE, "A"), new Diff(EQUAL, "3"), new Diff(INSERT, "BC")), diffs);
   }
 
-  public void testDiffCleanupEfficiency() {
+  public static void testDiffCleanupEfficiency() {
     // Cleanup operationally trivial equalities.
     dmp.Diff_EditCost = 4;
     LinkedList<Diff> diffs = diffList();
@@ -345,20 +346,20 @@ public class diff_match_patch_test extends TestCase {
     dmp.Diff_EditCost = 4;
   }
 
-  public void testDiffPrettyHtml() {
+  public static void testDiffPrettyHtml() {
     // Pretty print.
     LinkedList<Diff> diffs = diffList(new Diff(EQUAL, "a\n"), new Diff(DELETE, "<B>b</B>"), new Diff(INSERT, "c&d"));
     assertEquals("diff_prettyHtml:", "<span>a&para;<br></span><del style=\"background:#ffe6e6;\">&lt;B&gt;b&lt;/B&gt;</del><ins style=\"background:#e6ffe6;\">c&amp;d</ins>", dmp.diff_prettyHtml(diffs));
   }
 
-  public void testDiffText() {
+  public static void testDiffText() {
     // Compute the source and destination texts.
     LinkedList<Diff> diffs = diffList(new Diff(EQUAL, "jump"), new Diff(DELETE, "s"), new Diff(INSERT, "ed"), new Diff(EQUAL, " over "), new Diff(DELETE, "the"), new Diff(INSERT, "a"), new Diff(EQUAL, " lazy"));
     assertEquals("diff_text1:", "jumps over the lazy", dmp.diff_text1(diffs));
     assertEquals("diff_text2:", "jumped over a lazy", dmp.diff_text2(diffs));
   }
 
-  public void testDiffDelta() {
+  public static void testDiffDelta() {
     // Convert a diff into delta string.
     LinkedList<Diff> diffs = diffList(new Diff(EQUAL, "jump"), new Diff(DELETE, "s"), new Diff(INSERT, "ed"), new Diff(EQUAL, " over "), new Diff(DELETE, "the"), new Diff(INSERT, "a"), new Diff(EQUAL, " lazy"), new Diff(INSERT, "old dog"));
     String text1 = dmp.diff_text1(diffs);
@@ -416,7 +417,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("diff_fromDelta: Unchanged characters.", diffs, dmp.diff_fromDelta("", delta));
   }
 
-  public void testDiffXIndex() {
+  public static void testDiffXIndex() {
     // Translate a location in text1 to text2.
     LinkedList<Diff> diffs = diffList(new Diff(DELETE, "a"), new Diff(INSERT, "1234"), new Diff(EQUAL, "xyz"));
     assertEquals("diff_xIndex: Translation on equality.", 5, dmp.diff_xIndex(diffs, 2));
@@ -425,7 +426,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("diff_xIndex: Translation on deletion.", 1, dmp.diff_xIndex(diffs, 3));
   }
 
-  public void testDiffLevenshtein() {
+  public static void testDiffLevenshtein() {
     LinkedList<Diff> diffs = diffList(new Diff(DELETE, "abc"), new Diff(INSERT, "1234"), new Diff(EQUAL, "xyz"));
     assertEquals("Levenshtein with trailing equality.", 4, dmp.diff_levenshtein(diffs));
 
@@ -436,7 +437,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("Levenshtein with middle equality.", 7, dmp.diff_levenshtein(diffs));
   }
 
-  public void testDiffBisect() {
+  public static void testDiffBisect() {
     // Normal.
     String a = "cat";
     String b = "map";
@@ -451,7 +452,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("diff_bisect: Timeout.", diffs, dmp.diff_bisect(a, b, 0));
   }
 
-  public void testDiffMain() {
+  public static void testDiffMain() {
     // Perform a trivial diff.
     LinkedList<Diff> diffs = diffList();
     assertEquals("diff_main: Null case.", diffs, dmp.diff_main("", "", false));
@@ -543,7 +544,7 @@ public class diff_match_patch_test extends TestCase {
   //  MATCH TEST FUNCTIONS
 
 
-  public void testMatchAlphabet() {
+  public static void testMatchAlphabet() {
     // Initialise the bitmasks for Bitap.
     Map<Character, Integer> bitmask;
     bitmask = new HashMap<Character, Integer>();
@@ -555,7 +556,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("match_alphabet: Duplicates.", bitmask, dmp.match_alphabet("abcaba"));
   }
 
-  public void testMatchBitap() {
+  public static void testMatchBitap() {
     // Bitap algorithm.
     dmp.Match_Distance = 100;
     dmp.Match_Threshold = 0.5f;
@@ -600,7 +601,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("match_bitap: Distance test #3.", 0, dmp.match_bitap("abcdefghijklmnopqrstuvwxyz", "abcdefg", 24));
   }
 
-  public void testMatchMain() {
+  public static void testMatchMain() {
     // Full match.
     assertEquals("match_main: Equality.", 0, dmp.match_main("abcdef", "abcdef", 1000));
 
@@ -631,7 +632,7 @@ public class diff_match_patch_test extends TestCase {
   //  PATCH TEST FUNCTIONS
 
 
-  public void testPatchObj() {
+  public static void testPatchObj() {
     // Patch Object.
     Patch p = new Patch();
     p.start1 = 20;
@@ -643,7 +644,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("Patch: toString.", strp, p.toString());
   }
 
-  public void testPatchFromText() {
+  public static void testPatchFromText() {
     assertTrue("patch_fromText: #0.", dmp.patch_fromText("").isEmpty());
 
     String strp = "@@ -21,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n %0Alaz\n";
@@ -664,7 +665,7 @@ public class diff_match_patch_test extends TestCase {
     }
   }
 
-  public void testPatchToText() {
+  public static void testPatchToText() {
     String strp = "@@ -21,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n  laz\n";
     List<Patch> patches;
     patches = dmp.patch_fromText(strp);
@@ -675,7 +676,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("patch_toText: Dual.", strp, dmp.patch_toText(patches));
   }
 
-  public void testPatchAddContext() {
+  public static void testPatchAddContext() {
     dmp.Patch_Margin = 4;
     Patch p;
     p = dmp.patch_fromText("@@ -21,4 +21,10 @@\n-jump\n+somersault\n").get(0);
@@ -696,7 +697,7 @@ public class diff_match_patch_test extends TestCase {
   }
 
   @SuppressWarnings("deprecation")
-  public void testPatchMake() {
+  public static void testPatchMake() {
     LinkedList<Patch> patches;
     patches = dmp.patch_make("", "");
     assertEquals("patch_make: Null case.", "", dmp.patch_toText(patches));
@@ -746,7 +747,7 @@ public class diff_match_patch_test extends TestCase {
     }
   }
 
-  public void testPatchSplitMax() {
+  public static void testPatchSplitMax() {
     // Assumes that Match_MaxBits is 32.
     LinkedList<Patch> patches;
     patches = dmp.patch_make("abcdefghijklmnopqrstuvwxyz01234567890", "XabXcdXefXghXijXklXmnXopXqrXstXuvXwxXyzX01X23X45X67X89X0");
@@ -767,7 +768,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("patch_splitMax: #4.", "@@ -2,32 +2,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n@@ -29,32 +29,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n", dmp.patch_toText(patches));
   }
 
-  public void testPatchAddPadding() {
+  public static void testPatchAddPadding() {
     LinkedList<Patch> patches;
     patches = dmp.patch_make("", "test");
     assertEquals("patch_addPadding: Both edges full.", "@@ -0,0 +1,4 @@\n+test\n", dmp.patch_toText(patches));
@@ -785,7 +786,7 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("patch_addPadding: Both edges none.", "@@ -5,8 +5,12 @@\n XXXX\n+test\n YYYY\n", dmp.patch_toText(patches));
   }
 
-  public void testPatchApply() {
+  public static void testPatchApply() {
     dmp.Match_Distance = 1000;
     dmp.Match_Threshold = 0.5f;
     dmp.Patch_DeleteThreshold = 0.5f;
@@ -872,13 +873,36 @@ public class diff_match_patch_test extends TestCase {
     assertEquals("patch_apply: Edge partial match.", "x123\ttrue", resultStr);
   }
 
-  private void assertArrayEquals(String error_msg, Object[] a, Object[] b) {
+  private static void assertEquals(String error_msg, Object a, Object b) {
+    if (!a.toString().equals(b.toString())) {
+      throw new Error("assertEquals fail:\n Expected: " + a + "\n Actual: " + b
+                      + "\n" + error_msg);
+    }
+  }
+
+  private static void assertTrue(String error_msg, boolean a) {
+    if (!a) {
+      throw new Error("assertTrue fail: " + error_msg);
+    }
+  }
+
+  private static void assertNull(String error_msg, Object n) {
+    if (n != null) {
+      throw new Error("assertNull fail: " + error_msg);
+    }
+  }
+
+  private static void fail(String error_msg) {
+    throw new Error("Fail: " + error_msg);
+  }
+
+  private static void assertArrayEquals(String error_msg, Object[] a, Object[] b) {
     List<Object> list_a = Arrays.asList(a);
     List<Object> list_b = Arrays.asList(b);
     assertEquals(error_msg, list_a, list_b);
   }
 
-  private void assertLinesToCharsResultEquals(String error_msg,
+  private static void assertLinesToCharsResultEquals(String error_msg,
       LinesToCharsResult a, LinesToCharsResult b) {
     assertEquals(error_msg, a.chars1, b.chars1);
     assertEquals(error_msg, a.chars2, b.chars2);
@@ -906,5 +930,42 @@ public class diff_match_patch_test extends TestCase {
       myDiffList.add(myDiff);
     }
     return myDiffList;
+  }
+
+  public static void main(String args[]) {
+    dmp = new diff_match_patch();
+
+    testDiffCommonPrefix();
+    testDiffCommonSuffix();
+    testDiffCommonOverlap();
+    testDiffHalfmatch();
+    testDiffLinesToChars();
+    testDiffCharsToLines();
+    testDiffCleanupMerge();
+    testDiffCleanupSemanticLossless();
+    testDiffCleanupSemantic();
+    testDiffCleanupEfficiency();
+    testDiffPrettyHtml();
+    testDiffText();
+    testDiffDelta();
+    testDiffXIndex();
+    testDiffLevenshtein();
+    testDiffBisect();
+    testDiffMain();
+
+    testMatchAlphabet();
+    testMatchBitap();
+    testMatchMain();
+
+    testPatchObj();
+    testPatchFromText();
+    testPatchToText();
+    testPatchAddContext();
+    testPatchMake();
+    testPatchSplitMax();
+    testPatchAddPadding();
+    testPatchApply();
+
+    System.out.println("All tests passed.");
   }
 }

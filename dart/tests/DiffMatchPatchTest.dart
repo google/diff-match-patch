@@ -883,7 +883,6 @@ void testPatchApply() {
 }
 
 // Run each test.
-// TODO: Use the Dart unit test framework (once it is published).
 main() {
   dmp = new DiffMatchPatch();
 
