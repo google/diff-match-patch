@@ -1,5 +1,6 @@
 
 *.class
+*.exe
 *.pyc
 *.komodoproject
 

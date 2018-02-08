@@ -428,13 +428,13 @@ public class diff_match_patch_test {
 
   public static void testDiffLevenshtein() {
     LinkedList<Diff> diffs = diffList(new Diff(DELETE, "abc"), new Diff(INSERT, "1234"), new Diff(EQUAL, "xyz"));
-    assertEquals("Levenshtein with trailing equality.", 4, dmp.diff_levenshtein(diffs));
+    assertEquals("diff_levenshtein: Levenshtein with trailing equality.", 4, dmp.diff_levenshtein(diffs));
 
     diffs = diffList(new Diff(EQUAL, "xyz"), new Diff(DELETE, "abc"), new Diff(INSERT, "1234"));
-    assertEquals("Levenshtein with leading equality.", 4, dmp.diff_levenshtein(diffs));
+    assertEquals("diff_levenshtein: Levenshtein with leading equality.", 4, dmp.diff_levenshtein(diffs));
 
     diffs = diffList(new Diff(DELETE, "abc"), new Diff(EQUAL, "xyz"), new Diff(INSERT, "1234"));
-    assertEquals("Levenshtein with middle equality.", 7, dmp.diff_levenshtein(diffs));
+    assertEquals("diff_levenshtein: Levenshtein with middle equality.", 7, dmp.diff_levenshtein(diffs));
   }
 
   public static void testDiffBisect() {

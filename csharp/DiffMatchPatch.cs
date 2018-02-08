@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 
 namespace DiffMatchPatch {
   internal static class CompatibilityExtensions {
@@ -167,8 +166,7 @@ namespace DiffMatchPatch {
             break;
         }
 
-        text.Append(HttpUtility.UrlEncode(aDiff.text,
-            new UTF8Encoding()).Replace('+', ' ')).Append("\n");
+        text.Append(Uri.EscapeDataString(aDiff.text).Replace('+', ' ')).Append("\n");
       }
 
       return diff_match_patch.unescapeForEncodeUriCompatability(
@@ -653,7 +651,7 @@ namespace DiffMatchPatch {
      * @param lineArray List of unique strings.
      */
     protected void diff_charsToLines(ICollection<Diff> diffs,
-                    List<string> lineArray) {
+                    IList<string> lineArray) {
       StringBuilder text;
       foreach (Diff diff in diffs) {
         text = new StringBuilder();
@@ -1429,8 +1427,7 @@ namespace DiffMatchPatch {
       foreach (Diff aDiff in diffs) {
         switch (aDiff.operation) {
           case Operation.INSERT:
-            text.Append("+").Append(HttpUtility.UrlEncode(aDiff.text,
-                new UTF8Encoding()).Replace('+', ' ')).Append("\t");
+            text.Append("+").Append(Uri.EscapeDataString(aDiff.text).Replace('+', ' ')).Append("\t");
             break;
           case Operation.DELETE:
             text.Append("-").Append(aDiff.text.Length).Append("\t");
@@ -1475,7 +1472,7 @@ namespace DiffMatchPatch {
             // decode would change all "+" to " "
             param = param.Replace("+", "%2b");
 
-            param = HttpUtility.UrlDecode(param, new UTF8Encoding(false, true));
+            param = Uri.UnescapeDataString(param);
             //} catch (UnsupportedEncodingException e) {
             //  // Not likely on modern system.
             //  throw new Error("This system does not support UTF-8.", e);
@@ -2250,7 +2247,7 @@ namespace DiffMatchPatch {
           }
           line = text[textPointer].Substring(1);
           line = line.Replace("+", "%2b");
-          line = HttpUtility.UrlDecode(line, new UTF8Encoding(false, true));
+          line = Uri.UnescapeDataString(line);
           if (sign == '-') {
             // Deletion.
             patch.diffs.Add(new Diff(Operation.DELETE, line));
@@ -2274,13 +2271,15 @@ namespace DiffMatchPatch {
       return patches;
     }
 
+    private static Regex HEXCODE = new Regex("%[0-9A-F][0-9A-F]");
+
     /**
-     * Unescape selected chars for compatability with JavaScript's encodeURI.
+     * Unescape selected chars for compatibility with JavaScript's encodeURI.
      * In speed critical applications this could be dropped since the
      * receiving application will certainly decode these fine.
      * Note that this function is case-sensitive.  Thus "%3F" would not be
      * unescaped.  But this is ok because it is only called with the output of
-     * HttpUtility.UrlEncode which returns lowercase hex.
+     * Uri.EscapeDataString which returns lowercase hex.
      *
      * Example: "%3f" -> "?", "%24" -> "$", etc.
      *
@@ -2288,12 +2287,17 @@ namespace DiffMatchPatch {
      * @return The escaped string.
      */
     public static string unescapeForEncodeUriCompatability(string str) {
-      return str.Replace("%21", "!").Replace("%7e", "~")
+      str = str.Replace("%20", " ").Replace("%21", "!").Replace("%2A", "*")
           .Replace("%27", "'").Replace("%28", "(").Replace("%29", ")")
-          .Replace("%3b", ";").Replace("%2f", "/").Replace("%3f", "?")
-          .Replace("%3a", ":").Replace("%40", "@").Replace("%26", "&")
-          .Replace("%3d", "=").Replace("%2b", "+").Replace("%24", "$")
-          .Replace("%2c", ",").Replace("%23", "#");
+          .Replace("%3B", ";").Replace("%2F", "/").Replace("%3F", "?")
+          .Replace("%3A", ":").Replace("%40", "@").Replace("%26", "&")
+          .Replace("%3D", "=").Replace("%2B", "+").Replace("%24", "$")
+          .Replace("%2C", ",").Replace("%23", "#");
+      return HEXCODE.Replace(str, new MatchEvaluator(lowerHex));
+    }
+
+    private static string lowerHex(Match m) {
+      return m.ToString().ToLower();
     }
   }
 }
