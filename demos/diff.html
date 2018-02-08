@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
   <TITLE>Diff, Match and Patch: Demo of Diff</TITLE>
-  <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript" SRC="../javascript/diff_match_patch.js"></SCRIPT>
+  <SCRIPT SRC="../javascript/diff_match_patch.js"></SCRIPT>
 </HEAD>
 
 <BODY>
@@ -13,7 +13,7 @@
 The result of any diff may contain 'chaff', irrelevant small commonalities which complicate the output.
 A post-diff cleanup algorithm factors out these trivial commonalities.</P>
 
-<SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">
+<SCRIPT>
 var dmp = new diff_match_patch();
 
 function launch() {
@@ -81,7 +81,7 @@ not worth the overhead.  The larger the edit cost, the more agressive the cleanu
 <DIV ID="outputdiv"></DIV>
 
 <HR>
-Back to <A HREF="http://code.google.com/p/google-diff-match-patch/">Diff, Match and Patch</A>
+Back to <A HREF="https://github.com/google/diff-match-patch">Diff, Match and Patch</A>
 
 </BODY>
 </HTML>
