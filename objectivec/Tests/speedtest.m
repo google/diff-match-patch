@@ -26,11 +26,20 @@
 int main (int argc, const char * argv[]) {
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-  NSString *text1 = [NSString stringWithContentsOfFile:@"Speedtest1.txt"
+  NSString *directory = @"";
+  if (argc >= 1) {
+     directory = [NSString stringWithCString:argv[1] encoding:NSUTF8StringEncoding];
+  }
+
+  NSString *filePath1 =
+      [directory stringByAppendingPathComponent:@"Tests/Speedtest1.txt"];
+  NSString *text1 = [NSString stringWithContentsOfFile:filePath1
                         encoding:NSUTF8StringEncoding
                            error:NULL];
 
-  NSString *text2 = [NSString stringWithContentsOfFile:@"Speedtest2.txt"
+  NSString *filePath2 =
+      [directory stringByAppendingPathComponent:@"Tests/Speedtest2.txt"];
+  NSString *text2 = [NSString stringWithContentsOfFile:filePath2
                         encoding:NSUTF8StringEncoding
                            error:NULL];
 

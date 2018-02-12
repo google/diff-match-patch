@@ -4,5 +4,8 @@
 *.pyc
 *.komodoproject
 
+.DS_STORE
+xcuserdata
+
 dart/tests/Speedtest.dart.js.deps
 dart/tests/Speedtest.dart.js.map

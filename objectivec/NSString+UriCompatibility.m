@@ -31,15 +31,14 @@
  * @param str The CFStringRef to escape.
  * @return The escaped CFStringRef.
  */
-- (NSString *)diff_stringByAddingPercentEscapesForEncodeUriCompatibility;
-{
-  CFStringRef urlString = CFURLCreateStringByAddingPercentEscapes(NULL,
-                                  (CFStringRef)self,
-                                  CFSTR(" !~*'();/?:@&=+$,#"),
-                                  NULL,
-                                  kCFStringEncodingUTF8);
-  CFMakeCollectable(urlString);
-  return [(NSString *)urlString autorelease];
+- (NSString *)diff_stringByAddingPercentEscapesForEncodeUriCompatibility {
+  NSMutableCharacterSet *allowedCharacters =
+      [NSMutableCharacterSet characterSetWithCharactersInString:@" !~*'();/?:@&=+$,#"];
+  [allowedCharacters formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
+  NSString *URLString =
+      [self stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+
+  return URLString;
 }
 
 /**
@@ -49,14 +48,9 @@
  *
  * @return The unescaped NSString.
  */
-- (NSString *)diff_stringByReplacingPercentEscapesForEncodeUriCompatibility;
-{
-  CFStringRef decodedString = CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL, 
-                                            (CFStringRef)self, 
-                                            CFSTR(""), 
-                                            kCFStringEncodingUTF8);
-  CFMakeCollectable(decodedString);
-  return [(NSString *)decodedString autorelease];
+- (NSString *)diff_stringByReplacingPercentEscapesForEncodeUriCompatibility {
+  NSString *decodedString = [self stringByRemovingPercentEncoding];
+  return decodedString;
 }
 
 @end

@@ -8,20 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		3D08D25412A71B9C007A5316 /* NSString+UnicharUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D08D25212A71B9C007A5316 /* NSString+UnicharUtilities.m */; };
-		3D0D3FAB128CBD350093B0C7 /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */; };
-		3D5BBFDF128C416900B8F5FF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		3D5BC080128C44A700B8F5FF /* DiffMatchPatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5BC07E128C44A700B8F5FF /* DiffMatchPatch.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D5BC081128C44A700B8F5FF /* DiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5BC07F128C44A700B8F5FF /* DiffMatchPatch.m */; };
 		3D70BCC9128EDAF80078D1A6 /* NSString+UriCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D70BCC7128EDAF80078D1A6 /* NSString+UriCompatibility.m */; };
-		3D96F3BC12AFC6D800C3E5C0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		3D96F44A12AFC82F00C3E5C0 /* speedtest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D96F44912AFC82F00C3E5C0 /* speedtest.m */; };
 		3D96F44F12AFC96A00C3E5C0 /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */; };
 		3DA641D1128DE21D00B33CE9 /* DiffMatchPatchCFUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DA64170128DDA3400B33CE9 /* DiffMatchPatchCFUtilities.c */; };
-		3DA64278128DE8C900B33CE9 /* DiffMatchPatchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */; };
 		3DC87026129FF4B6001F602B /* NSString+JavaSubstring.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */; };
 		3DEE4C73129D484D00885485 /* NSMutableDictionary+DMPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */; };
-		3DFDB2FA12AEC7700084EFE3 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */; };
-		3DFDB2FB12AEC77E0084EFE3 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */; };
+		4CF04C3620323A1100945640 /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */; };
+		4CF04C3E20323A8200945640 /* DiffMatchPatchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
@@ -33,7 +29,7 @@
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = DiffMatchPatch;
 		};
-		3DA64279128DE8CD00B33CE9 /* PBXContainerItemProxy */ = {
+		4CF04C3720323A1100945640 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
@@ -43,23 +39,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* DiffMatchPatch_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch_Prefix.pch; sourceTree = "<group>"; };
 		3D08D25112A71B9C007A5316 /* NSString+UnicharUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UnicharUtilities.h"; sourceTree = "<group>"; };
 		3D08D25212A71B9C007A5316 /* NSString+UnicharUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UnicharUtilities.m"; sourceTree = "<group>"; };
-		3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Base+SnowLeopard.xcconfig"; sourceTree = "<group>"; };
-		3D510E1012BEBA44008C7CE7 /* Base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
-		3D510E1112BEBA44008C7CE7 /* Version.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		3D5BC07E128C44A700B8F5FF /* DiffMatchPatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch.h; sourceTree = "<group>"; };
 		3D5BC07F128C44A700B8F5FF /* DiffMatchPatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatch.m; sourceTree = "<group>"; };
-		3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiffMatchPatchTest.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D5BC0B0128CA8E200B8F5FF /* DiffMatchPatchTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DiffMatchPatchTest-Info.plist"; sourceTree = "<group>"; };
 		3D5BC0DD128CAAE400B8F5FF /* DiffMatchPatchTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatchTest.h; sourceTree = "<group>"; };
 		3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatchTest.m; sourceTree = "<group>"; };
-		3D5BC104128CAD6900B8F5FF /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		3D70BCC6128EDAF80078D1A6 /* NSString+UriCompatibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UriCompatibility.h"; sourceTree = "<group>"; };
 		3D70BCC7128EDAF80078D1A6 /* NSString+UriCompatibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UriCompatibility.m"; sourceTree = "<group>"; };
 		3D96F3A212AFC68900C3E5C0 /* speedtest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = speedtest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -72,27 +60,29 @@
 		3DC87024129FF4B6001F602B /* NSString+JavaSubstring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+JavaSubstring.m"; sourceTree = "<group>"; };
 		3DEE4C70129D484D00885485 /* NSMutableDictionary+DMPExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+DMPExtensions.h"; sourceTree = "<group>"; };
 		3DEE4C71129D484D00885485 /* NSMutableDictionary+DMPExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+DMPExtensions.m"; sourceTree = "<group>"; };
-		3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
+		4CF04C272032368B00945640 /* Speedtest2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Speedtest2.txt; sourceTree = "<group>"; };
+		4CF04C282032368B00945640 /* Speedtest1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Speedtest1.txt; sourceTree = "<group>"; };
+		4CF04C2B2032394300945640 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		4CF04C3120323A1100945640 /* DiffMatchPatchTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiffMatchPatchTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CF04C40203240AB00945640 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = ../../../../../System/Library/Frameworks/Foundation.framework; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DiffMatchPatch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		3D5BC0AC128CA8E200B8F5FF /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3D0D3FAB128CBD350093B0C7 /* DiffMatchPatch.framework in Frameworks */,
-				3DFDB2FA12AEC7700084EFE3 /* libstdc++.6.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3D96F3A012AFC68900C3E5C0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				3D96F44F12AFC96A00C3E5C0 /* DiffMatchPatch.framework in Frameworks */,
-				3D96F3BC12AFC6D800C3E5C0 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CF04C2E20323A1100945640 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CF04C3620323A1100945640 /* DiffMatchPatch.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,8 +90,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D5BBFDF128C416900B8F5FF /* Foundation.framework in Frameworks */,
-				3DFDB2FB12AEC77E0084EFE3 /* libstdc++.6.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,8 +100,8 @@
 			isa = PBXGroup;
 			children = (
 				8DC2EF5B0486A6940098B216 /* DiffMatchPatch.framework */,
-				3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */,
 				3D96F3A212AFC68900C3E5C0 /* speedtest */,
+				4CF04C3120323A1100945640 /* DiffMatchPatchTest.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -124,21 +112,11 @@
 				08FB77AEFE84172EC02AAC07 /* Classes */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				089C1665FE841158C02AAC07 /* Resources */,
-				3D510E0F12BEBA44008C7CE7 /* Configurations */,
-				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				3D5BC0D9128CAA7600B8F5FF /* Tests */,
 				034768DFFF38A50411DB9C8B /* Products */,
+				4CF04C2A2032394300945640 /* Frameworks */,
 			);
 			name = DiffMatchPatch;
-			sourceTree = "<group>";
-		};
-		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
-			isa = PBXGroup;
-			children = (
-				1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */,
-				1058C7B2FEA5585E11CA2CBB /* Other Frameworks */,
-			);
-			name = "External Frameworks and Libraries";
 			sourceTree = "<group>";
 		};
 		089C1665FE841158C02AAC07 /* Resources */ = {
@@ -167,24 +145,6 @@
 			name = Classes;
 			sourceTree = "<group>";
 		};
-		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */,
-			);
-			name = "Linked Frameworks";
-			sourceTree = "<group>";
-		};
-		1058C7B2FEA5585E11CA2CBB /* Other Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				0867D6A5FE840307C02AAC07 /* AppKit.framework */,
-				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
-				3DFDB2F912AEC7700084EFE3 /* libstdc++.6.dylib */,
-			);
-			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -196,20 +156,11 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
-		3D510E0F12BEBA44008C7CE7 /* Configurations */ = {
-			isa = PBXGroup;
-			children = (
-				3D510E1112BEBA44008C7CE7 /* Version.xcconfig */,
-				3D510E1012BEBA44008C7CE7 /* Base.xcconfig */,
-				3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */,
-			);
-			path = Configurations;
-			sourceTree = "<group>";
-		};
 		3D5BC0D9128CAA7600B8F5FF /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				3D5BC104128CAD6900B8F5FF /* SenTestingKit.framework */,
+				4CF04C282032368B00945640 /* Speedtest1.txt */,
+				4CF04C272032368B00945640 /* Speedtest2.txt */,
 				3D5BC0B0128CA8E200B8F5FF /* DiffMatchPatchTest-Info.plist */,
 				3D5BC0DD128CAAE400B8F5FF /* DiffMatchPatchTest.h */,
 				3D5BC0DE128CAAE400B8F5FF /* DiffMatchPatchTest.m */,
@@ -217,6 +168,15 @@
 				3D96F44912AFC82F00C3E5C0 /* speedtest.m */,
 			);
 			path = Tests;
+			sourceTree = "<group>";
+		};
+		4CF04C2A2032394300945640 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4CF04C40203240AB00945640 /* Foundation.framework */,
+				4CF04C2B2032394300945640 /* XCTest.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -233,25 +193,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		3D5BC0AE128CA8E200B8F5FF /* DiffMatchPatchTest */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3D5BC0B3128CA8E500B8F5FF /* Build configuration list for PBXNativeTarget "DiffMatchPatchTest" */;
-			buildPhases = (
-				3D5BC0AA128CA8E200B8F5FF /* Resources */,
-				3D5BC0AB128CA8E200B8F5FF /* Sources */,
-				3D5BC0AC128CA8E200B8F5FF /* Frameworks */,
-				3D5BC0AD128CA8E200B8F5FF /* ShellScript */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3DA6427A128DE8CD00B33CE9 /* PBXTargetDependency */,
-			);
-			name = DiffMatchPatchTest;
-			productName = DiffMatchPatchTest;
-			productReference = 3D5BC0AF128CA8E200B8F5FF /* DiffMatchPatchTest.octest */;
-			productType = "com.apple.product-type.bundle";
-		};
 		3D96F3A112AFC68900C3E5C0 /* speedtest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3D96F3B512AFC68E00C3E5C0 /* Build configuration list for PBXNativeTarget "speedtest" */;
@@ -268,6 +209,24 @@
 			productName = speedtest;
 			productReference = 3D96F3A212AFC68900C3E5C0 /* speedtest */;
 			productType = "com.apple.product-type.tool";
+		};
+		4CF04C3020323A1100945640 /* DiffMatchPatchTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4CF04C3920323A1100945640 /* Build configuration list for PBXNativeTarget "DiffMatchPatchTest" */;
+			buildPhases = (
+				4CF04C2D20323A1100945640 /* Sources */,
+				4CF04C2E20323A1100945640 /* Frameworks */,
+				4CF04C2F20323A1100945640 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4CF04C3820323A1100945640 /* PBXTargetDependency */,
+			);
+			name = DiffMatchPatchTest;
+			productName = DiffMatchPatchTest;
+			productReference = 4CF04C3120323A1100945640 /* DiffMatchPatchTest.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		8DC2EF4F0486A6940098B216 /* DiffMatchPatch */ = {
 			isa = PBXNativeTarget;
@@ -293,6 +252,14 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				TargetAttributes = {
+					4CF04C3020323A1100945640 = {
+						CreatedOnToolsVersion = 9.2;
+					};
+				};
+			};
 			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "DiffMatchPatch" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -309,14 +276,14 @@
 			projectRoot = "";
 			targets = (
 				8DC2EF4F0486A6940098B216 /* DiffMatchPatch */,
-				3D5BC0AE128CA8E200B8F5FF /* DiffMatchPatchTest */,
 				3D96F3A112AFC68900C3E5C0 /* speedtest */,
+				4CF04C3020323A1100945640 /* DiffMatchPatchTest */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		3D5BC0AA128CA8E200B8F5FF /* Resources */ = {
+		4CF04C2F20323A1100945640 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -333,36 +300,20 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		3D5BC0AD128CA8E200B8F5FF /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		3D5BC0AB128CA8E200B8F5FF /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3DA64278128DE8C900B33CE9 /* DiffMatchPatchTest.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3D96F39F12AFC68900C3E5C0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				3D96F44A12AFC82F00C3E5C0 /* speedtest.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CF04C2D20323A1100945640 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CF04C3E20323A8200945640 /* DiffMatchPatchTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,10 +338,10 @@
 			target = 8DC2EF4F0486A6940098B216 /* DiffMatchPatch */;
 			targetProxy = 3D96F3B812AFC6CD00C3E5C0 /* PBXContainerItemProxy */;
 		};
-		3DA6427A128DE8CD00B33CE9 /* PBXTargetDependency */ = {
+		4CF04C3820323A1100945640 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8DC2EF4F0486A6940098B216 /* DiffMatchPatch */;
-			targetProxy = 3DA64279128DE8CD00B33CE9 /* PBXContainerItemProxy */;
+			targetProxy = 4CF04C3720323A1100945640 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -422,6 +373,7 @@
 				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "de.geheimwerk.${PRODUCT_NAME:rfc1034Identifier}";
 				PRODUCT_NAME = DiffMatchPatch;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -440,6 +392,7 @@
 				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "de.geheimwerk.${PRODUCT_NAME:rfc1034Identifier}";
 				PRODUCT_NAME = DiffMatchPatch;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -447,28 +400,84 @@
 		};
 		1DEB91B208733DA50010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D510E1012BEBA44008C7CE7 /* Base.xcconfig */;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_UNINITIALIZED_AUTOS = NO;
 				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
 		1DEB91B308733DA50010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D510E1012BEBA44008C7CE7 /* Base.xcconfig */;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
 		3D105A0C12DA601C002111E1 /* Debug 10.6 */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_UNINITIALIZED_AUTOS = NO;
 				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
 			};
 			name = "Debug 10.6";
 		};
@@ -488,35 +497,9 @@
 				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "de.geheimwerk.${PRODUCT_NAME:rfc1034Identifier}";
 				PRODUCT_NAME = DiffMatchPatch;
 				WRAPPER_EXTENSION = framework;
-			};
-			name = "Debug 10.6";
-		};
-		3D105A0E12DA601C002111E1 /* Debug 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = DiffMatchPatchTest;
-				WRAPPER_EXTENSION = octest;
 			};
 			name = "Debug 10.6";
 		};
@@ -545,8 +528,26 @@
 		};
 		3D105A1012DA6024002111E1 /* Release 10.6 */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D105A0912DA5F9D002111E1 /* Base+SnowLeopard.xcconfig */;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				SDKROOT = macosx;
 			};
 			name = "Release 10.6";
 		};
@@ -563,35 +564,9 @@
 				GCC_PREFIX_HEADER = DiffMatchPatch_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "de.geheimwerk.${PRODUCT_NAME:rfc1034Identifier}";
 				PRODUCT_NAME = DiffMatchPatch;
 				WRAPPER_EXTENSION = framework;
-			};
-			name = "Release 10.6";
-		};
-		3D105A1212DA6024002111E1 /* Release 10.6 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = DiffMatchPatchTest;
-				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
 			};
 			name = "Release 10.6";
 		};
@@ -617,60 +592,6 @@
 				ZERO_LINK = NO;
 			};
 			name = "Release 10.6";
-		};
-		3D5BC0B1128CA8E500B8F5FF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = DiffMatchPatchTest;
-				WRAPPER_EXTENSION = octest;
-			};
-			name = Debug;
-		};
-		3D5BC0B2128CA8E500B8F5FF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = DiffMatchPatchTest;
-				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		3D96F3A412AFC68B00C3E5C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -718,6 +639,158 @@
 			};
 			name = Release;
 		};
+		4CF04C3A20323A1100945640 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.google.DiffMatchPatchTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		4CF04C3B20323A1100945640 /* Debug 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.google.DiffMatchPatchTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug 10.6";
+		};
+		4CF04C3C20323A1100945640 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.google.DiffMatchPatchTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		4CF04C3D20323A1100945640 /* Release 10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "Tests/DiffMatchPatchTest-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.google.DiffMatchPatchTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release 10.6";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -743,17 +816,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3D5BC0B3128CA8E500B8F5FF /* Build configuration list for PBXNativeTarget "DiffMatchPatchTest" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3D5BC0B1128CA8E500B8F5FF /* Debug */,
-				3D105A0E12DA601C002111E1 /* Debug 10.6 */,
-				3D5BC0B2128CA8E500B8F5FF /* Release */,
-				3D105A1212DA6024002111E1 /* Release 10.6 */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		3D96F3B512AFC68E00C3E5C0 /* Build configuration list for PBXNativeTarget "speedtest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -761,6 +823,17 @@
 				3D105A0F12DA601C002111E1 /* Debug 10.6 */,
 				3D96F3A512AFC68B00C3E5C0 /* Release */,
 				3D105A1312DA6024002111E1 /* Release 10.6 */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4CF04C3920323A1100945640 /* Build configuration list for PBXNativeTarget "DiffMatchPatchTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4CF04C3A20323A1100945640 /* Debug */,
+				4CF04C3B20323A1100945640 /* Debug 10.6 */,
+				4CF04C3C20323A1100945640 /* Release */,
+				4CF04C3D20323A1100945640 /* Release 10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

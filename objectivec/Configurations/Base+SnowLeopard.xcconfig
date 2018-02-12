@@ -1,3 +1,0 @@
-#include "Base.xcconfig"
-
-SDKROOT = macosx10.6
