@@ -24,13 +24,13 @@ Originally built in 2006 to power Google Docs, this library is now available in 
 ### Languages
 Although each language port of Diff Match Patch uses the same API, there are some language-specific notes.
 
-* C++
+* [C++](https://github.com/google/diff-match-patch/wiki/Language:-Cpp)
 * [C#](https://github.com/google/diff-match-patch/wiki/Language:-C%23)
 * [Dart](https://github.com/google/diff-match-patch/wiki/Language:-Dart)
 * [Java](https://github.com/google/diff-match-patch/wiki/Language:-Java)
 * [JavaScript](https://github.com/google/diff-match-patch/wiki/Language:-JavaScript)
 * [Lua](https://github.com/google/diff-match-patch/wiki/Language:-Lua)
-* Objective-C
+* [Objective-C](https://github.com/google/diff-match-patch/wiki/Language:-Objective-C)
 * [Python](https://github.com/google/diff-match-patch/wiki/Language:-Python)
 
 A standardized speed test tracks the [relative performance of diffs](https://docs.google.com/spreadsheets/d/1zpZccuBpjMZTvL1nGDMKJc7rWL_m_drF4XKOJvB27Kc/edit#gid=0) in each language.
