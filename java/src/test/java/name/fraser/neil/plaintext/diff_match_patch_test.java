@@ -18,9 +18,11 @@
 
 /**
  * Compile from diff-match-patch/java with:
- * javac -d classes src/name/fraser/neil/plaintext/diff_match_patch.java tests/name/fraser/neil/plaintext/diff_match_patch_test.java
+ * javac -d target/classes src/main/java/name/fraser/neil/plaintext/diff_match_patch.java
+ * javac -classpath target/classes -d target/test-classes src/test/java/name/fraser/neil/plaintext/diff_match_patch_test.java
+ *
  * Execute with:
- * java -classpath classes name/fraser/neil/plaintext/diff_match_patch_test
+ * java -classpath target/classes:target/test-classes name/fraser/neil/plaintext/diff_match_patch_test
  */
 
 package name.fraser.neil.plaintext;
