@@ -174,9 +174,9 @@ function testDiffLinesToChars() {
   var n = 300;
   var lineList = [];
   var charList = [];
-  for (var x = 1; x < n + 1; x++) {
-    lineList[x - 1] = x + '\n';
-    charList[x - 1] = String.fromCharCode(x);
+  for (var i = 1; i < n + 1; i++) {
+    lineList[i - 1] = i + '\n';
+    charList[i - 1] = String.fromCharCode(i);
   }
   assertEquals(n, lineList.length);
   var lines = lineList.join('');
@@ -196,9 +196,9 @@ function testDiffCharsToLines() {
   var n = 300;
   var lineList = [];
   var charList = [];
-  for (var x = 1; x < n + 1; x++) {
-    lineList[x - 1] = x + '\n';
-    charList[x - 1] = String.fromCharCode(x);
+  for (var i = 1; i < n + 1; i++) {
+    lineList[i - 1] = i + '\n';
+    charList[i - 1] = String.fromCharCode(i);
   }
   assertEquals(n, lineList.length);
   var lines = lineList.join('');
@@ -208,6 +208,17 @@ function testDiffCharsToLines() {
   var diffs = [[DIFF_DELETE, chars]];
   dmp.diff_charsToLines_(diffs, lineList);
   assertEquivalent([[DIFF_DELETE, lines]], diffs);
+
+  // More than 65536 to verify any 16-bit limitation.
+  lineList = [];
+  for (var i = 0; i < 66000; i++) {
+    lineList[i] = i + '\n';
+  }
+  chars = lineList.join('');
+  var results = dmp.diff_linesToChars_(chars, '');
+  diffs = [[DIFF_INSERT, results.chars1]];
+  dmp.diff_charsToLines_(diffs, results.lineArray);
+  assertEquals(chars, diffs[0][1]);
 }
 
 function testDiffCleanupMerge() {
@@ -560,8 +571,8 @@ function testDiffMain() {
   var b = 'I am the very model of a modern major general,\nI\'ve information vegetable, animal, and mineral,\nI know the kings of England, and I quote the fights historical,\nFrom Marathon to Waterloo, in order categorical.\n';
   // Increase the text lengths by 1024 times to ensure a timeout.
   for (var x = 0; x < 10; x++) {
-    a = a + a;
-    b = b + b;
+    a += a;
+    b += b;
   }
   var startTime = (new Date()).getTime();
   dmp.diff_main(a, b);
@@ -571,11 +582,7 @@ function testDiffMain() {
   // Test that we didn't take forever (be forgiving).
   // Theoretically this test could fail very occasionally if the
   // OS task swaps or locks up for a second at the wrong moment.
-  // ****
-  // TODO(fraser): For unknown reasons this is taking 500 ms on Google's
-  // internal test system.  Whereas browsers take 140 ms.
-  //assertTrue(dmp.Diff_Timeout * 1000 * 2 > endTime - startTime);
-  // ****
+  assertTrue(dmp.Diff_Timeout * 1000 * 2 > endTime - startTime);
   dmp.Diff_Timeout = 0;
 
   // Test the linemode speedup.
@@ -596,7 +603,7 @@ function testDiffMain() {
   var texts_linemode = diff_rebuildtexts(dmp.diff_main(a, b, true));
   var texts_textmode = diff_rebuildtexts(dmp.diff_main(a, b, false));
   assertEquivalent(texts_textmode, texts_linemode);
-
+  
   // Test null inputs.
   try {
     dmp.diff_main(null, null);
