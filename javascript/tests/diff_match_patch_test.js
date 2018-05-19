@@ -570,7 +570,7 @@ function testDiffMain() {
   var a = '`Twas brillig, and the slithy toves\nDid gyre and gimble in the wabe:\nAll mimsy were the borogoves,\nAnd the mome raths outgrabe.\n';
   var b = 'I am the very model of a modern major general,\nI\'ve information vegetable, animal, and mineral,\nI know the kings of England, and I quote the fights historical,\nFrom Marathon to Waterloo, in order categorical.\n';
   // Increase the text lengths by 1024 times to ensure a timeout.
-  for (var x = 0; x < 10; x++) {
+  for (var i = 0; i < 10; i++) {
     a += a;
     b += b;
   }
@@ -603,7 +603,7 @@ function testDiffMain() {
   var texts_linemode = diff_rebuildtexts(dmp.diff_main(a, b, true));
   var texts_textmode = diff_rebuildtexts(dmp.diff_main(a, b, false));
   assertEquivalent(texts_textmode, texts_linemode);
-  
+
   // Test null inputs.
   try {
     dmp.diff_main(null, null);

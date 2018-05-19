@@ -545,15 +545,21 @@ public class diff_match_patch {
         lineEnd = text.length() - 1;
       }
       line = text.substring(lineStart, lineEnd + 1);
-      lineStart = lineEnd + 1;
 
       if (lineHash.containsKey(line)) {
         chars.append(String.valueOf((char) (int) lineHash.get(line)));
       } else {
+        if (lineArray.size() == 65535) {
+          // Bail out at 65535 because
+          // String.valueOf((char) 65536).equals(String.valueOf(((char) 0)))
+          line = text.substring(lineStart);
+          lineEnd = text.length();
+        }
         lineArray.add(line);
         lineHash.put(line, lineArray.size() - 1);
         chars.append(String.valueOf((char) (lineArray.size() - 1)));
       }
+      lineStart = lineEnd + 1;
     }
     return chars.toString();
   }

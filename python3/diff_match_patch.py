@@ -420,14 +420,18 @@ class diff_match_patch:
         if lineEnd == -1:
           lineEnd = len(text) - 1
         line = text[lineStart:lineEnd + 1]
-        lineStart = lineEnd + 1
 
         if line in lineHash:
           chars.append(chr(lineHash[line]))
         else:
+          if len(lineArray) == 1114111:
+            # Bail out at 1114111 because chr(1114112) throws.
+            line = text[lineStart:]
+            lineEnd = len(text)
           lineArray.append(line)
           lineHash[line] = len(lineArray) - 1
           chars.append(chr(len(lineArray) - 1))
+        lineStart = lineEnd + 1
       return "".join(chars)
 
     chars1 = diff_linesToCharsMunge(text1)

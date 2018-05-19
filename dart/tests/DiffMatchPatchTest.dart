@@ -185,9 +185,9 @@ void testDiffLinesToChars() {
   int n = 300;
   List<String> lineList = [];
   StringBuffer charList = new StringBuffer();
-  for (int x = 1; x < n + 1; x++) {
-    lineList.add('$x\n');
-    charList.writeCharCode(x);
+  for (int i = 1; i < n + 1; i++) {
+    lineList.add('$i\n');
+    charList.writeCharCode(i);
   }
   Expect.equals(n, lineList.length, 'Test initialization fail #1.');
   String lines = lineList.join();
@@ -212,9 +212,9 @@ void testDiffCharsToLines() {
   int n = 300;
   List<String> lineList = [];
   StringBuffer charList = new StringBuffer();
-  for (int x = 1; x < n + 1; x++) {
-    lineList.add('$x\n');
-    charList.writeCharCode(x);
+  for (int i = 1; i < n + 1; i++) {
+    lineList.add('$i\n');
+    charList.writeCharCode(i);
   }
   Expect.equals(n, lineList.length, 'Test initialization fail #3.');
   String lines = lineList.join();
@@ -224,6 +224,17 @@ void testDiffCharsToLines() {
   diffs = [new Diff(Operation.delete, chars)];
   dmp._diff_charsToLines(diffs, lineList);
   Expect.listEquals([new Diff(Operation.delete, lines)], diffs, 'diff_charsToLines: More than 256.');
+
+  // More than 65536 to verify any 16-bit limitation.
+  lineList = [];
+  for (int i = 0; i < 66000; i++) {
+    lineList.add('$i\n');
+  }
+  chars = lineList.join();
+  final results = dmp._diff_linesToChars(chars, '');
+  diffs = [new Diff(Operation.insert, results['chars1'])];
+  dmp._diff_charsToLines(diffs, results['lineArray']);
+  Expect.equals(chars, diffs[0].text, 'diff_charsToLines: More than 65536.');
 }
 
 void testDiffCleanupMerge() {
@@ -532,7 +543,7 @@ void testDiffMain() {
   String a = '`Twas brillig, and the slithy toves\nDid gyre and gimble in the wabe:\nAll mimsy were the borogoves,\nAnd the mome raths outgrabe.\n';
   String b = 'I am the very model of a modern major general,\nI\'ve information vegetable, animal, and mineral,\nI know the kings of England, and I quote the fights historical,\nFrom Marathon to Waterloo, in order categorical.\n';
   // Increase the text lengths by 1024 times to ensure a timeout.
-  for (int x = 0; x < 10; x++) {
+  for (int i = 0; i < 10; i++) {
     a += a;
     b += b;
   }

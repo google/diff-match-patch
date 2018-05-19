@@ -480,7 +480,6 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
     }*/
 
     line = diff_CFStringCreateJavaSubstring(text, lineStart, lineEnd + 1);
-    lineStart = lineEnd + 1;
 
     if (CFDictionaryContainsKey(lineHash, line)) {
       CFDictionaryGetValueIfPresent(lineHash, line, (const void **)&hashNumber);
@@ -488,6 +487,11 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
       const UniChar hashChar = (UniChar)hash;
       CFStringAppendCharacters(chars, &hashChar, 1);
     } else {
+      if (CFArrayGetCount(lineArray) == 65535) {
+        // Bail out at 65535 because char 65536 == char 0.
+        line = diff_CFStringCreateJavaSubstring(text, lineStart, textLength);
+        lineEnd = textLength;
+      }
       CFArrayAppendValue(lineArray, line);
       hash = CFArrayGetCount(lineArray) - 1;
       hashNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &hash);
@@ -497,6 +501,7 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
       const UniChar hashChar = (UniChar)hash;
       CFStringAppendCharacters(chars, &hashChar, 1);
     }
+    lineStart = lineEnd + 1;
 
     CFRelease(line);
   }

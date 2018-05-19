@@ -480,15 +480,23 @@ class DiffMatchPatch {
         lineEnd = text.length - 1;
       }
       line = text.substring(lineStart, lineEnd + 1);
-      lineStart = lineEnd + 1;
 
       if (lineHash.containsKey(line)) {
         chars.writeCharCode(lineHash[line]);
       } else {
+        if (lineArray.length == 65535) {
+          // Bail out at 65535 because
+          // final chars1 = new StringBuffer();
+          // chars1.writeCharCode(65536);
+          // chars1.toString().codeUnitAt(0) == 55296;
+          line = text.substring(lineStart);
+          lineEnd = text.length;
+        }
         lineArray.add(line);
         lineHash[line] = lineArray.length - 1;
         chars.writeCharCode(lineArray.length - 1);
       }
+      lineStart = lineEnd + 1;
     }
     return chars.toString();
   }

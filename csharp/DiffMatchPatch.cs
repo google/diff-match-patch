@@ -631,15 +631,20 @@ namespace DiffMatchPatch {
           lineEnd = text.Length - 1;
         }
         line = text.JavaSubstring(lineStart, lineEnd + 1);
-        lineStart = lineEnd + 1;
 
         if (lineHash.ContainsKey(line)) {
           chars.Append(((char)(int)lineHash[line]));
         } else {
+          if (lineArray.Count == 65535) {
+            // Bail out at 65535 because char 65536 == char 0.
+            line = text.Substring(lineStart);
+            lineEnd = text.Length;
+          }
           lineArray.Add(line);
           lineHash.Add(line, lineArray.Count - 1);
           chars.Append(((char)(lineArray.Count - 1)));
         }
+        lineStart = lineEnd + 1;
       }
       return chars.ToString();
     }
