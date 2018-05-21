@@ -517,8 +517,9 @@ public class diff_match_patch {
     // So we'll insert a junk entry to avoid generating a null character.
     lineArray.add("");
 
-    String chars1 = diff_linesToCharsMunge(text1, lineArray, lineHash);
-    String chars2 = diff_linesToCharsMunge(text2, lineArray, lineHash);
+    // Allocate 2/3rds of the space for text1, the rest for text2.
+    String chars1 = diff_linesToCharsMunge(text1, lineArray, lineHash, 40000);
+    String chars2 = diff_linesToCharsMunge(text2, lineArray, lineHash, 65535);
     return new LinesToCharsResult(chars1, chars2, lineArray);
   }
 
@@ -528,10 +529,11 @@ public class diff_match_patch {
    * @param text String to encode.
    * @param lineArray List of unique strings.
    * @param lineHash Map of strings to indices.
+   * @param maxLines Maximum length of lineArray.
    * @return Encoded string.
    */
   private String diff_linesToCharsMunge(String text, List<String> lineArray,
-                                        Map<String, Integer> lineHash) {
+      Map<String, Integer> lineHash, int maxLines) {
     int lineStart = 0;
     int lineEnd = -1;
     String line;
@@ -549,7 +551,7 @@ public class diff_match_patch {
       if (lineHash.containsKey(line)) {
         chars.append(String.valueOf((char) (int) lineHash.get(line)));
       } else {
-        if (lineArray.size() == 65535) {
+        if (lineArray.size() == maxLines) {
           // Bail out at 65535 because
           // String.valueOf((char) 65536).equals(String.valueOf(((char) 0)))
           line = text.substring(lineStart);

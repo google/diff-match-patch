@@ -424,7 +424,7 @@ class diff_match_patch:
         if line in lineHash:
           chars.append(chr(lineHash[line]))
         else:
-          if len(lineArray) == 1114111:
+          if len(lineArray) == maxLines:
             # Bail out at 1114111 because chr(1114112) throws.
             line = text[lineStart:]
             lineEnd = len(text)
@@ -434,7 +434,10 @@ class diff_match_patch:
         lineStart = lineEnd + 1
       return "".join(chars)
 
+    # Allocate 2/3rds of the space for text1, the rest for text2.
+    maxLines = 666666
     chars1 = diff_linesToCharsMunge(text1)
+    maxLines = 1114111
     chars2 = diff_linesToCharsMunge(text2)
     return (chars1, chars2, lineArray)
 

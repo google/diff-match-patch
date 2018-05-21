@@ -450,9 +450,10 @@ CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CF
  * @param text CFString to encode.
  * @param lineArray CFMutableArray of unique strings.
  * @param lineHash Map of strings to indices.
+ * @param maxLines Maximum length for lineArray.
  * @return Encoded CFStringRef.
  */
-CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef lineArray, CFMutableDictionaryRef lineHash) {
+CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef lineArray, CFMutableDictionaryRef lineHash, CFIndex maxLines) {
   #define lineStart lineStartRange.location
   #define lineEnd lineEndRange.location
 
@@ -487,7 +488,7 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
       const UniChar hashChar = (UniChar)hash;
       CFStringAppendCharacters(chars, &hashChar, 1);
     } else {
-      if (CFArrayGetCount(lineArray) == 65535) {
+      if (CFArrayGetCount(lineArray) == maxLength) {
         // Bail out at 65535 because char 65536 == char 0.
         line = diff_CFStringCreateJavaSubstring(text, lineStart, textLength);
         lineEnd = textLength;

@@ -168,7 +168,7 @@ class DiffTest(DiffMatchPatchTest):
     self.dmp.diff_charsToLines(diffs, lineList)
     self.assertEqual([(self.dmp.DIFF_DELETE, lines)], diffs)
 
-    # More than 1114112 to verify any 16-bit limitation.
+    # More than 1,114,112 to verify any 17 * 16-bit limitation.
     lineList = []
     for i in range(1, 1115000 + 1):
       lineList.append(str(i) + "\n")

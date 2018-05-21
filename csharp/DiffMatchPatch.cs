@@ -603,8 +603,9 @@ namespace DiffMatchPatch {
       // So we'll insert a junk entry to avoid generating a null character.
       lineArray.Add(string.Empty);
 
-      string chars1 = diff_linesToCharsMunge(text1, lineArray, lineHash);
-      string chars2 = diff_linesToCharsMunge(text2, lineArray, lineHash);
+      // Allocate 2/3rds of the space for text1, the rest for text2.
+      string chars1 = diff_linesToCharsMunge(text1, lineArray, lineHash, 40000);
+      string chars2 = diff_linesToCharsMunge(text2, lineArray, lineHash, 65535);
       return new Object[] { chars1, chars2, lineArray };
     }
 
@@ -614,10 +615,11 @@ namespace DiffMatchPatch {
      * @param text String to encode.
      * @param lineArray List of unique strings.
      * @param lineHash Map of strings to indices.
+     * @param maxLines Maximum length of lineArray.
      * @return Encoded string.
      */
     private string diff_linesToCharsMunge(string text, List<string> lineArray,
-                                          Dictionary<string, int> lineHash) {
+        Dictionary<string, int> lineHash, int maxLines) {
       int lineStart = 0;
       int lineEnd = -1;
       string line;
@@ -635,7 +637,7 @@ namespace DiffMatchPatch {
         if (lineHash.ContainsKey(line)) {
           chars.Append(((char)(int)lineHash[line]));
         } else {
-          if (lineArray.Count == 65535) {
+          if (lineArray.Count == maxLines) {
             // Bail out at 65535 because char 65536 == char 0.
             line = text.Substring(lineStart);
             lineEnd = text.Length;
