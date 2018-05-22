@@ -79,6 +79,8 @@
       }
 
       function runTests(force_utf32_string) {
+        test_good = 0;
+        test_bad = 0;
         diff_match_patch.force_utf32_string = force_utf32_string;
         if (force_utf32_string) {
           document.write('<H2>Forced UTF-32 Strings</H2>');
