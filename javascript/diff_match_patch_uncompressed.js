@@ -492,21 +492,29 @@ diff_match_patch.prototype.diff_linesToChars_ = function(text1, text2) {
       }
       var line = text.substring(lineStart, lineEnd + 1);
       var lineKey = line.toString();
-      lineStart = lineEnd + 1;
 
       if (lineHash.hasOwnProperty ? lineHash.hasOwnProperty(lineKey) :
           (lineHash[lineKey] !== undefined)) {
         chars += String.fromCharCode(lineHash[lineKey]);
       } else {
+        if (lineArrayLength == maxLines) {
+          // Bail out at 65535 because
+          // String.fromCharCode(65536) == String.fromCharCode(0)
+          line = text.substring(lineStart);
+          lineEnd = text.length;
+        }
         chars += String.fromCharCode(lineArrayLength);
         lineHash[lineKey] = lineArrayLength;
         lineArray[lineArrayLength++] = line;
       }
+      lineStart = lineEnd + 1;
     }
     return chars;
   }
-
+  // Allocate 2/3rds of the space for text1, the rest for text2.
+  var maxLines = 40000;
   var chars1 = diff_linesToCharsMunge_(text1);
+  maxLines = 65535;
   var chars2 = diff_linesToCharsMunge_(text2);
   return {chars1: chars1, chars2: chars2, lineArray: lineArray};
 };

@@ -134,9 +134,9 @@ class DiffTest(DiffMatchPatchTest):
     n = 300
     lineList = []
     charList = []
-    for x in range(1, n + 1):
-      lineList.append(str(x) + "\n")
-      charList.append(unichr(x))
+    for i in range(1, n + 1):
+      lineList.append(str(i) + "\n")
+      charList.append(unichr(i))
     self.assertEquals(n, len(lineList))
     lines = "".join(lineList)
     chars = "".join(charList)
@@ -154,9 +154,9 @@ class DiffTest(DiffMatchPatchTest):
     n = 300
     lineList = []
     charList = []
-    for x in range(1, n + 1):
-      lineList.append(str(x) + "\n")
-      charList.append(unichr(x))
+    for i in range(1, n + 1):
+      lineList.append(str(i) + "\n")
+      charList.append(unichr(i))
     self.assertEquals(n, len(lineList))
     lines = "".join(lineList)
     chars = "".join(charList)
@@ -165,6 +165,16 @@ class DiffTest(DiffMatchPatchTest):
     diffs = [(self.dmp.DIFF_DELETE, chars)]
     self.dmp.diff_charsToLines(diffs, lineList)
     self.assertEquals([(self.dmp.DIFF_DELETE, lines)], diffs)
+
+    # More than 65536 to verify any 16-bit limitation.
+    lineList = []
+    for i in range(1, 66000 + 1):
+      lineList.append(str(i) + "\n")
+    chars = "".join(lineList)
+    results = self.dmp.diff_linesToChars(chars, "")
+    diffs = [(self.dmp.DIFF_INSERT, results[0])];
+    self.dmp.diff_charsToLines(diffs, results[2]);
+    self.assertEquals(chars, diffs[0][1]);
 
   def testDiffCleanupMerge(self):
     # Cleanup a messy diff.
@@ -504,9 +514,9 @@ class DiffTest(DiffMatchPatchTest):
     a = "`Twas brillig, and the slithy toves\nDid gyre and gimble in the wabe:\nAll mimsy were the borogoves,\nAnd the mome raths outgrabe.\n"
     b = "I am the very model of a modern major general,\nI've information vegetable, animal, and mineral,\nI know the kings of England, and I quote the fights historical,\nFrom Marathon to Waterloo, in order categorical.\n"
     # Increase the text lengths by 1024 times to ensure a timeout.
-    for x in range(10):
-      a = a + a
-      b = b + b
+    for i in range(10):
+      a += a
+      b += b
     startTime = time.time()
     self.dmp.diff_main(a, b)
     endTime = time.time()

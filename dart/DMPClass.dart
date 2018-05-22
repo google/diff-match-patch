@@ -452,8 +452,9 @@ class DiffMatchPatch {
     // So we'll insert a junk entry to avoid generating a null character.
     lineArray.add('');
 
-    String chars1 = _diff_linesToCharsMunge(text1, lineArray, lineHash);
-    String chars2 = _diff_linesToCharsMunge(text2, lineArray, lineHash);
+    // Allocate 2/3rds of the space for text1, the rest for text2.
+    String chars1 = _diff_linesToCharsMunge(text1, lineArray, lineHash, 40000);
+    String chars2 = _diff_linesToCharsMunge(text2, lineArray, lineHash, 65535);
     return {'chars1': chars1, 'chars2': chars2, 'lineArray': lineArray};
   }
 
@@ -463,10 +464,11 @@ class DiffMatchPatch {
    * [text] is the string to encode.
    * [lineArray] is a List of unique strings.
    * [lineHash] is a Map of strings to indices.
+   * [maxLines] is the maximum length for lineArray.
    * Returns an encoded string.
    */
-  String _diff_linesToCharsMunge(
-      String text, List<String> lineArray, Map<String, int> lineHash) {
+  String _diff_linesToCharsMunge(String text, List<String> lineArray,
+      Map<String, int> lineHash, int maxLines) {
     int lineStart = 0;
     int lineEnd = -1;
     String line;
@@ -480,15 +482,23 @@ class DiffMatchPatch {
         lineEnd = text.length - 1;
       }
       line = text.substring(lineStart, lineEnd + 1);
-      lineStart = lineEnd + 1;
 
       if (lineHash.containsKey(line)) {
         chars.writeCharCode(lineHash[line]);
       } else {
+        if (lineArray.length == maxLines) {
+          // Bail out at 65535 because
+          // final chars1 = new StringBuffer();
+          // chars1.writeCharCode(65536);
+          // chars1.toString().codeUnitAt(0) == 55296;
+          line = text.substring(lineStart);
+          lineEnd = text.length;
+        }
         lineArray.add(line);
         lineHash[line] = lineArray.length - 1;
         chars.writeCharCode(lineArray.length - 1);
       }
+      lineStart = lineEnd + 1;
     }
     return chars.toString();
   }

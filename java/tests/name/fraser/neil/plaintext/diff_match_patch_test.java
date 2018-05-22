@@ -135,10 +135,10 @@ public class diff_match_patch_test {
     tmpVector.clear();
     StringBuilder lineList = new StringBuilder();
     StringBuilder charList = new StringBuilder();
-    for (int x = 1; x < n + 1; x++) {
-      tmpVector.add(x + "\n");
-      lineList.append(x + "\n");
-      charList.append(String.valueOf((char) x));
+    for (int i = 1; i < n + 1; i++) {
+      tmpVector.add(i + "\n");
+      lineList.append(i + "\n");
+      charList.append(String.valueOf((char) i));
     }
     assertEquals("Test initialization fail #1.", n, tmpVector.size());
     String lines = lineList.toString();
@@ -168,10 +168,10 @@ public class diff_match_patch_test {
     tmpVector.clear();
     StringBuilder lineList = new StringBuilder();
     StringBuilder charList = new StringBuilder();
-    for (int x = 1; x < n + 1; x++) {
-      tmpVector.add(x + "\n");
-      lineList.append(x + "\n");
-      charList.append(String.valueOf((char) x));
+    for (int i = 1; i < n + 1; i++) {
+      tmpVector.add(i + "\n");
+      lineList.append(i + "\n");
+      charList.append(String.valueOf((char) i));
     }
     assertEquals("Test initialization fail #3.", n, tmpVector.size());
     String lines = lineList.toString();
@@ -181,6 +181,17 @@ public class diff_match_patch_test {
     diffs = diffList(new Diff(DELETE, chars));
     dmp.diff_charsToLines(diffs, tmpVector);
     assertEquals("diff_charsToLines: More than 256.", diffList(new Diff(DELETE, lines)), diffs);
+
+    // More than 65536 to verify any 16-bit limitation.
+    lineList = new StringBuilder();
+    for (int i = 0; i < 66000; i++) {
+      lineList.append(i + "\n");
+    }
+    chars = lineList.toString();
+    LinesToCharsResult results = dmp.diff_linesToChars(chars, "");
+    diffs = diffList(new Diff(INSERT, results.chars1));
+    dmp.diff_charsToLines(diffs, results.lineArray);
+    assertEquals("diff_charsToLines: More than 65536.", chars, diffs.getFirst().text);
   }
 
   public static void testDiffCleanupMerge() {
@@ -500,9 +511,9 @@ public class diff_match_patch_test {
     String a = "`Twas brillig, and the slithy toves\nDid gyre and gimble in the wabe:\nAll mimsy were the borogoves,\nAnd the mome raths outgrabe.\n";
     String b = "I am the very model of a modern major general,\nI've information vegetable, animal, and mineral,\nI know the kings of England, and I quote the fights historical,\nFrom Marathon to Waterloo, in order categorical.\n";
     // Increase the text lengths by 1024 times to ensure a timeout.
-    for (int x = 0; x < 10; x++) {
-      a = a + a;
-      b = b + b;
+    for (int i = 0; i < 10; i++) {
+      a += a;
+      b += b;
     }
     long startTime = System.currentTimeMillis();
     dmp.diff_main(a, b);
