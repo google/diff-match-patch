@@ -569,10 +569,10 @@ public class diff_match_patch {
   /**
    * Rehydrate the text in a diff from a string of line hashes to real lines of
    * text.
-   * @param diffs LinkedList of Diff objects.
+   * @param diffs List of Diff objects.
    * @param lineArray List of unique strings.
    */
-  protected void diff_charsToLines(LinkedList<Diff> diffs,
+  protected void diff_charsToLines(List<Diff> diffs,
                                   List<String> lineArray) {
     StringBuilder text;
     for (Diff diff : diffs) {
@@ -1304,11 +1304,11 @@ public class diff_match_patch {
    * loc is a location in text1, compute and return the equivalent location in
    * text2.
    * e.g. "The cat" vs "The big cat", 1->1, 5->8
-   * @param diffs LinkedList of Diff objects.
+   * @param diffs List of Diff objects.
    * @param loc Location within text1.
    * @return Location within text2.
    */
-  public int diff_xIndex(LinkedList<Diff> diffs, int loc) {
+  public int diff_xIndex(List<Diff> diffs, int loc) {
     int chars1 = 0;
     int chars2 = 0;
     int last_chars1 = 0;
@@ -1341,10 +1341,10 @@ public class diff_match_patch {
 
   /**
    * Convert a Diff list into a pretty HTML report.
-   * @param diffs LinkedList of Diff objects.
+   * @param diffs List of Diff objects.
    * @return HTML representation.
    */
-  public String diff_prettyHtml(LinkedList<Diff> diffs) {
+  public String diff_prettyHtml(List<Diff> diffs) {
     StringBuilder html = new StringBuilder();
     for (Diff aDiff : diffs) {
       String text = aDiff.text.replace("&", "&amp;").replace("<", "&lt;")
@@ -1368,10 +1368,10 @@ public class diff_match_patch {
 
   /**
    * Compute and return the source text (all equalities and deletions).
-   * @param diffs LinkedList of Diff objects.
+   * @param diffs List of Diff objects.
    * @return Source text.
    */
-  public String diff_text1(LinkedList<Diff> diffs) {
+  public String diff_text1(List<Diff> diffs) {
     StringBuilder text = new StringBuilder();
     for (Diff aDiff : diffs) {
       if (aDiff.operation != Operation.INSERT) {
@@ -1383,10 +1383,10 @@ public class diff_match_patch {
 
   /**
    * Compute and return the destination text (all equalities and insertions).
-   * @param diffs LinkedList of Diff objects.
+   * @param diffs List of Diff objects.
    * @return Destination text.
    */
-  public String diff_text2(LinkedList<Diff> diffs) {
+  public String diff_text2(List<Diff> diffs) {
     StringBuilder text = new StringBuilder();
     for (Diff aDiff : diffs) {
       if (aDiff.operation != Operation.DELETE) {
@@ -1399,10 +1399,10 @@ public class diff_match_patch {
   /**
    * Compute the Levenshtein distance; the number of inserted, deleted or
    * substituted characters.
-   * @param diffs LinkedList of Diff objects.
+   * @param diffs List of Diff objects.
    * @return Number of changes.
    */
-  public int diff_levenshtein(LinkedList<Diff> diffs) {
+  public int diff_levenshtein(List<Diff> diffs) {
     int levenshtein = 0;
     int insertions = 0;
     int deletions = 0;
@@ -1431,10 +1431,10 @@ public class diff_match_patch {
    * required to transform text1 into text2.
    * E.g. =3\t-2\t+ing  -> Keep 3 chars, delete 2 chars, insert 'ing'.
    * Operations are tab-separated.  Inserted text is escaped using %xx notation.
-   * @param diffs Array of Diff objects.
+   * @param diffs List of Diff objects.
    * @return Delta text.
    */
-  public String diff_toDelta(LinkedList<Diff> diffs) {
+  public String diff_toDelta(List<Diff> diffs) {
     StringBuilder text = new StringBuilder();
     for (Diff aDiff : diffs) {
       switch (aDiff.operation) {
