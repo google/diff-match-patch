@@ -971,41 +971,4 @@ public class diff_match_patch_test {
     }
     return myDiffList;
   }
-
-  public static void main(String args[]) {
-    dmp = new diff_match_patch();
-
-    testDiffCommonPrefix();
-    testDiffCommonSuffix();
-    testDiffCommonOverlap();
-    testDiffHalfmatch();
-    testDiffLinesToChars();
-    testDiffCharsToLines();
-    testDiffCleanupMerge();
-    testDiffCleanupSemanticLossless();
-    testDiffCleanupSemantic();
-    testDiffCleanupEfficiency();
-    testDiffPrettyHtml();
-    testDiffText();
-    testDiffDelta();
-    testDiffXIndex();
-    testDiffLevenshtein();
-    testDiffBisect();
-    testDiffMain();
-
-    testMatchAlphabet();
-    testMatchBitap();
-    testMatchMain();
-
-    testPatchObj();
-    testPatchFromText();
-    testPatchToText();
-    testPatchAddContext();
-    testPatchMake();
-    testPatchSplitMax();
-    testPatchAddPadding();
-    testPatchApply();
-
-    System.out.println("All tests passed.");
-  }
 }
