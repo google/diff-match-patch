@@ -1,0 +1,132 @@
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.google</groupId>
+    <artifactId>diff-match-patch</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <java-version>1.6</java-version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.version>4.11</junit.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.2</version>
+                <configuration>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <excludePackageNames>*.internal.*</excludePackageNames>
+                    <failOnError>false</failOnError>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <inherited>true</inherited>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                    <archive>
+                        <index>true</index>
+                        <manifest>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.21.0</version>
+                <configuration>
+                    <surefire.useFile>false</surefire.useFile>
+                    <includes>
+                        <include>**/diff_match_patch_test.java</include>
+                        <include>**/*Test</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <name>Google Diff Match and Patch</name>
+    <url>https://github.com/google/diff-match-patch</url>
+    <description>Diff Match Patch is a high-performance library in multiple languages that manipulates plain text.</description>
+    <inceptionYear>2006</inceptionYear>
+    <organization>
+        <url>https://www.google.com</url>
+        <name>Google Inc</name>
+    </organization>
+    <scm>
+        <url>https://github.com/google/diff-match-patch</url>
+        <connection>scm:git:git@github.com:google/diff-match-patch</connection>
+        <developerConnection>scm:git:git@github.com:google/diff-match-patch</developerConnection>
+    </scm>
+    <issueManagement>
+        <system>github.com</system>
+        <url>https://github.com/google/diff-match-patch/issues</url>
+    </issueManagement>
+    <developers>
+        <developer>
+            <name>Neil Fraser</name>
+            <organizationUrl>https://www.google.com</organizationUrl>
+            <url>https://www.google.com</url>
+            <roles>
+                <role>Initiator</role>
+                <role>Commiter</role>
+            </roles>
+            <email>fraser at google.com</email>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+</project>
