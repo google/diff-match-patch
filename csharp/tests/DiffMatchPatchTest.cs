@@ -124,10 +124,10 @@ public class diff_match_patchTest : diff_match_patch {
     tmpVector.Clear();
     StringBuilder lineList = new StringBuilder();
     StringBuilder charList = new StringBuilder();
-    for (int x = 1; x < n + 1; x++) {
-      tmpVector.Add(x + "\n");
-      lineList.Append(x + "\n");
-      charList.Append(Convert.ToChar(x));
+    for (int i = 1; i < n + 1; i++) {
+      tmpVector.Add(i + "\n");
+      lineList.Append(i + "\n");
+      charList.Append(Convert.ToChar(i));
     }
     assertEquals("Test initialization fail #1.", n, tmpVector.Count);
     string lines = lineList.ToString();
@@ -164,10 +164,10 @@ public class diff_match_patchTest : diff_match_patch {
     tmpVector.Clear();
     StringBuilder lineList = new StringBuilder();
     StringBuilder charList = new StringBuilder();
-    for (int x = 1; x < n + 1; x++) {
-      tmpVector.Add(x + "\n");
-      lineList.Append(x + "\n");
-      charList.Append(Convert.ToChar (x));
+    for (int i = 1; i < n + 1; i++) {
+      tmpVector.Add(i + "\n");
+      lineList.Append(i + "\n");
+      charList.Append(Convert.ToChar (i));
     }
     assertEquals("Test initialization fail #3.", n, tmpVector.Count);
     string lines = lineList.ToString();
@@ -178,6 +178,17 @@ public class diff_match_patchTest : diff_match_patch {
     this.diff_charsToLines(diffs, tmpVector);
     assertEquals("diff_charsToLines: More than 256.", new List<Diff>
         {new Diff(Operation.DELETE, lines)}, diffs);
+
+    // More than 65536 to verify any 16-bit limitation.
+    lineList = new StringBuilder();
+    for (int i = 0; i < 66000; i++) {
+      lineList.Append(i + "\n");
+    }
+    chars = lineList.ToString();
+    Object[] result = this.diff_linesToChars(chars, "");
+    diffs = new List<Diff> {new Diff(Operation.INSERT, (string)result[0])};
+    this.diff_charsToLines(diffs, (List<string>)result[2]);
+    assertEquals("diff_charsToLines: More than 65536.", chars, diffs[0].text);
   }
 
   public void diff_cleanupMergeTest() {
@@ -692,9 +703,9 @@ public class diff_match_patchTest : diff_match_patch {
     string a = "`Twas brillig, and the slithy toves\nDid gyre and gimble in the wabe:\nAll mimsy were the borogoves,\nAnd the mome raths outgrabe.\n";
     string b = "I am the very model of a modern major general,\nI've information vegetable, animal, and mineral,\nI know the kings of England, and I quote the fights historical,\nFrom Marathon to Waterloo, in order categorical.\n";
     // Increase the text lengths by 1024 times to ensure a timeout.
-    for (int x = 0; x < 10; x++) {
-      a = a + a;
-      b = b + b;
+    for (int i = 0; i < 10; i++) {
+      a += a;
+      b += b;
     }
     DateTime startTime = DateTime.Now;
     this.diff_main(a, b);

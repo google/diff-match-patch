@@ -624,23 +624,6 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 }
 
 /**
- * Split a text into a list of strings.  Reduce the texts to a string of
- * hashes where each Unicode character represents one line.
- * @param text NSString to encode.
- * @param lineArray NSMutableArray of unique strings.
- * @param lineHash Map of strings to indices.
- * @return Encoded string.
- */
-- (NSString *)diff_linesToCharsMungeOfText:(NSString *)text
-                                 lineArray:(NSMutableArray *)lineArray
-                                  lineHash:(NSMutableDictionary *)lineHash;
-{
-  return [((NSString *)diff_linesToCharsMungeCFStringCreate((CFStringRef)text,
-                                                            (CFMutableArrayRef)lineArray,
-                                                            (CFMutableDictionaryRef)lineHash)) autorelease];
-}
-
-/**
  * Find the 'middle snake' of a diff, split the problem in two
  * and return the recursively constructed diff.
  * See Myers 1986 paper: An O(ND) Difference Algorithm and Its Variations.
@@ -859,12 +842,15 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // So we'll insert a junk entry to avoid generating a nil character.
   [lineArray addObject:@""];
 
+  // Allocate 2/3rds of the space for text1, the rest for text2.
   NSString *chars1 = (NSString *)diff_linesToCharsMungeCFStringCreate((CFStringRef)text1,
                                                                       (CFMutableArrayRef)lineArray,
-                                                                      (CFMutableDictionaryRef)lineHash);
+                                                                      (CFMutableDictionaryRef)lineHash,
+                                                                      40000);
   NSString *chars2 = (NSString *)diff_linesToCharsMungeCFStringCreate((CFStringRef)text2,
                                                                       (CFMutableArrayRef)lineArray,
-                                                                      (CFMutableDictionaryRef)lineHash);
+                                                                      (CFMutableDictionaryRef)lineHash,
+                                                                      65535);
 
   NSArray *result = [NSArray arrayWithObjects:chars1, chars2, lineArray, nil];
 

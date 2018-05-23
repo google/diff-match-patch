@@ -422,17 +422,24 @@ class diff_match_patch:
         if lineEnd == -1:
           lineEnd = len(text) - 1
         line = text[lineStart:lineEnd + 1]
-        lineStart = lineEnd + 1
 
         if line in lineHash:
           chars.append(unichr(lineHash[line]))
         else:
+          if len(lineArray) == maxLines:
+            # Bail out at 65535 because unichr(65536) throws.
+            line = text[lineStart:]
+            lineEnd = len(text)
           lineArray.append(line)
           lineHash[line] = len(lineArray) - 1
           chars.append(unichr(len(lineArray) - 1))
+        lineStart = lineEnd + 1
       return "".join(chars)
 
+    # Allocate 2/3rds of the space for text1, the rest for text2.
+    maxLines = 40000
     chars1 = diff_linesToCharsMunge(text1)
+    maxLines = 65535
     chars2 = diff_linesToCharsMunge(text2)
     return (chars1, chars2, lineArray)
 

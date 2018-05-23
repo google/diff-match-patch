@@ -172,11 +172,11 @@
   NSMutableString *lines = [NSMutableString string];
   NSMutableString *chars = [NSMutableString string];
   NSString *currentLine;
-  for (unichar x = 1; x < n + 1; x++) {
-    currentLine = [NSString stringWithFormat:@"%d\n", (int)x];
+  for (unichar i = 1; i < n + 1; i++) {
+    currentLine = [NSString stringWithFormat:@"%d\n", (int)i];
     [tmpVector addObject:currentLine];
     [lines appendString:currentLine];
-    [chars appendString:[NSString stringWithFormat:@"%C", x]];
+    [chars appendString:[NSString stringWithFormat:@"%C", i]];
   }
   XCTAssertEqual((NSUInteger)n, tmpVector.count, @"More than 256 #1.");
   XCTAssertEqual((NSUInteger)n, chars.length, @"More than 256 #2.");
@@ -212,11 +212,11 @@
   NSMutableString *lines = [NSMutableString string];
   NSMutableString *chars = [NSMutableString string];
   NSString *currentLine;
-  for (unichar x = 1; x < n + 1; x++) {
-    currentLine = [NSString stringWithFormat:@"%d\n", (int)x];
+  for (unichar i = 1; i < n + 1; i++) {
+    currentLine = [NSString stringWithFormat:@"%d\n", (int)i];
     [tmpVector addObject:currentLine];
     [lines appendString:currentLine];
-    [chars appendString:[NSString stringWithFormat:@"%C", x]];
+    [chars appendString:[NSString stringWithFormat:@"%C", i]];
   }
   XCTAssertEqual((NSUInteger)n, tmpVector.count, @"More than 256 #1.");
   XCTAssertEqual((NSUInteger)n, chars.length, @"More than 256 #2.");
@@ -224,6 +224,19 @@
   diffs = [NSArray arrayWithObject:[Diff diffWithOperation:DIFF_DELETE andText:chars]];
   [dmp diff_chars:diffs toLines:tmpVector];
   XCTAssertEqualObjects([NSArray arrayWithObject:[Diff diffWithOperation:DIFF_DELETE andText:lines]], diffs, @"More than 256 #3.");
+
+  // More than 65536 to verify any 16-bit limitation.
+  lines = [NSMutableString string];
+  for (int i = 1; i < 66000; i++) {
+    currentLine = [NSString stringWithFormat:@"%d\n", i];
+    [lines appendString:currentLine];
+  }
+  NSArray *result;
+  result = [dmp diff_linesToCharsForFirstString:lines andSecondString:@""];
+  diffs = [NSArray arrayWithObject:[Diff diffWithOperation:DIFF_INSERT andText:result[0]]];
+  [dmp diff_chars:diffs toLines:result[2]];
+  Diff *myDiff = diffs.firstObject;
+  XCTAssertEqualObjects(lines, myDiff.text, @"More than 65536.");
 
   [dmp release];
 }
@@ -859,7 +872,7 @@
   NSMutableString *aMutable = [NSMutableString stringWithString:a];
   NSMutableString *bMutable = [NSMutableString stringWithString:b];
   // Increase the text lengths by 1024 times to ensure a timeout.
-  for (int x = 0; x < 10; x++) {
+  for (int i = 0; i < 10; i++) {
     [aMutable appendString:aMutable];
     [bMutable appendString:bMutable];
   }
