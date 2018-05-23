@@ -488,7 +488,7 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
       const UniChar hashChar = (UniChar)hash;
       CFStringAppendCharacters(chars, &hashChar, 1);
     } else {
-      if (CFArrayGetCount(lineArray) == maxLength) {
+      if (CFArrayGetCount(lineArray) == maxLines) {
         // Bail out at 65535 because char 65536 == char 0.
         line = diff_CFStringCreateJavaSubstring(text, lineStart, textLength);
         lineEnd = textLength;
