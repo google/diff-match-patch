@@ -21,14 +21,7 @@ package name.fraser.neil.plaintext;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -763,8 +756,8 @@ public class diff_match_patch {
       return;
     }
     boolean changes = false;
-    Stack<Diff> equalities = new Stack<Diff>();  // Stack of qualities.
-    String lastequality = null; // Always equal to equalities.lastElement().text
+    Deque<Diff> equalities = new ArrayDeque<Diff>();  // Double-ended queue of qualities.
+    String lastEquality = null; // Always equal to equalities.peek().text
     ListIterator<Diff> pointer = diffs.listIterator();
     // Number of characters that changed prior to the equality.
     int length_insertions1 = 0;
@@ -781,7 +774,7 @@ public class diff_match_patch {
         length_deletions1 = length_deletions2;
         length_insertions2 = 0;
         length_deletions2 = 0;
-        lastequality = thisDiff.text;
+        lastEquality = thisDiff.text;
       } else {
         // An insertion or deletion.
         if (thisDiff.operation == Operation.INSERT) {
@@ -791,35 +784,35 @@ public class diff_match_patch {
         }
         // Eliminate an equality that is smaller or equal to the edits on both
         // sides of it.
-        if (lastequality != null && (lastequality.length()
+        if (lastEquality != null && (lastEquality.length()
             <= Math.max(length_insertions1, length_deletions1))
-            && (lastequality.length()
+            && (lastEquality.length()
                 <= Math.max(length_insertions2, length_deletions2))) {
-          //System.out.println("Splitting: '" + lastequality + "'");
+          //System.out.println("Splitting: '" + lastEquality + "'");
           // Walk back to offending equality.
-          while (thisDiff != equalities.lastElement()) {
+          while (thisDiff != equalities.peek()) {
             thisDiff = pointer.previous();
           }
           pointer.next();
 
           // Replace equality with a delete.
-          pointer.set(new Diff(Operation.DELETE, lastequality));
+          pointer.set(new Diff(Operation.DELETE, lastEquality));
           // Insert a corresponding an insert.
-          pointer.add(new Diff(Operation.INSERT, lastequality));
+          pointer.add(new Diff(Operation.INSERT, lastEquality));
 
           equalities.pop();  // Throw away the equality we just deleted.
-          if (!equalities.empty()) {
+          if (!equalities.isEmpty()) {
             // Throw away the previous equality (it needs to be reevaluated).
             equalities.pop();
           }
-          if (equalities.empty()) {
+          if (equalities.isEmpty()) {
             // There are no previous equalities, walk back to the start.
             while (pointer.hasPrevious()) {
               pointer.previous();
             }
           } else {
             // There is a safe equality we can fall back to.
-            thisDiff = equalities.lastElement();
+            thisDiff = equalities.peek();
             while (thisDiff != pointer.previous()) {
               // Intentionally empty loop.
             }
@@ -829,7 +822,7 @@ public class diff_match_patch {
           length_insertions2 = 0;
           length_deletions1 = 0;
           length_deletions2 = 0;
-          lastequality = null;
+          lastEquality = null;
           changes = true;
         }
       }
@@ -1052,8 +1045,8 @@ public class diff_match_patch {
       return;
     }
     boolean changes = false;
-    Stack<Diff> equalities = new Stack<Diff>();  // Stack of equalities.
-    String lastequality = null; // Always equal to equalities.lastElement().text
+    Deque<Diff> equalities = new ArrayDeque<Diff>();  // Double-ended queue of equalities.
+    String lastEquality = null; // Always equal to equalities.peek().text
     ListIterator<Diff> pointer = diffs.listIterator();
     // Is there an insertion operation before the last equality.
     boolean pre_ins = false;
@@ -1064,7 +1057,7 @@ public class diff_match_patch {
     // Is there a deletion operation after the last equality.
     boolean post_del = false;
     Diff thisDiff = pointer.next();
-    Diff safeDiff = thisDiff;  // The last Diff that is known to be unsplitable.
+    Diff safeDiff = thisDiff;  // The last Diff that is known to be unsplittable.
     while (thisDiff != null) {
       if (thisDiff.operation == Operation.EQUAL) {
         // Equality found.
@@ -1073,11 +1066,11 @@ public class diff_match_patch {
           equalities.push(thisDiff);
           pre_ins = post_ins;
           pre_del = post_del;
-          lastequality = thisDiff.text;
+          lastEquality = thisDiff.text;
         } else {
           // Not a candidate, and can never become one.
           equalities.clear();
-          lastequality = null;
+          lastEquality = null;
           safeDiff = thisDiff;
         }
         post_ins = post_del = false;
@@ -1096,42 +1089,42 @@ public class diff_match_patch {
          * <ins>A</del>X<ins>C</ins><del>D</del>
          * <ins>A</ins><del>B</del>X<del>C</del>
          */
-        if (lastequality != null
+        if (lastEquality != null
             && ((pre_ins && pre_del && post_ins && post_del)
-                || ((lastequality.length() < Diff_EditCost / 2)
+                || ((lastEquality.length() < Diff_EditCost / 2)
                     && ((pre_ins ? 1 : 0) + (pre_del ? 1 : 0)
                         + (post_ins ? 1 : 0) + (post_del ? 1 : 0)) == 3))) {
-          //System.out.println("Splitting: '" + lastequality + "'");
+          //System.out.println("Splitting: '" + lastEquality + "'");
           // Walk back to offending equality.
-          while (thisDiff != equalities.lastElement()) {
+          while (thisDiff != equalities.peek()) {
             thisDiff = pointer.previous();
           }
           pointer.next();
 
           // Replace equality with a delete.
-          pointer.set(new Diff(Operation.DELETE, lastequality));
+          pointer.set(new Diff(Operation.DELETE, lastEquality));
           // Insert a corresponding an insert.
-          pointer.add(thisDiff = new Diff(Operation.INSERT, lastequality));
+          pointer.add(thisDiff = new Diff(Operation.INSERT, lastEquality));
 
           equalities.pop();  // Throw away the equality we just deleted.
-          lastequality = null;
+          lastEquality = null;
           if (pre_ins && pre_del) {
             // No changes made which could affect previous entry, keep going.
             post_ins = post_del = true;
             equalities.clear();
             safeDiff = thisDiff;
           } else {
-            if (!equalities.empty()) {
+            if (!equalities.isEmpty()) {
               // Throw away the previous equality (it needs to be reevaluated).
               equalities.pop();
             }
-            if (equalities.empty()) {
+            if (equalities.isEmpty()) {
               // There are no previous questionable equalities,
               // walk back to the last known safe diff.
               thisDiff = safeDiff;
             } else {
               // There is an equality we can fall back to.
-              thisDiff = equalities.lastElement();
+              thisDiff = equalities.peek();
             }
             while (thisDiff != pointer.previous()) {
               // Intentionally empty loop.
@@ -1868,19 +1861,17 @@ public class diff_match_patch {
           patch.length2 += aDiff.text.length();
         }
 
-        if (aDiff.text.length() >= 2 * Patch_Margin) {
+        if (aDiff.text.length() >= 2 * Patch_Margin && !patch.diffs.isEmpty()) {
           // Time for a new patch.
-          if (!patch.diffs.isEmpty()) {
-            patch_addContext(patch, prepatch_text);
-            patches.add(patch);
-            patch = new Patch();
-            // Unlike Unidiff, our patch lists have a rolling context.
-            // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
-            // Update prepatch text & pos to reflect the application of the
-            // just completed patch.
-            prepatch_text = postpatch_text;
-            char_count1 = char_count2;
-          }
+          patch_addContext(patch, prepatch_text);
+          patches.add(patch);
+          patch = new Patch();
+          // Unlike Unidiff, our patch lists have a rolling context.
+          // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
+          // Update prepatch text & pos to reflect the application of the
+          // just completed patch.
+          prepatch_text = postpatch_text;
+          char_count1 = char_count2;
         }
         break;
       }

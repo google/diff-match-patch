@@ -936,11 +936,7 @@ public class diff_match_patch_test {
 
   // Private function for quickly building lists of diffs.
   private static LinkedList<Diff> diffList(Diff... diffs) {
-    LinkedList<Diff> myDiffList = new LinkedList<Diff>();
-    for (Diff myDiff : diffs) {
-      myDiffList.add(myDiff);
-    }
-    return myDiffList;
+      return new LinkedList<Diff>(Arrays.asList(diffs));
   }
 
   public static void main(String args[]) {
