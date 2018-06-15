@@ -238,6 +238,16 @@ class DiffTest(DiffMatchPatchTest):
     self.dmp.diff_cleanupMerge(diffs)
     self.assertEquals([(self.dmp.DIFF_EQUAL, "xca"), (self.dmp.DIFF_DELETE, "cba")], diffs)
 
+    # Empty merge.
+    diffs = [(self.dmp.DIFF_DELETE, "b"), (self.dmp.DIFF_INSERT, "ab"), (self.dmp.DIFF_EQUAL, "c")]
+    self.dmp.diff_cleanupMerge(diffs)
+    self.assertEquals([(self.dmp.DIFF_INSERT, "a"), (self.dmp.DIFF_EQUAL, "bc")], diffs)
+
+    # Empty equality.
+    diffs = [(self.dmp.DIFF_EQUAL, ""), (self.dmp.DIFF_INSERT, "a"), (self.dmp.DIFF_EQUAL, "b")]
+    self.dmp.diff_cleanupMerge(diffs)
+    self.assertEquals([(self.dmp.DIFF_INSERT, "a"), (self.dmp.DIFF_EQUAL, "b")], diffs)
+
   def testDiffCleanupSemanticLossless(self):
     # Slide diffs to match logical boundaries.
     # Null case.

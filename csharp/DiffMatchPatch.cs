@@ -676,7 +676,7 @@ namespace DiffMatchPatch {
      * @return The number of characters common to the start of each string.
      */
     public int diff_commonPrefix(string text1, string text2) {
-      // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+      // Performance analysis: https://neil.fraser.name/news/2007/10/09/
       int n = Math.Min(text1.Length, text2.Length);
       for (int i = 0; i < n; i++) {
         if (text1[i] != text2[i]) {
@@ -693,7 +693,7 @@ namespace DiffMatchPatch {
      * @return The number of characters common to the end of each string.
      */
     public int diff_commonSuffix(string text1, string text2) {
-      // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+      // Performance analysis: https://neil.fraser.name/news/2007/10/09/
       int text1_length = text1.Length;
       int text2_length = text2.Length;
       int n = Math.Min(text1.Length, text2.Length);
@@ -734,7 +734,7 @@ namespace DiffMatchPatch {
 
       // Start by looking for a single character match
       // and increase length until no match is found.
-      // Performance analysis: http://neil.fraser.name/news/2010/11/04/
+      // Performance analysis: https://neil.fraser.name/news/2010/11/04/
       int best = 0;
       int length = 1;
       while (true) {
@@ -1220,22 +1220,19 @@ namespace DiffMatchPatch {
                 }
               }
               // Delete the offending records and add the merged ones.
-              if (count_delete == 0) {
-                diffs.Splice(pointer - count_insert,
-                    count_delete + count_insert,
-                    new Diff(Operation.INSERT, text_insert));
-              } else if (count_insert == 0) {
-                diffs.Splice(pointer - count_delete,
-                    count_delete + count_insert,
+              pointer -= count_delete + count_insert;
+              diffs.Splice(pointer, count_delete + count_insert);
+              if (text_delete.Length != 0) {
+                diffs.Splice(pointer, 0,
                     new Diff(Operation.DELETE, text_delete));
-              } else {
-                diffs.Splice(pointer - count_delete - count_insert,
-                    count_delete + count_insert,
-                    new Diff(Operation.DELETE, text_delete),
-                    new Diff(Operation.INSERT, text_insert));
+                pointer++;
               }
-              pointer = pointer - count_delete - count_insert +
-                  (count_delete != 0 ? 1 : 0) + (count_insert != 0 ? 1 : 0) + 1;
+              if (text_insert.Length != 0) {
+                diffs.Splice(pointer, 0,
+                    new Diff(Operation.INSERT, text_insert));
+                pointer++;
+              }
+              pointer++;
             } else if (pointer != 0
                 && diffs[pointer - 1].operation == Operation.EQUAL) {
               // Merge this equality with the previous one.
@@ -1860,7 +1857,7 @@ namespace DiffMatchPatch {
                 patches.Add(patch);
                 patch = new Patch();
                 // Unlike Unidiff, our patch lists have a rolling context.
-                // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
+                // https://github.com/google/diff-match-patch/wiki/Unidiff
                 // Update prepatch text & pos to reflect the application of the
                 // just completed patch.
                 prepatch_text = postpatch_text;

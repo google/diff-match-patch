@@ -471,7 +471,7 @@ class diff_match_patch:
     if not text1 or not text2 or text1[0] != text2[0]:
       return 0
     # Binary search.
-    # Performance analysis: http://neil.fraser.name/news/2007/10/09/
+    # Performance analysis: https://neil.fraser.name/news/2007/10/09/
     pointermin = 0
     pointermax = min(len(text1), len(text2))
     pointermid = pointermax
@@ -499,7 +499,7 @@ class diff_match_patch:
     if not text1 or not text2 or text1[-1] != text2[-1]:
       return 0
     # Binary search.
-    # Performance analysis: http://neil.fraser.name/news/2007/10/09/
+    # Performance analysis: https://neil.fraser.name/news/2007/10/09/
     pointermin = 0
     pointermax = min(len(text1), len(text2))
     pointermid = pointermax
@@ -543,7 +543,7 @@ class diff_match_patch:
 
     # Start by looking for a single character match
     # and increase length until no match is found.
-    # Performance analysis: http://neil.fraser.name/news/2010/11/04/
+    # Performance analysis: https://neil.fraser.name/news/2010/11/04/
     best = 0
     length = 1
     while True:
@@ -967,21 +967,14 @@ class diff_match_patch:
               text_insert = text_insert[:-commonlength]
               text_delete = text_delete[:-commonlength]
           # Delete the offending records and add the merged ones.
-          if count_delete == 0:
-            diffs[pointer - count_insert : pointer] = [
-                (self.DIFF_INSERT, text_insert)]
-          elif count_insert == 0:
-            diffs[pointer - count_delete : pointer] = [
-                (self.DIFF_DELETE, text_delete)]
-          else:
-            diffs[pointer - count_delete - count_insert : pointer] = [
-                (self.DIFF_DELETE, text_delete),
-                (self.DIFF_INSERT, text_insert)]
-          pointer = pointer - count_delete - count_insert + 1
-          if count_delete != 0:
-            pointer += 1
-          if count_insert != 0:
-            pointer += 1
+          new_ops = [];
+          if len(text_delete) != 0:
+            new_ops.append((self.DIFF_DELETE, text_delete))
+          if len(text_insert) != 0:
+            new_ops.append((self.DIFF_INSERT, text_insert))
+          pointer -= count_delete + count_insert
+          diffs[pointer : pointer + count_delete + count_insert] = new_ops
+          pointer += len(new_ops) + 1;
         elif pointer != 0 and diffs[pointer - 1][0] == self.DIFF_EQUAL:
           # Merge this equality with the previous one.
           diffs[pointer - 1] = (diffs[pointer - 1][0],
@@ -1010,11 +1003,12 @@ class diff_match_patch:
         # This is a single edit surrounded by equalities.
         if diffs[pointer][1].endswith(diffs[pointer - 1][1]):
           # Shift the edit over the previous equality.
-          diffs[pointer] = (diffs[pointer][0],
-              diffs[pointer - 1][1] +
-              diffs[pointer][1][:-len(diffs[pointer - 1][1])])
-          diffs[pointer + 1] = (diffs[pointer + 1][0],
-                                diffs[pointer - 1][1] + diffs[pointer + 1][1])
+          if diffs[pointer - 1][1] != "":
+            diffs[pointer] = (diffs[pointer][0],
+                diffs[pointer - 1][1] +
+                diffs[pointer][1][:-len(diffs[pointer - 1][1])])
+            diffs[pointer + 1] = (diffs[pointer + 1][0],
+                                  diffs[pointer - 1][1] + diffs[pointer + 1][1])
           del diffs[pointer - 1]
           changes = True
         elif diffs[pointer][1].startswith(diffs[pointer + 1][1]):
@@ -1512,7 +1506,7 @@ class diff_match_patch:
           patches.append(patch)
           patch = patch_obj()
           # Unlike Unidiff, our patch lists have a rolling context.
-          # http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
+          # https://github.com/google/diff-match-patch/wiki/Unidiff
           # Update prepatch text & pos to reflect the application of the
           # just completed patch.
           prepatch_text = postpatch_text

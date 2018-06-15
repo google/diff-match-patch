@@ -286,6 +286,14 @@ void testDiffCleanupMerge() {
   diffs = [new Diff(Operation.equal, 'x'), new Diff(Operation.delete, 'ca'), new Diff(Operation.equal, 'c'), new Diff(Operation.delete, 'b'), new Diff(Operation.equal, 'a')];
   dmp.diff_cleanupMerge(diffs);
   Expect.listEquals([new Diff(Operation.equal, 'xca'), new Diff(Operation.delete, 'cba')], diffs, 'diff_cleanupMerge: Slide edit right recursive.');
+
+  diffs = [new Diff(Operation.delete, 'b'), new Diff(Operation.insert, 'ab'), new Diff(Operation.equal, 'c')];
+  dmp.diff_cleanupMerge(diffs);
+  Expect.listEquals([new Diff(Operation.insert, 'a'), new Diff(Operation.equal, 'bc')], diffs, 'diff_cleanupMerge: Empty merge.');
+
+  diffs = [new Diff(Operation.equal, ''), new Diff(Operation.insert, 'a'), new Diff(Operation.equal, 'b')];
+  dmp.diff_cleanupMerge(diffs);
+  Expect.listEquals([new Diff(Operation.insert, 'a'), new Diff(Operation.equal, 'b')], diffs, 'diff_cleanupMerge: Empty equality.');
 }
 
 void testDiffCleanupSemanticLossless() {

@@ -584,7 +584,7 @@ public class diff_match_patch {
    * @return The number of characters common to the start of each string.
    */
   public int diff_commonPrefix(String text1, String text2) {
-    // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+    // Performance analysis: https://neil.fraser.name/news/2007/10/09/
     int n = Math.min(text1.length(), text2.length());
     for (int i = 0; i < n; i++) {
       if (text1.charAt(i) != text2.charAt(i)) {
@@ -601,7 +601,7 @@ public class diff_match_patch {
    * @return The number of characters common to the end of each string.
    */
   public int diff_commonSuffix(String text1, String text2) {
-    // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+    // Performance analysis: https://neil.fraser.name/news/2007/10/09/
     int text1_length = text1.length();
     int text2_length = text2.length();
     int n = Math.min(text1_length, text2_length);
@@ -642,7 +642,7 @@ public class diff_match_patch {
 
     // Start by looking for a single character match
     // and increase length until no match is found.
-    // Performance analysis: http://neil.fraser.name/news/2010/11/04/
+    // Performance analysis: https://neil.fraser.name/news/2010/11/04/
     int best = 0;
     int length = 1;
     while (true) {
@@ -1863,15 +1863,17 @@ public class diff_match_patch {
 
         if (aDiff.text.length() >= 2 * Patch_Margin && !patch.diffs.isEmpty()) {
           // Time for a new patch.
-          patch_addContext(patch, prepatch_text);
-          patches.add(patch);
-          patch = new Patch();
-          // Unlike Unidiff, our patch lists have a rolling context.
-          // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
-          // Update prepatch text & pos to reflect the application of the
-          // just completed patch.
-          prepatch_text = postpatch_text;
-          char_count1 = char_count2;
+          if (!patch.diffs.isEmpty()) {
+            patch_addContext(patch, prepatch_text);
+            patches.add(patch);
+            patch = new Patch();
+            // Unlike Unidiff, our patch lists have a rolling context.
+            // https://github.com/google/diff-match-patch/wiki/Unidiff
+            // Update prepatch text & pos to reflect the application of the
+            // just completed patch.
+            prepatch_text = postpatch_text;
+            char_count1 = char_count2;
+          }
         }
         break;
       }

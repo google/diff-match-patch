@@ -529,7 +529,7 @@ class DiffMatchPatch {
   int diff_commonPrefix(String text1, String text2) {
     // TODO: Once Dart's performance stabilizes, determine if linear or binary
     // search is better.
-    // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+    // Performance analysis: https://neil.fraser.name/news/2007/10/09/
     final n = min(text1.length, text2.length);
     for (int i = 0; i < n; i++) {
       if (text1[i] != text2[i]) {
@@ -548,7 +548,7 @@ class DiffMatchPatch {
   int diff_commonSuffix(String text1, String text2) {
     // TODO: Once Dart's performance stabilizes, determine if linear or binary
     // search is better.
-    // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+    // Performance analysis: https://neil.fraser.name/news/2007/10/09/
     final text1_length = text1.length;
     final text2_length = text2.length;
     final n = min(text1_length, text2_length);
@@ -589,7 +589,7 @@ class DiffMatchPatch {
 
     // Start by looking for a single character match
     // and increase length until no match is found.
-    // Performance analysis: http://neil.fraser.name/news/2010/11/04/
+    // Performance analysis: https://neil.fraser.name/news/2010/11/04/
     int best = 0;
     int length = 1;
     while (true) {
@@ -1094,27 +1094,17 @@ class DiffMatchPatch {
               }
             }
             // Delete the offending records and add the merged ones.
-            if (count_delete == 0) {
-              diffs.removeRange(pointer - count_insert, pointer);
-              diffs.insert(pointer - count_insert,
-                  new Diff(Operation.insert, text_insert));
-            } else if (count_insert == 0) {
-              diffs.removeRange(pointer - count_delete, pointer);
-              diffs.insert(pointer - count_delete,
-                  new Diff(Operation.delete, text_delete));
-            } else {
-              diffs.replaceRange(
-                  pointer - count_delete - count_insert, pointer, [
-                new Diff(Operation.delete, text_delete),
-                new Diff(Operation.insert, text_insert)
-              ]);
+            pointer -= count_delete + count_insert;
+            diffs.removeRange(pointer, pointer + count_delete + count_insert);
+            if (!text_delete.isEmpty) {
+              diffs.insert(pointer, new Diff(Operation.delete, text_delete));
+              pointer++;
             }
-            pointer = pointer -
-                count_delete -
-                count_insert +
-                (count_delete == 0 ? 0 : 1) +
-                (count_insert == 0 ? 0 : 1) +
-                1;
+            if (!text_insert.isEmpty) {
+              diffs.insert(pointer, new Diff(Operation.insert, text_insert));
+              pointer++;
+            }
+            pointer++;
           } else if (pointer != 0 &&
               diffs[pointer - 1].operation == Operation.equal) {
             // Merge this equality with the previous one.
@@ -1725,7 +1715,7 @@ class DiffMatchPatch {
               patches.add(patch);
               patch = new Patch();
               // Unlike Unidiff, our patch lists have a rolling context.
-              // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
+              // https://github.com/google/diff-match-patch/wiki/Unidiff
               // Update prepatch text & pos to reflect the application of the
               // just completed patch.
               prepatch_text = postpatch_text;
