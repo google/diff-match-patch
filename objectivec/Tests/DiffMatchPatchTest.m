@@ -317,6 +317,18 @@
   expectedResult = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_EQUAL andText:@"xca"], [Diff diffWithOperation:DIFF_DELETE andText:@"cba"], nil];
   XCTAssertEqualObjects(expectedResult, diffs, @"Slide edit right recursive.");
 
+  // Empty merge.
+  diffs = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_DELETE andText:@"b"], [Diff diffWithOperation:DIFF_INSERT andText:@"ab"], [Diff diffWithOperation:DIFF_EQUAL andText:@"c"], nil];
+  [dmp diff_cleanupMerge:diffs];
+  expectedResult = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_INSERT andText:@"a"], [Diff diffWithOperation:DIFF_EQUAL andText:@"bc"], nil];
+  XCTAssertEqualObjects(expectedResult, diffs, @"Empty merge.");
+
+  // Empty equality.
+  diffs = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_EQUAL andText:@""], [Diff diffWithOperation:DIFF_INSERT andText:@"a"], [Diff diffWithOperation:DIFF_EQUAL andText:@"b"], nil];
+  [dmp diff_cleanupMerge:diffs];
+  expectedResult = [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_INSERT andText:@"a"], [Diff diffWithOperation:DIFF_EQUAL andText:@"b"], nil];
+  XCTAssertEqualObjects(expectedResult, diffs, @"Empty equality.");
+
   [dmp release];
 }
 

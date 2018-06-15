@@ -240,6 +240,14 @@ public class diff_match_patchTest : diff_match_patch {
     diffs = new List<Diff> {new Diff(Operation.EQUAL, "x"), new Diff(Operation.DELETE, "ca"), new Diff(Operation.EQUAL, "c"), new Diff(Operation.DELETE, "b"), new Diff(Operation.EQUAL, "a")};
     this.diff_cleanupMerge(diffs);
     assertEquals("diff_cleanupMerge: Slide edit right recursive.", new List<Diff> {new Diff(Operation.EQUAL, "xca"), new Diff(Operation.DELETE, "cba")}, diffs);
+
+    diffs = new List<Diff> {new Diff(Operation.DELETE, "b"), new Diff(Operation.INSERT, "ab"), new Diff(Operation.EQUAL, "c")};
+    this.diff_cleanupMerge(diffs);
+    assertEquals("diff_cleanupMerge: Empty merge.", new List<Diff> {new Diff(Operation.INSERT, "a"), new Diff(Operation.EQUAL, "bc")}, diffs);
+
+    diffs = new List<Diff> {new Diff(Operation.EQUAL, ""), new Diff(Operation.INSERT, "a"), new Diff(Operation.EQUAL, "b")};
+    this.diff_cleanupMerge(diffs);
+    assertEquals("diff_cleanupMerge: Empty equality.", new List<Diff> {new Diff(Operation.INSERT, "a"), new Diff(Operation.EQUAL, "b")}, diffs);
   }
 
   public void diff_cleanupSemanticLosslessTest() {

@@ -243,6 +243,14 @@ public class diff_match_patch_test {
     diffs = diffList(new Diff(EQUAL, "x"), new Diff(DELETE, "ca"), new Diff(EQUAL, "c"), new Diff(DELETE, "b"), new Diff(EQUAL, "a"));
     dmp.diff_cleanupMerge(diffs);
     assertEquals("diff_cleanupMerge: Slide edit right recursive.", diffList(new Diff(EQUAL, "xca"), new Diff(DELETE, "cba")), diffs);
+
+    diffs = diffList(new Diff(DELETE, "b"), new Diff(INSERT, "ab"), new Diff(EQUAL, "c"));
+    dmp.diff_cleanupMerge(diffs);
+    assertEquals("diff_cleanupMerge: Empty merge.", diffList(new Diff(INSERT, "a"), new Diff(EQUAL, "bc")), diffs);
+
+    diffs = diffList(new Diff(EQUAL, ""), new Diff(INSERT, "a"), new Diff(EQUAL, "b"));
+    dmp.diff_cleanupMerge(diffs);
+    assertEquals("diff_cleanupMerge: Empty equality.", diffList(new Diff(INSERT, "a"), new Diff(EQUAL, "b")), diffs);
   }
 
   public static void testDiffCleanupSemanticLossless() {

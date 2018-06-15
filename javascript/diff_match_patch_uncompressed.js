@@ -530,7 +530,7 @@ diff_match_patch.prototype.diff_commonPrefix = function(text1, text2) {
     return 0;
   }
   // Binary search.
-  // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+  // Performance analysis: https://neil.fraser.name/news/2007/10/09/
   var pointermin = 0;
   var pointermax = Math.min(text1.length, text2.length);
   var pointermid = pointermax;
@@ -562,7 +562,7 @@ diff_match_patch.prototype.diff_commonSuffix = function(text1, text2) {
     return 0;
   }
   // Binary search.
-  // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+  // Performance analysis: https://neil.fraser.name/news/2007/10/09/
   var pointermin = 0;
   var pointermax = Math.min(text1.length, text2.length);
   var pointermid = pointermax;
@@ -611,7 +611,7 @@ diff_match_patch.prototype.diff_commonOverlap_ = function(text1, text2) {
 
   // Start by looking for a single character match
   // and increase length until no match is found.
-  // Performance analysis: http://neil.fraser.name/news/2010/11/04/
+  // Performance analysis: https://neil.fraser.name/news/2010/11/04/
   var best = 0;
   var length = 1;
   while (true) {
@@ -1112,19 +1112,17 @@ diff_match_patch.prototype.diff_cleanupMerge = function(diffs) {
             }
           }
           // Delete the offending records and add the merged ones.
-          if (count_delete === 0) {
-            diffs.splice(pointer - count_insert,
-                count_delete + count_insert, [DIFF_INSERT, text_insert]);
-          } else if (count_insert === 0) {
-            diffs.splice(pointer - count_delete,
-                count_delete + count_insert, [DIFF_DELETE, text_delete]);
-          } else {
-            diffs.splice(pointer - count_delete - count_insert,
-                count_delete + count_insert, [DIFF_DELETE, text_delete],
-                [DIFF_INSERT, text_insert]);
+          pointer -= count_delete + count_insert;
+          diffs.splice(pointer, count_delete + count_insert);
+          if (text_delete.length) {
+            diffs.splice(pointer, 0, [DIFF_DELETE, text_delete]);
+            pointer++;
           }
-          pointer = pointer - count_delete - count_insert +
-                    (count_delete ? 1 : 0) + (count_insert ? 1 : 0) + 1;
+          if (text_insert.length) {
+            diffs.splice(pointer, 0, [DIFF_INSERT, text_insert]);
+            pointer++;
+          }
+          pointer++;
         } else if (pointer !== 0 && diffs[pointer - 1][0] == DIFF_EQUAL) {
           // Merge this equality with the previous one.
           diffs[pointer - 1][1] += diffs[pointer][1];
@@ -1725,7 +1723,7 @@ diff_match_patch.prototype.patch_make = function(a, opt_b, opt_c) {
             patch = new diff_match_patch.patch_obj();
             patchDiffLength = 0;
             // Unlike Unidiff, our patch lists have a rolling context.
-            // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
+            // https://github.com/google/diff-match-patch/wiki/Unidiff
             // Update prepatch text & pos to reflect the application of the
             // just completed patch.
             prepatch_text = postpatch_text;

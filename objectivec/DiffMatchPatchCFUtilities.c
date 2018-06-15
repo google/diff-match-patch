@@ -153,7 +153,7 @@ Boolean diff_regExMatch(CFStringRef text, const regex_t *re) {
  * @return The number of characters common to the start of each string.
  */
 CFIndex diff_commonPrefix(CFStringRef text1, CFStringRef text2) {
-  // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+  // Performance analysis: https://neil.fraser.name/news/2007/10/09/
   CFIndex text1_length = CFStringGetLength(text1);
   CFIndex text2_length = CFStringGetLength(text2);
 
@@ -183,7 +183,7 @@ CFIndex diff_commonPrefix(CFStringRef text1, CFStringRef text2) {
  * @return The number of characters common to the end of each string.
  */
 CFIndex diff_commonSuffix(CFStringRef text1, CFStringRef text2) {
-  // Performance analysis: http://neil.fraser.name/news/2007/10/09/
+  // Performance analysis: https://neil.fraser.name/news/2007/10/09/
   CFIndex text1_length = CFStringGetLength(text1);
   CFIndex text2_length = CFStringGetLength(text2);
 
@@ -253,7 +253,7 @@ CFIndex diff_commonOverlap(CFStringRef text1, CFStringRef text2) {
   } else {
     // Start by looking for a single character match
     // and increase length until no match is found.
-    // Performance analysis: http://neil.fraser.name/news/2010/11/04/
+    // Performance analysis: https://neil.fraser.name/news/2010/11/04/
     CFIndex best = 0;
     CFIndex length = 1;
     while (true) {

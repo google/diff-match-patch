@@ -949,22 +949,20 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
             }
           }
           // Delete the offending records and add the merged ones.
-          if (count_delete == 0) {
-            splice(diffs, thisPointer - count_insert,
-                count_delete + count_insert,
-                [NSMutableArray arrayWithObject:[Diff diffWithOperation:DIFF_INSERT andText:text_insert]]);
-          } else if (count_insert == 0) {
-            splice(diffs, thisPointer - count_delete,
-                count_delete + count_insert,
-                [NSMutableArray arrayWithObject:[Diff diffWithOperation:DIFF_DELETE andText:text_delete]]);
-          } else {
-            splice(diffs, thisPointer - count_delete - count_insert,
-                count_delete + count_insert,
-                [NSMutableArray arrayWithObjects:[Diff diffWithOperation:DIFF_DELETE andText:text_delete],
-                [Diff diffWithOperation:DIFF_INSERT andText:text_insert], nil]);
+          thisPointer -= count_delete + count_insert;
+
+          splice(diffs, thisPointer, count_delete + count_insert, nil);
+          if ([text_delete length] != 0) {
+            splice(diffs, thisPointer, 0,
+                   [NSMutableArray arrayWithObject:[Diff diffWithOperation:DIFF_DELETE andText:text_delete]]);
+            thisPointer++;
           }
-          thisPointer = thisPointer - count_delete - count_insert +
-              (count_delete != 0 ? 1 : 0) + (count_insert != 0 ? 1 : 0) + 1;
+          if ([text_insert length] != 0) {
+            splice(diffs, thisPointer, 0,
+                   [NSMutableArray arrayWithObject:[Diff diffWithOperation:DIFF_INSERT andText:text_insert]]);
+            thisPointer++;
+          }
+          thisPointer++;
         } else if (thisPointer != 0 && prevDiff.operation == DIFF_EQUAL) {
           // Merge this equality with the previous one.
           prevDiff.text = [prevDiff.text stringByAppendingString:thisDiff.text];
@@ -993,7 +991,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     if (prevDiff.operation == DIFF_EQUAL &&
       nextDiff.operation == DIFF_EQUAL) {
       // This is a single edit surrounded by equalities.
-      if ([thisDiff.text hasSuffix:prevDiff.text]) {
+      if ([prevDiff.text length] == 0) {
+        splice(diffs, thisPointer - 1, 1, nil);
+        changes = YES;
+      } else if ([thisDiff.text hasSuffix:prevDiff.text]) {
         // Shift the edit over the previous equality.
         thisDiff.text = [prevDiff.text stringByAppendingString:
             [thisDiff.text substringWithRange:NSMakeRange(0, thisDiff.text.length - prevDiff.text.length)]];
@@ -2048,7 +2049,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
             [patches addObject:patch];
             patch = [[Patch new] autorelease];
             // Unlike Unidiff, our patch lists have a rolling context.
-            // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
+            // https://github.com/google/diff-match-patch/wiki/Unidiff
             // Update prepatch text & pos to reflect the application of the
             // just completed patch.
             [prepatch_text release];
