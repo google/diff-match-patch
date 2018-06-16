@@ -560,10 +560,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                                       deadline:(NSTimeInterval)deadline;
 {
   // Scan the text on a line-by-line basis first.
-  NSArray *b = [self diff_linesToCharsForFirstString:text1 andSecondString:text2];
-  text1 = (NSString *)[b objectAtIndex:0];
-  text2 = (NSString *)[b objectAtIndex:1];
-  NSMutableArray *linearray = (NSMutableArray *)[b objectAtIndex:2];
+  NSArray *a = [self diff_linesToCharsForFirstString:text1 andSecondString:text2];
+  text1 = (NSString *)[a objectAtIndex:0];
+  text2 = (NSString *)[a objectAtIndex:1];
+  NSMutableArray *linearray = (NSMutableArray *)[a objectAtIndex:2];
 
   NSAutoreleasePool *recursePool = [NSAutoreleasePool new];
   NSMutableArray *diffs = [self diff_mainOfOldString:text1 andNewString:text2 checkLines:NO deadline:deadline];
@@ -599,16 +599,16 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         // Upon reaching an equality, check for prior redundancies.
         if (count_delete >= 1 && count_insert >= 1) {
           // Delete the offending records and add the merged ones.
-          NSMutableArray *a = [self diff_mainOfOldString:text_delete andNewString:text_insert checkLines:NO deadline:deadline];
+          NSMutableArray *subDiff = [self diff_mainOfOldString:text_delete andNewString:text_insert checkLines:NO deadline:deadline];
           [diffs removeObjectsInRange:NSMakeRange(thisPointer - count_delete - count_insert,
                                                   count_delete + count_insert)];
           thisPointer = thisPointer - count_delete - count_insert;
           NSUInteger insertionIndex = thisPointer;
-          for (Diff *thisDiff in a) {
+          for (Diff *thisDiff in subDiff) {
             [diffs insertObject:thisDiff atIndex:insertionIndex];
             insertionIndex++;
           }
-          thisPointer = thisPointer + a.count;
+          thisPointer = thisPointer + subDiff.count;
         }
         count_insert = 0;
         count_delete = 0;

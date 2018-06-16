@@ -267,12 +267,12 @@ class DiffMatchPatch {
             // Delete the offending records and add the merged ones.
             diffs.removeRange(pointer - count_delete - count_insert, pointer);
             pointer = pointer - count_delete - count_insert;
-            final a = diff_main(text_delete.toString(), text_insert.toString(),
-                false, deadline);
-            for (int j = a.length - 1; j >= 0; j--) {
-              diffs.insert(pointer, a[j]);
+            final subDiff = diff_main(text_delete.toString(),
+                text_insert.toString(), false, deadline);
+            for (int j = subDiff.length - 1; j >= 0; j--) {
+              diffs.insert(pointer, subDiff[j]);
             }
-            pointer = pointer + a.length;
+            pointer = pointer + subDiff.length;
           }
           count_insert = 0;
           count_delete = 0;

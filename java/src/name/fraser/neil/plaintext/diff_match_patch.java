@@ -293,10 +293,10 @@ public class diff_match_patch {
   private LinkedList<Diff> diff_lineMode(String text1, String text2,
                                          long deadline) {
     // Scan the text on a line-by-line basis first.
-    LinesToCharsResult b = diff_linesToChars(text1, text2);
-    text1 = b.chars1;
-    text2 = b.chars2;
-    List<String> linearray = b.lineArray;
+    LinesToCharsResult a = diff_linesToChars(text1, text2);
+    text1 = a.chars1;
+    text2 = a.chars2;
+    List<String> linearray = a.lineArray;
 
     LinkedList<Diff> diffs = diff_main(text1, text2, false, deadline);
 
@@ -333,9 +333,9 @@ public class diff_match_patch {
             pointer.previous();
             pointer.remove();
           }
-          for (Diff newDiff : diff_main(text_delete, text_insert, false,
+          for (Diff subDiff : diff_main(text_delete, text_insert, false,
               deadline)) {
-            pointer.add(newDiff);
+            pointer.add(subDiff);
           }
         }
         count_insert = 0;

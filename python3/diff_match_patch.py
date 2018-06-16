@@ -237,9 +237,9 @@ class diff_match_patch:
         # Upon reaching an equality, check for prior redundancies.
         if count_delete >= 1 and count_insert >= 1:
           # Delete the offending records and add the merged ones.
-          a = self.diff_main(text_delete, text_insert, False, deadline)
-          diffs[pointer - count_delete - count_insert : pointer] = a
-          pointer = pointer - count_delete - count_insert + len(a)
+          subDiff = self.diff_main(text_delete, text_insert, False, deadline)
+          diffs[pointer - count_delete - count_insert : pointer] = subDiff
+          pointer = pointer - count_delete - count_insert + len(subDiff)
         count_insert = 0
         count_delete = 0
         text_delete = ''

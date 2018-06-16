@@ -382,10 +382,10 @@ namespace DiffMatchPatch {
     private List<Diff> diff_lineMode(string text1, string text2,
                                      DateTime deadline) {
       // Scan the text on a line-by-line basis first.
-      Object[] b = diff_linesToChars(text1, text2);
-      text1 = (string)b[0];
-      text2 = (string)b[1];
-      List<string> linearray = (List<string>)b[2];
+      Object[] a = diff_linesToChars(text1, text2);
+      text1 = (string)a[0];
+      text2 = (string)a[1];
+      List<string> linearray = (List<string>)a[2];
 
       List<Diff> diffs = diff_main(text1, text2, false, deadline);
 
@@ -419,10 +419,10 @@ namespace DiffMatchPatch {
               diffs.RemoveRange(pointer - count_delete - count_insert,
                   count_delete + count_insert);
               pointer = pointer - count_delete - count_insert;
-              List<Diff> a =
+              List<Diff> subDiff =
                   this.diff_main(text_delete, text_insert, false, deadline);
-              diffs.InsertRange(pointer, a);
-              pointer = pointer + a.Count;
+              diffs.InsertRange(pointer, subDiff);
+              pointer = pointer + subDiff.Count;
             }
             count_insert = 0;
             count_delete = 0;

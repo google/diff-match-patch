@@ -260,11 +260,12 @@ diff_match_patch.prototype.diff_lineMode_ = function(text1, text2, deadline) {
           diffs.splice(pointer - count_delete - count_insert,
                        count_delete + count_insert);
           pointer = pointer - count_delete - count_insert;
-          var a = this.diff_main(text_delete, text_insert, false, deadline);
-          for (var j = a.length - 1; j >= 0; j--) {
-            diffs.splice(pointer, 0, a[j]);
+          var subDiff =
+              this.diff_main(text_delete, text_insert, false, deadline);
+          for (var j = subDiff.length - 1; j >= 0; j--) {
+            diffs.splice(pointer, 0, subDiff[j]);
           }
-          pointer = pointer + a.length;
+          pointer = pointer + subDiff.length;
         }
         count_insert = 0;
         count_delete = 0;
