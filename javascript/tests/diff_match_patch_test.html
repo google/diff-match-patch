@@ -45,7 +45,7 @@
           // msg is optional.
           actual = expected;
           expected = msg;
-          msg = 'Expected: \'' + expected + '\' Actual: \'' + actual + '\'';
+          msg = 'Expected: \'' + (expected && expected.toString()) + '\' Actual: \'' + (actual && actual.toString()) + '\'';
         }
         if (expected === actual) {
           document.write('<FONT COLOR="#009900">Ok</FONT><BR>');
@@ -78,9 +78,17 @@
         }
       }
 
-      function runTests() {
+      function runTests(force_utf32_string) {
+        test_good = 0;
+        test_bad = 0;
+        diff_match_patch.force_utf32_string = force_utf32_string;
+        if (force_utf32_string) {
+          document.write('<H2>Forced UTF-32 Strings</H2>');
+        } else {
+          document.write('<H2>Normal Strings</H2>');
+        }
         for (var x = 0; x < tests.length; x++) {
-          document.write('<H3>' + tests[x] + ':</H3>');
+          document.write('<H3>' + tests[x] + ' (' + (force_utf32_string ? 'utf32_string' : 'standard string') + '):</H3>');
           eval(tests[x] + '()');
         }
       }
@@ -115,7 +123,10 @@
           'testPatchMake',
           'testPatchSplitMax',
           'testPatchAddPadding',
-          'testPatchApply'];
+          'testPatchApply',
+
+         'testUnicode',
+          ];
 
     </script>
   </head>
@@ -136,11 +147,17 @@
 
     <script type="text/javascript">
       var startTime = (new Date()).getTime();
-      runTests();
+      runTests(false);
       var endTime = (new Date()).getTime();
-      document.write('<H3>Done.</H3>');
+      document.write('<H3>Done with standard string test.</H3>');
       document.write('<P>Tests passed: ' + test_good + '<BR>Tests failed: ' + test_bad + '</P>');
       document.write('<P>Total time: ' + (endTime - startTime) + ' ms</P>');
-    </script>
+
+      var startTime = (new Date()).getTime();
+      runTests(true);
+      var endTime = (new Date()).getTime();
+      document.write('<H3>Done with utf32_string test.</H3>');
+      document.write('<P>Tests passed: ' + test_good + '<BR>Tests failed: ' + test_bad + '</P>');
+      document.write('<P>Total time: ' + (endTime - startTime) + ' ms</P>');    </script>
   </body>
 </html>
