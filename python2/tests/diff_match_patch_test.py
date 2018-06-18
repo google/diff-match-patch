@@ -172,9 +172,9 @@ class DiffTest(DiffMatchPatchTest):
       lineList.append(str(i) + "\n")
     chars = "".join(lineList)
     results = self.dmp.diff_linesToChars(chars, "")
-    diffs = [(self.dmp.DIFF_INSERT, results[0])];
-    self.dmp.diff_charsToLines(diffs, results[2]);
-    self.assertEquals(chars, diffs[0][1]);
+    diffs = [(self.dmp.DIFF_INSERT, results[0])]
+    self.dmp.diff_charsToLines(diffs, results[2])
+    self.assertEquals(chars, diffs[0][1])
 
   def testDiffCleanupMerge(self):
     # Cleanup a messy diff.

@@ -27,11 +27,11 @@ Applies the patch onto another text, allowing for errors.
 
 __author__ = 'fraser@google.com (Neil Fraser)'
 
-import math
 import re
 import sys
 import time
 import urllib
+
 
 class diff_match_patch:
   """Class containing the diff, match and patch methods.
@@ -847,8 +847,8 @@ class diff_match_patch:
       pointer += 1
 
   # Define some regex patterns for matching boundaries.
-  BLANKLINEEND = re.compile(r"\n\r?\n$");
-  BLANKLINESTART = re.compile(r"^\r?\n\r?\n");
+  BLANKLINEEND = re.compile(r"\n\r?\n$")
+  BLANKLINESTART = re.compile(r"^\r?\n\r?\n")
 
   def diff_cleanupEfficiency(self, diffs):
     """Reduce the number of edits by eliminating operationally trivial
@@ -967,14 +967,14 @@ class diff_match_patch:
               text_insert = text_insert[:-commonlength]
               text_delete = text_delete[:-commonlength]
           # Delete the offending records and add the merged ones.
-          new_ops = [];
+          new_ops = []
           if len(text_delete) != 0:
             new_ops.append((self.DIFF_DELETE, text_delete))
           if len(text_insert) != 0:
             new_ops.append((self.DIFF_INSERT, text_insert))
           pointer -= count_delete + count_insert
           diffs[pointer : pointer + count_delete + count_insert] = new_ops
-          pointer += len(new_ops) + 1;
+          pointer += len(new_ops) + 1
         elif pointer != 0 and diffs[pointer - 1][0] == self.DIFF_EQUAL:
           # Merge this equality with the previous one.
           diffs[pointer - 1] = (diffs[pointer - 1][0],
