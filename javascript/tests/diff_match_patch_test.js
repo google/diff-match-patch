@@ -26,9 +26,9 @@ function assertEquivalent(msg, expected, actual) {
     msg = 'Expected: \'' + expected + '\' Actual: \'' + actual + '\'';
   }
   if (_equivalent(expected, actual)) {
-    assertEquals(msg, String.toString(expected), String.toString(actual));
+    return assertEquals(msg, String(expected), String(actual));
   } else {
-    assertEquals(msg, expected, actual);
+    return assertEquals(msg, expected, actual);
   }
 }
 
@@ -43,12 +43,12 @@ function _equivalent(a, b) {
       return false;
     }
     for (var p in a) {
-      if (!_equivalent(a[p], b[p])) {
+      if (a.hasOwnProperty(p) && !_equivalent(a[p], b[p])) {
         return false;
       }
     }
     for (var p in b) {
-      if (!_equivalent(a[p], b[p])) {
+      if (a.hasOwnProperty(p) && !_equivalent(a[p], b[p])) {
         return false;
       }
     }
