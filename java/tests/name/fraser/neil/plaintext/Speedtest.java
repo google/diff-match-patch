@@ -13,15 +13,13 @@
 
 package name.fraser.neil.plaintext;
 
-import name.fraser.neil.plaintext.diff_match_patch;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class Speedtest {
 
-  public static void main(String args[]) {
+  public static void main(String args[]) throws IOException {
     String text1 = readFile("tests/name/fraser/neil/plaintext/Speedtest1.txt");
     String text2 = readFile("tests/name/fraser/neil/plaintext/Speedtest2.txt");
 
@@ -30,32 +28,28 @@ public class Speedtest {
 
     // Execute one reverse diff as a warmup.
     dmp.diff_main(text2, text1, false);
-    System.gc();
 
-    long start_time = System.currentTimeMillis();
+    long start_time = System.nanoTime();
     dmp.diff_main(text1, text2, false);
-    long end_time = System.currentTimeMillis();
-    System.out.printf("Elapsed time: %f\n", ((end_time - start_time) / 1000.0));
+    long end_time = System.nanoTime();
+    System.out.printf("Elapsed time: %f\n", ((end_time - start_time) / 1000000000.0));
   }
 
-  private static String readFile(String filename) {
+  private static String readFile(String filename) throws IOException {
     // Read a file from disk and return the text contents.
-    StringBuffer strbuf = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
+    FileReader input = new FileReader(filename);
+    BufferedReader bufRead = new BufferedReader(input);
     try {
-      FileReader input = new FileReader(filename);
-      BufferedReader bufRead = new BufferedReader(input);
       String line = bufRead.readLine();
       while (line != null) {
-        strbuf.append(line);
-        strbuf.append('\n');
+        sb.append(line).append('\n');
         line = bufRead.readLine();
       }
-
+    } finally {
       bufRead.close();
-
-    } catch (IOException e) {
-      e.printStackTrace();
+      input.close();
     }
-    return strbuf.toString();
+    return sb.toString();
   }
 }
