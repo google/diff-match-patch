@@ -512,8 +512,8 @@ class DiffMatchPatch {
   void _diff_charsToLines(List<Diff> diffs, List<String> lineArray) {
     final text = new StringBuffer();
     for (Diff diff in diffs) {
-      for (int y = 0; y < diff.text.length; y++) {
-        text.write(lineArray[diff.text.codeUnitAt(y)]);
+      for (int j = 0; j < diff.text.length; j++) {
+        text.write(lineArray[diff.text.codeUnitAt(j)]);
       }
       diff.text = text.toString();
       text.clear();
@@ -709,7 +709,7 @@ class DiffMatchPatch {
     // Stack of indices where equalities are found.
     final equalities = <int>[];
     // Always equal to diffs[equalities.last()].text
-    String lastequality = null;
+    String lastEquality = null;
     int pointer = 0; // Index of current position.
     // Number of characters that changed prior to the equality.
     int length_insertions1 = 0;
@@ -725,7 +725,7 @@ class DiffMatchPatch {
         length_deletions1 = length_deletions2;
         length_insertions2 = 0;
         length_deletions2 = 0;
-        lastequality = diffs[pointer].text;
+        lastEquality = diffs[pointer].text;
       } else {
         // An insertion or deletion.
         if (diffs[pointer].operation == Operation.insert) {
@@ -735,14 +735,14 @@ class DiffMatchPatch {
         }
         // Eliminate an equality that is smaller or equal to the edits on both
         // sides of it.
-        if (lastequality != null &&
-            (lastequality.length <=
+        if (lastEquality != null &&
+            (lastEquality.length <=
                 max(length_insertions1, length_deletions1)) &&
-            (lastequality.length <=
+            (lastEquality.length <=
                 max(length_insertions2, length_deletions2))) {
           // Duplicate record.
           diffs.insert(
-              equalities.last, new Diff(Operation.delete, lastequality));
+              equalities.last, new Diff(Operation.delete, lastEquality));
           // Change second copy to insert.
           diffs[equalities.last + 1].operation = Operation.insert;
           // Throw away the equality we just deleted.
@@ -756,7 +756,7 @@ class DiffMatchPatch {
           length_deletions1 = 0;
           length_insertions2 = 0;
           length_deletions2 = 0;
-          lastequality = null;
+          lastEquality = null;
           changes = true;
         }
       }
@@ -953,7 +953,7 @@ class DiffMatchPatch {
     // Stack of indices where equalities are found.
     final equalities = <int>[];
     // Always equal to diffs[equalities.last()].text
-    String lastequality = null;
+    String lastEquality = null;
     int pointer = 0; // Index of current position.
     // Is there an insertion operation before the last equality.
     bool pre_ins = false;
@@ -972,11 +972,11 @@ class DiffMatchPatch {
           equalities.add(pointer);
           pre_ins = post_ins;
           pre_del = post_del;
-          lastequality = diffs[pointer].text;
+          lastEquality = diffs[pointer].text;
         } else {
           // Not a candidate, and can never become one.
           equalities.clear();
-          lastequality = null;
+          lastEquality = null;
         }
         post_ins = post_del = false;
       } else {
@@ -994,9 +994,9 @@ class DiffMatchPatch {
          * <ins>A</del>X<ins>C</ins><del>D</del>
          * <ins>A</ins><del>B</del>X<del>C</del>
          */
-        if (lastequality != null &&
+        if (lastEquality != null &&
             ((pre_ins && pre_del && post_ins && post_del) ||
-                ((lastequality.length < Diff_EditCost / 2) &&
+                ((lastEquality.length < Diff_EditCost / 2) &&
                     ((pre_ins ? 1 : 0) +
                             (pre_del ? 1 : 0) +
                             (post_ins ? 1 : 0) +
@@ -1004,11 +1004,11 @@ class DiffMatchPatch {
                         3))) {
           // Duplicate record.
           diffs.insert(
-              equalities.last, new Diff(Operation.delete, lastequality));
+              equalities.last, new Diff(Operation.delete, lastEquality));
           // Change second copy to insert.
           diffs[equalities.last + 1].operation = Operation.insert;
           equalities.removeLast(); // Throw away the equality we just deleted.
-          lastequality = null;
+          lastEquality = null;
           if (pre_ins && pre_del) {
             // No changes made which could affect previous entry, keep going.
             post_ins = post_del = true;

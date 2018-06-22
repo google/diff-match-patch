@@ -662,8 +662,8 @@ namespace DiffMatchPatch {
       StringBuilder text;
       foreach (Diff diff in diffs) {
         text = new StringBuilder();
-        for (int y = 0; y < diff.text.Length; y++) {
-          text.Append(lineArray[diff.text[y]]);
+        for (int j = 0; j < diff.text.Length; j++) {
+          text.Append(lineArray[diff.text[j]]);
         }
         diff.text = text.ToString();
       }
@@ -851,7 +851,7 @@ namespace DiffMatchPatch {
       // Stack of indices where equalities are found.
       Stack<int> equalities = new Stack<int>();
       // Always equal to equalities[equalitiesLength-1][1]
-      string lastequality = null;
+      string lastEquality = null;
       int pointer = 0;  // Index of current position.
       // Number of characters that changed prior to the equality.
       int length_insertions1 = 0;
@@ -866,7 +866,7 @@ namespace DiffMatchPatch {
           length_deletions1 = length_deletions2;
           length_insertions2 = 0;
           length_deletions2 = 0;
-          lastequality = diffs[pointer].text;
+          lastEquality = diffs[pointer].text;
         } else {  // an insertion or deletion
           if (diffs[pointer].operation == Operation.INSERT) {
             length_insertions2 += diffs[pointer].text.Length;
@@ -875,13 +875,13 @@ namespace DiffMatchPatch {
           }
           // Eliminate an equality that is smaller or equal to the edits on both
           // sides of it.
-          if (lastequality != null && (lastequality.Length
+          if (lastEquality != null && (lastEquality.Length
               <= Math.Max(length_insertions1, length_deletions1))
-              && (lastequality.Length
+              && (lastEquality.Length
                   <= Math.Max(length_insertions2, length_deletions2))) {
             // Duplicate record.
             diffs.Insert(equalities.Peek(),
-                         new Diff(Operation.DELETE, lastequality));
+                         new Diff(Operation.DELETE, lastEquality));
             // Change second copy to insert.
             diffs[equalities.Peek() + 1].operation = Operation.INSERT;
             // Throw away the equality we just deleted.
@@ -894,7 +894,7 @@ namespace DiffMatchPatch {
             length_deletions1 = 0;
             length_insertions2 = 0;
             length_deletions2 = 0;
-            lastequality = null;
+            lastEquality = null;
             changes = true;
           }
         }
@@ -1088,7 +1088,7 @@ namespace DiffMatchPatch {
       // Stack of indices where equalities are found.
       Stack<int> equalities = new Stack<int>();
       // Always equal to equalities[equalitiesLength-1][1]
-      string lastequality = string.Empty;
+      string lastEquality = string.Empty;
       int pointer = 0;  // Index of current position.
       // Is there an insertion operation before the last equality.
       bool pre_ins = false;
@@ -1106,11 +1106,11 @@ namespace DiffMatchPatch {
             equalities.Push(pointer);
             pre_ins = post_ins;
             pre_del = post_del;
-            lastequality = diffs[pointer].text;
+            lastEquality = diffs[pointer].text;
           } else {
             // Not a candidate, and can never become one.
             equalities.Clear();
-            lastequality = string.Empty;
+            lastEquality = string.Empty;
           }
           post_ins = post_del = false;
         } else {  // An insertion or deletion.
@@ -1127,18 +1127,18 @@ namespace DiffMatchPatch {
            * <ins>A</del>X<ins>C</ins><del>D</del>
            * <ins>A</ins><del>B</del>X<del>C</del>
            */
-          if ((lastequality.Length != 0)
+          if ((lastEquality.Length != 0)
               && ((pre_ins && pre_del && post_ins && post_del)
-              || ((lastequality.Length < this.Diff_EditCost / 2)
+              || ((lastEquality.Length < this.Diff_EditCost / 2)
               && ((pre_ins ? 1 : 0) + (pre_del ? 1 : 0) + (post_ins ? 1 : 0)
               + (post_del ? 1 : 0)) == 3))) {
             // Duplicate record.
             diffs.Insert(equalities.Peek(),
-                         new Diff(Operation.DELETE, lastequality));
+                         new Diff(Operation.DELETE, lastEquality));
             // Change second copy to insert.
             diffs[equalities.Peek() + 1].operation = Operation.INSERT;
             equalities.Pop();  // Throw away the equality we just deleted.
-            lastequality = string.Empty;
+            lastEquality = string.Empty;
             if (pre_ins && pre_del) {
               // No changes made which could affect previous entry, keep going.
               post_ins = post_del = true;

@@ -451,11 +451,11 @@ class diff_match_patch:
       diffs: Array of diff tuples.
       lineArray: Array of unique strings.
     """
-    for x in xrange(len(diffs)):
+    for i in xrange(len(diffs)):
       text = []
-      for char in diffs[x][1]:
+      for char in diffs[i][1]:
         text.append(lineArray[ord(char)])
-      diffs[x] = (diffs[x][0], "".join(text))
+      diffs[i] = (diffs[i][0], "".join(text))
 
   def diff_commonPrefix(self, text1, text2):
     """Determine the common prefix of two strings.
@@ -649,7 +649,7 @@ class diff_match_patch:
     """
     changes = False
     equalities = []  # Stack of indices where equalities are found.
-    lastequality = None  # Always equal to diffs[equalities[-1]][1]
+    lastEquality = None  # Always equal to diffs[equalities[-1]][1]
     pointer = 0  # Index of current position.
     # Number of chars that changed prior to the equality.
     length_insertions1, length_deletions1 = 0, 0
@@ -660,7 +660,7 @@ class diff_match_patch:
         equalities.append(pointer)
         length_insertions1, length_insertions2 = length_insertions2, 0
         length_deletions1, length_deletions2 = length_deletions2, 0
-        lastequality = diffs[pointer][1]
+        lastEquality = diffs[pointer][1]
       else:  # An insertion or deletion.
         if diffs[pointer][0] == self.DIFF_INSERT:
           length_insertions2 += len(diffs[pointer][1])
@@ -668,11 +668,11 @@ class diff_match_patch:
           length_deletions2 += len(diffs[pointer][1])
         # Eliminate an equality that is smaller or equal to the edits on both
         # sides of it.
-        if (lastequality and (len(lastequality) <=
+        if (lastEquality and (len(lastEquality) <=
             max(length_insertions1, length_deletions1)) and
-            (len(lastequality) <= max(length_insertions2, length_deletions2))):
+            (len(lastEquality) <= max(length_insertions2, length_deletions2))):
           # Duplicate record.
-          diffs.insert(equalities[-1], (self.DIFF_DELETE, lastequality))
+          diffs.insert(equalities[-1], (self.DIFF_DELETE, lastEquality))
           # Change second copy to insert.
           diffs[equalities[-1] + 1] = (self.DIFF_INSERT,
               diffs[equalities[-1] + 1][1])
@@ -688,7 +688,7 @@ class diff_match_patch:
           # Reset the counters.
           length_insertions1, length_deletions1 = 0, 0
           length_insertions2, length_deletions2 = 0, 0
-          lastequality = None
+          lastEquality = None
           changes = True
       pointer += 1
 
@@ -859,7 +859,7 @@ class diff_match_patch:
     """
     changes = False
     equalities = []  # Stack of indices where equalities are found.
-    lastequality = None  # Always equal to diffs[equalities[-1]][1]
+    lastEquality = None  # Always equal to diffs[equalities[-1]][1]
     pointer = 0  # Index of current position.
     pre_ins = False  # Is there an insertion operation before the last equality.
     pre_del = False  # Is there a deletion operation before the last equality.
@@ -873,11 +873,11 @@ class diff_match_patch:
           equalities.append(pointer)
           pre_ins = post_ins
           pre_del = post_del
-          lastequality = diffs[pointer][1]
+          lastEquality = diffs[pointer][1]
         else:
           # Not a candidate, and can never become one.
           equalities = []
-          lastequality = None
+          lastEquality = None
 
         post_ins = post_del = False
       else:  # An insertion or deletion.
@@ -893,16 +893,16 @@ class diff_match_patch:
         # <ins>A</del>X<ins>C</ins><del>D</del>
         # <ins>A</ins><del>B</del>X<del>C</del>
 
-        if lastequality and ((pre_ins and pre_del and post_ins and post_del) or
-                             ((len(lastequality) < self.Diff_EditCost / 2) and
+        if lastEquality and ((pre_ins and pre_del and post_ins and post_del) or
+                             ((len(lastEquality) < self.Diff_EditCost / 2) and
                               (pre_ins + pre_del + post_ins + post_del) == 3)):
           # Duplicate record.
-          diffs.insert(equalities[-1], (self.DIFF_DELETE, lastequality))
+          diffs.insert(equalities[-1], (self.DIFF_DELETE, lastEquality))
           # Change second copy to insert.
           diffs[equalities[-1] + 1] = (self.DIFF_INSERT,
               diffs[equalities[-1] + 1][1])
           equalities.pop()  # Throw away the equality we just deleted.
-          lastequality = None
+          lastEquality = None
           if pre_ins and pre_del:
             # No changes made which could affect previous entry, keep going.
             post_ins = post_del = True

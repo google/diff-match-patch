@@ -19,8 +19,8 @@
 package name.fraser.neil.plaintext;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -570,8 +570,8 @@ public class diff_match_patch {
     StringBuilder text;
     for (Diff diff : diffs) {
       text = new StringBuilder();
-      for (int y = 0; y < diff.text.length(); y++) {
-        text.append(lineArray.get(diff.text.charAt(y)));
+      for (int j = 0; j < diff.text.length(); j++) {
+        text.append(lineArray.get(diff.text.charAt(j)));
       }
       diff.text = text.toString();
     }

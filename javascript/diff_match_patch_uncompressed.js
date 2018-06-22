@@ -530,13 +530,13 @@ diff_match_patch.prototype.diff_linesToChars_ = function(text1, text2) {
  * @private
  */
 diff_match_patch.prototype.diff_charsToLines_ = function(diffs, lineArray) {
-  for (var x = 0; x < diffs.length; x++) {
-    var chars = diffs[x][1];
+  for (var i = 0; i < diffs.length; i++) {
+    var chars = diffs[i][1];
     var text = [];
-    for (var y = 0; y < chars.length; y++) {
-      text[y] = lineArray[chars.charCodeAt(y)];
+    for (var j = 0; j < chars.length; j++) {
+      text[j] = lineArray[chars.charCodeAt(j)];
     }
-    diffs[x][1] = text.join('');
+    diffs[j][1] = text.join('');
   }
 };
 
@@ -762,7 +762,7 @@ diff_match_patch.prototype.diff_cleanupSemantic = function(diffs) {
   var equalities = [];  // Stack of indices where equalities are found.
   var equalitiesLength = 0;  // Keeping our own length var is faster in JS.
   /** @type {?string} */
-  var lastequality = null;
+  var lastEquality = null;
   // Always equal to diffs[equalities[equalitiesLength - 1]][1]
   var pointer = 0;  // Index of current position.
   // Number of characters that changed prior to the equality.
@@ -778,7 +778,7 @@ diff_match_patch.prototype.diff_cleanupSemantic = function(diffs) {
       length_deletions1 = length_deletions2;
       length_insertions2 = 0;
       length_deletions2 = 0;
-      lastequality = diffs[pointer][1];
+      lastEquality = diffs[pointer][1];
     } else {  // An insertion or deletion.
       if (diffs[pointer][0] == DIFF_INSERT) {
         length_insertions2 += diffs[pointer][1].length;
@@ -787,13 +787,13 @@ diff_match_patch.prototype.diff_cleanupSemantic = function(diffs) {
       }
       // Eliminate an equality that is smaller or equal to the edits on both
       // sides of it.
-      if (lastequality && (lastequality.length <=
+      if (lastEquality && (lastEquality.length <=
           Math.max(length_insertions1, length_deletions1)) &&
-          (lastequality.length <= Math.max(length_insertions2,
+          (lastEquality.length <= Math.max(length_insertions2,
                                            length_deletions2))) {
         // Duplicate record.
         diffs.splice(equalities[equalitiesLength - 1], 0,
-                     new diff_match_patch.Diff(DIFF_DELETE, lastequality));
+                     new diff_match_patch.Diff(DIFF_DELETE, lastEquality));
         // Change second copy to insert.
         diffs[equalities[equalitiesLength - 1] + 1][0] = DIFF_INSERT;
         // Throw away the equality we just deleted.
@@ -805,7 +805,7 @@ diff_match_patch.prototype.diff_cleanupSemantic = function(diffs) {
         length_deletions1 = 0;
         length_insertions2 = 0;
         length_deletions2 = 0;
-        lastequality = null;
+        lastEquality = null;
         changes = true;
       }
     }
@@ -1007,7 +1007,7 @@ diff_match_patch.prototype.diff_cleanupEfficiency = function(diffs) {
   var equalities = [];  // Stack of indices where equalities are found.
   var equalitiesLength = 0;  // Keeping our own length var is faster in JS.
   /** @type {?string} */
-  var lastequality = null;
+  var lastEquality = null;
   // Always equal to diffs[equalities[equalitiesLength - 1]][1]
   var pointer = 0;  // Index of current position.
   // Is there an insertion operation before the last equality.
@@ -1026,11 +1026,11 @@ diff_match_patch.prototype.diff_cleanupEfficiency = function(diffs) {
         equalities[equalitiesLength++] = pointer;
         pre_ins = post_ins;
         pre_del = post_del;
-        lastequality = diffs[pointer][1];
+        lastEquality = diffs[pointer][1];
       } else {
         // Not a candidate, and can never become one.
         equalitiesLength = 0;
-        lastequality = null;
+        lastEquality = null;
       }
       post_ins = post_del = false;
     } else {  // An insertion or deletion.
@@ -1047,16 +1047,16 @@ diff_match_patch.prototype.diff_cleanupEfficiency = function(diffs) {
        * <ins>A</del>X<ins>C</ins><del>D</del>
        * <ins>A</ins><del>B</del>X<del>C</del>
        */
-      if (lastequality && ((pre_ins && pre_del && post_ins && post_del) ||
-                           ((lastequality.length < this.Diff_EditCost / 2) &&
+      if (lastEquality && ((pre_ins && pre_del && post_ins && post_del) ||
+                           ((lastEquality.length < this.Diff_EditCost / 2) &&
                             (pre_ins + pre_del + post_ins + post_del) == 3))) {
         // Duplicate record.
         diffs.splice(equalities[equalitiesLength - 1], 0,
-                     new diff_match_patch.Diff(DIFF_DELETE, lastequality));
+                     new diff_match_patch.Diff(DIFF_DELETE, lastEquality));
         // Change second copy to insert.
         diffs[equalities[equalitiesLength - 1] + 1][0] = DIFF_INSERT;
         equalitiesLength--;  // Throw away the equality we just deleted;
-        lastequality = null;
+        lastEquality = null;
         if (pre_ins && pre_del) {
           // No changes made which could affect previous entry, keep going.
           post_ins = post_del = true;
@@ -2219,7 +2219,7 @@ diff_match_patch.patch_obj.prototype.toString = function() {
   return text.join('').replace(/%20/g, ' ');
 };
 
-// STRIP_FOR_CLOSURE
+// CLOSURE:begin_strip
 // Lines below here will not be included in the Closure-compatible library.
 
 // Export these global variables so that they survive Google's JS compiler.
