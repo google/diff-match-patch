@@ -536,7 +536,7 @@ diff_match_patch.prototype.diff_charsToLines_ = function(diffs, lineArray) {
     for (var j = 0; j < chars.length; j++) {
       text[j] = lineArray[chars.charCodeAt(j)];
     }
-    diffs[j][1] = text.join('');
+    diffs[i][1] = text.join('');
   }
 };
 
