@@ -166,11 +166,9 @@ namespace DiffMatchPatch {
             break;
         }
 
-        text.Append(Uri.EscapeDataString(aDiff.text).Replace('+', ' ')).Append("\n");
+        text.Append(diff_match_patch.encodeURI(aDiff.text)).Append("\n");
       }
-
-      return diff_match_patch.unescapeForEncodeUriCompatability(
-          text.ToString());
+      return text.ToString();
     }
   }
 
@@ -1026,7 +1024,7 @@ namespace DiffMatchPatch {
     }
 
     /**
-     * Given two strings, comAdde a score representing whether the internal
+     * Given two strings, compute a score representing whether the internal
      * boundary falls on logical boundaries.
      * Scores range from 6 (best) to 0 (worst).
      * @param one First string.
@@ -1292,7 +1290,7 @@ namespace DiffMatchPatch {
     }
 
     /**
-     * loc is a location in text1, comAdde and return the equivalent location in
+     * loc is a location in text1, compute and return the equivalent location in
      * text2.
      * e.g. "The cat" vs "The big cat", 1->1, 5->8
      * @param diffs List of Diff objects.
@@ -1431,7 +1429,7 @@ namespace DiffMatchPatch {
       foreach (Diff aDiff in diffs) {
         switch (aDiff.operation) {
           case Operation.INSERT:
-            text.Append("+").Append(Uri.EscapeDataString(aDiff.text).Replace('+', ' ')).Append("\t");
+            text.Append("+").Append(encodeURI(aDiff.text)).Append("\t");
             break;
           case Operation.DELETE:
             text.Append("-").Append(aDiff.text.Length).Append("\t");
@@ -1445,14 +1443,13 @@ namespace DiffMatchPatch {
       if (delta.Length != 0) {
         // Strip off trailing tab character.
         delta = delta.Substring(0, delta.Length - 1);
-        delta = unescapeForEncodeUriCompatability(delta);
       }
       return delta;
     }
 
     /**
      * Given the original text1, and an encoded string which describes the
-     * operations required to transform text1 into text2, comAdde the full diff.
+     * operations required to transform text1 into text2, compute the full diff.
      * @param text1 Source string for the diff.
      * @param delta Delta text.
      * @return Array of Diff objects or null if invalid.
@@ -1765,7 +1762,7 @@ namespace DiffMatchPatch {
      */
     public List<Patch> patch_make(string text1, string text2) {
       // Check for null inputs not needed since null can't be passed in C#.
-      // No diffs provided, comAdde our own.
+      // No diffs provided, compute our own.
       List<Diff> diffs = diff_main(text1, text2, true);
       if (diffs.Count > 2) {
         diff_cleanupSemantic(diffs);
@@ -1782,7 +1779,7 @@ namespace DiffMatchPatch {
      */
     public List<Patch> patch_make(List<Diff> diffs) {
       // Check for null inputs not needed since null can't be passed in C#.
-      // No origin string provided, comAdde our own.
+      // No origin string provided, compute our own.
       string text1 = diff_text1(diffs);
       return patch_make(text1, diffs);
     }
@@ -2278,25 +2275,31 @@ namespace DiffMatchPatch {
     private static Regex HEXCODE = new Regex("%[0-9A-F][0-9A-F]");
 
     /**
-     * Unescape selected chars for compatibility with JavaScript's encodeURI.
-     * In speed critical applications this could be dropped since the
-     * receiving application will certainly decode these fine.
-     * Note that this function is case-sensitive.  Thus "%3F" would not be
-     * unescaped.  But this is ok because it is only called with the output of
-     * Uri.EscapeDataString which returns lowercase hex.
+     * Encodes a string with URI-style % escaping.
+     * Compatible with JavaScript's encodeURI function.
      *
-     * Example: "%3f" -> "?", "%24" -> "$", etc.
-     *
-     * @param str The string to escape.
-     * @return The escaped string.
+     * @param str The string to encode.
+     * @return The encoded string.
      */
-    public static string unescapeForEncodeUriCompatability(string str) {
-      str = str.Replace("%20", " ").Replace("%21", "!").Replace("%2A", "*")
-          .Replace("%27", "'").Replace("%28", "(").Replace("%29", ")")
-          .Replace("%3B", ";").Replace("%2F", "/").Replace("%3F", "?")
-          .Replace("%3A", ":").Replace("%40", "@").Replace("%26", "&")
-          .Replace("%3D", "=").Replace("%2B", "+").Replace("%24", "$")
-          .Replace("%2C", ",").Replace("%23", "#");
+    public static string encodeURI(string str) {
+      int MAX_LENGTH = 65520 - 1;
+      // C# throws a System.UriFormatException if string is too long.
+      // Split the string into 64kb chunks.
+      StringBuilder sb = new StringBuilder();
+      while (str.Length > MAX_LENGTH) {
+        sb.Append(Uri.EscapeDataString(str.Substring(0, MAX_LENGTH)));
+        str = str.Substring(MAX_LENGTH);
+      }
+      sb.Append(Uri.EscapeDataString(str));
+      str = sb.ToString();
+      // C# is overzealous in the replacements.  Walk back on a few.
+      str = str.Replace("+", " ").Replace("%20", " ").Replace("%21", "!")
+          .Replace("%2A", "*").Replace("%27", "'").Replace("%28", "(")
+          .Replace("%29", ")").Replace("%3B", ";").Replace("%2F", "/")
+          .Replace("%3F", "?").Replace("%3A", ":").Replace("%40", "@")
+          .Replace("%26", "&").Replace("%3D", "=").Replace("%2B", "+")
+          .Replace("%24", "$").Replace("%2C", ",").Replace("%23", "#");
+      // C# uses uppercase hex codes, JavaScript uses lowercase.
       return HEXCODE.Replace(str, new MatchEvaluator(lowerHex));
     }
 
