@@ -765,6 +765,22 @@
   expectedResult = [dmp diff_fromDeltaWithText:@"" andDelta:delta error:NULL];
   XCTAssertEqualObjects(diffs, expectedResult, @"diff_fromDelta: Unchanged characters. Convert delta string into a diff.");
 
+  // 160 kb string.
+  NSString *a = @"abcdefghij";
+  NSMutableString *aMutable = [NSMutableString stringWithString:a];
+  for (int i = 0; i < 14; i++) {
+    [aMutable appendString:aMutable];
+  }
+  a = aMutable;
+  diffs = [NSMutableArray arrayWithObject:
+           [Diff diffWithOperation:DIFF_INSERT andText:a]];
+  delta = [dmp diff_toDelta:diffs];
+  XCTAssertEqualObjects([@"+" stringByAppendingString:a], delta, @"diff_toDelta: 160kb string.");
+  
+  // Convert delta string into a diff.
+  expectedResult = [dmp diff_fromDeltaWithText:@"" andDelta:delta error:NULL];
+  XCTAssertEqualObjects(diffs, expectedResult, @"diff_fromDelta: 160kb string. Convert delta string into a diff.");
+
   [dmp release];
 }
 

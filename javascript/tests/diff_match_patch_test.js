@@ -502,6 +502,18 @@ function testDiffDelta() {
 
   // Convert delta string into a diff.
   assertEquivalent(diffs, dmp.diff_fromDelta('', delta));
+
+  // 160 kb string.
+  var a = 'abcdefghij';
+  for (var i = 0; i < 14; i++) {
+    a += a;
+  }
+  diffs = [[DIFF_INSERT, a]];
+  delta = dmp.diff_toDelta(diffs);
+  assertEquals('+' + a, delta);
+
+  // Convert delta string into a diff.
+  assertEquivalent(diffs, dmp.diff_fromDelta('', delta));
 }
 
 function testDiffXIndex() {

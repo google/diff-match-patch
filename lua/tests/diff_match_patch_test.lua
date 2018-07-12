@@ -550,6 +550,15 @@ function testDiffDelta()
 
   -- Convert delta string into a diff.
   assertEquivalent(diffs, dmp.diff_fromDelta('', delta))
+
+  -- 160 kb string.
+  local a = string.rep('abcdefghij', 16384)
+  diffs = {{DIFF_INSERT, a}};
+  delta = dmp.diff_toDelta(diffs);
+  assertEquals('+' .. a, delta);
+
+  -- Convert delta string into a diff.
+  assertEquivalent(diffs, dmp.diff_fromDelta('', delta));
 end
 
 function testDiffXIndex()

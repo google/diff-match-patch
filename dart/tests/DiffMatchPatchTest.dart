@@ -462,6 +462,18 @@ void testDiffDelta() {
 
   // Convert delta string into a diff.
   Expect.listEquals(diffs, dmp.diff_fromDelta('', delta), 'diff_fromDelta: Unchanged characters.');
+
+  // 160 kb string.
+  var a = 'abcdefghij';
+  for (var i = 0; i < 14; i++) {
+    a += a;
+  }
+  diffs = [new Diff(Operation.insert, a)];
+  delta = dmp.diff_toDelta(diffs);
+  Expect.equals('+' + a, delta, 'diff_toDelta: 160kb string.');
+
+  // Convert delta string into a diff.
+  Expect.listEquals(diffs, dmp.diff_fromDelta('', delta), 'diff_fromDelta: 160kb string.');
 }
 
 void testDiffXIndex() {

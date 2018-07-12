@@ -455,6 +455,17 @@ class DiffTest(DiffMatchPatchTest):
     # Convert delta string into a diff.
     self.assertEqual(diffs, self.dmp.diff_fromDelta("", delta))
 
+    # 160 kb string.
+    a = "abcdefghij"
+    for i in range(14):
+      a += a
+    diffs = [(self.dmp.DIFF_INSERT, a)]
+    delta = self.dmp.diff_toDelta(diffs);
+    self.assertEqual('+' + a, delta);
+
+    # Convert delta string into a diff.
+    self.assertEqual(diffs, self.dmp.diff_fromDelta("", delta));
+
   def testDiffXIndex(self):
     # Translate a location in text1 to text2.
     self.assertEqual(5, self.dmp.diff_xIndex([(self.dmp.DIFF_DELETE, "a"), (self.dmp.DIFF_INSERT, "1234"), (self.dmp.DIFF_EQUAL, "xyz")], 2))

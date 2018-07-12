@@ -434,6 +434,18 @@ public class diff_match_patch_test {
 
     // Convert delta string into a diff.
     assertEquals("diff_fromDelta: Unchanged characters.", diffs, dmp.diff_fromDelta("", delta));
+
+    // 160 kb string.
+    String a = "abcdefghij";
+    for (int i = 0; i < 14; i++) {
+      a += a;
+    }
+    diffs = diffList(new Diff(INSERT, a));
+    delta = dmp.diff_toDelta(diffs);
+    assertEquals("diff_toDelta: 160kb string.", "+" + a, delta);
+
+    // Convert delta string into a diff.
+    assertEquals("diff_fromDelta: 160kb string.", diffs, dmp.diff_fromDelta("", delta));
   }
 
   public static void testDiffXIndex() {
