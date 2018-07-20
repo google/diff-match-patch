@@ -778,9 +778,6 @@ namespace Google.DiffMatchPatch.Tests
             // Generates error (19 > 18).
             Assert.Throws<ArgumentException>(() => diff_fromDelta(text1.Substring(1), delta));
 
-            // Generates error (%c3%xy invalid Unicode).
-            //TODO:rolshevsky:Assert.Throws<ArgumentException>(() => diff_fromDelta("", "+%c3%xy"));
-
             // Test deltas with special characters.
             const char zero = (char) 0;
             const char one = (char) 1;
