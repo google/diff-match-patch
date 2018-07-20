@@ -8,11 +8,11 @@
  *   mono Speedtest.exe
 */
 
-using DiffMatchPatch;
 using System;
 using System.Collections.Generic;
 
 public class Speedtest {
+  /*TODO Replace with BenchmarkDotNet
   public static void Main(string[] args) {
     string text1 = System.IO.File.ReadAllText("Speedtest1.txt");
     string text2 = System.IO.File.ReadAllText("Speedtest2.txt");
@@ -30,5 +30,5 @@ public class Speedtest {
     DateTime ms_end = DateTime.Now;
 
     Console.WriteLine("Elapsed time: " + (ms_end - ms_start));
-  }
+  }*/
 }

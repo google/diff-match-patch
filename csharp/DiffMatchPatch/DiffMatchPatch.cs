@@ -22,7 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace DiffMatchPatch {
+namespace Google.DiffMatchPatch {
   internal static class CompatibilityExtensions {
     // JScript splice function
     public static List<T> Splice<T>(this List<T> input, int start, int count,
