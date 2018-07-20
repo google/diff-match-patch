@@ -19,9 +19,8 @@
 using System.Collections.Generic;
 using System.IO;
 using BenchmarkDotNet.Attributes;
-using Google.DiffMatchPatch;
 
-namespace DiffMatchPatch.Tests.Performance
+namespace Google.DiffMatchPatch.Tests.Performance
 {
     public class DiffMainTest
     {

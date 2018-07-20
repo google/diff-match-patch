@@ -18,7 +18,7 @@
 
 using BenchmarkDotNet.Running;
 
-namespace DiffMatchPatch.Tests.Performance
+namespace Google.DiffMatchPatch.Tests.Performance
 {
     internal static class Program
     {
