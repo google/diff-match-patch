@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace DiffMatchPatch {
   internal static class CompatibilityExtensions {
@@ -1473,7 +1474,7 @@ namespace DiffMatchPatch {
             // decode would change all "+" to " "
             param = param.Replace("+", "%2b");
 
-            param = Uri.UnescapeDataString(param);
+            param = HttpUtility.UrlDecode(param);
             //} catch (UnsupportedEncodingException e) {
             //  // Not likely on modern system.
             //  throw new Error("This system does not support UTF-8.", e);
@@ -2248,7 +2249,7 @@ namespace DiffMatchPatch {
           }
           line = text[textPointer].Substring(1);
           line = line.Replace("+", "%2b");
-          line = Uri.UnescapeDataString(line);
+          line = HttpUtility.UrlDecode(line);
           if (sign == '-') {
             // Deletion.
             patch.diffs.Add(new Diff(Operation.DELETE, line));
@@ -2272,8 +2273,6 @@ namespace DiffMatchPatch {
       return patches;
     }
 
-    private static Regex HEXCODE = new Regex("%[0-9A-F][0-9A-F]");
-
     /**
      * Encodes a string with URI-style % escaping.
      * Compatible with JavaScript's encodeURI function.
@@ -2282,29 +2281,16 @@ namespace DiffMatchPatch {
      * @return The encoded string.
      */
     public static string encodeURI(string str) {
-      int MAX_LENGTH = 65520 - 1;
-      // C# throws a System.UriFormatException if string is too long.
-      // Split the string into 64kb chunks.
-      StringBuilder sb = new StringBuilder();
-      while (str.Length > MAX_LENGTH) {
-        sb.Append(Uri.EscapeDataString(str.Substring(0, MAX_LENGTH)));
-        str = str.Substring(MAX_LENGTH);
-      }
-      sb.Append(Uri.EscapeDataString(str));
-      str = sb.ToString();
-      // C# is overzealous in the replacements.  Walk back on a few.
-      str = str.Replace("+", " ").Replace("%20", " ").Replace("%21", "!")
-          .Replace("%2A", "*").Replace("%27", "'").Replace("%28", "(")
-          .Replace("%29", ")").Replace("%3B", ";").Replace("%2F", "/")
-          .Replace("%3F", "?").Replace("%3A", ":").Replace("%40", "@")
-          .Replace("%26", "&").Replace("%3D", "=").Replace("%2B", "+")
-          .Replace("%24", "$").Replace("%2C", ",").Replace("%23", "#");
-      // C# uses uppercase hex codes, JavaScript uses lowercase.
-      return HEXCODE.Replace(str, new MatchEvaluator(lowerHex));
-    }
-
-    private static string lowerHex(Match m) {
-      return m.ToString().ToLower();
+        // C# is overzealous in the replacements.  Walk back on a few.
+        return new StringBuilder(HttpUtility.UrlEncode(str))
+            .Replace('+', ' ').Replace("%20", " ").Replace("%21", "!")
+            .Replace("%2a", "*").Replace("%27", "'").Replace("%28", "(")
+            .Replace("%29", ")").Replace("%3b", ";").Replace("%2f", "/")
+            .Replace("%3f", "?").Replace("%3a", ":").Replace("%40", "@")
+            .Replace("%26", "&").Replace("%3d", "=").Replace("%2b", "+")
+            .Replace("%24", "$").Replace("%2c", ",").Replace("%23", "#")
+            .Replace("%7e", "~")
+            .ToString();
     }
   }
 }
