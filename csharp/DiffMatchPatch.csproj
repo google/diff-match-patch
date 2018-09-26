@@ -3,6 +3,21 @@
    <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DefaultItemExcludes>$(DefaultItemExcludes);tests\**</DefaultItemExcludes>
+    <PackOnBuild>true</PackOnBuild>
+    <PackageId>diffmatchpatch-csharp</PackageId>
+    <PackageVersion>0.1</PackageVersion>
+    <Authors>Google, Inc.</Authors>
+    <PackageLicenseUrl>https://github.com/google/diff-match-patch/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Owners>Google, Inc.</Owners>
+    <PackageProjectUrl>https://github.com/google/diff-match-patch</PackageProjectUrl>
+    <Summary>Diff Match Patch is a high-performance library in multiple languages that manipulates plain text. This is the C# version of that library.</Summary>
+    <PackageTags>diffmatchpatch</PackageTags>
+    <Title>diffmatchpatch-csharp</Title>
+    <Description>Diff Match Patch is a high-performance library in multiple languages that manipulates plain text. This is the C# version of that library.</Description>
   </PropertyGroup>
    
+   <ItemGroup>
+     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
+   </ItemGroup>
 </Project>
