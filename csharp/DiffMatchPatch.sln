@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiffMatchPatch", "DiffMatchPatch.csproj", "{88F42A85-D8E8-4DB3-9AE8-49FFC50C0EF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiffMatchPatchTests", "tests\DiffMatchPatchTests.csproj", "{B1DC026C-CD54-49FA-838F-2F103BEDFABE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{88F42A85-D8E8-4DB3-9AE8-49FFC50C0EF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88F42A85-D8E8-4DB3-9AE8-49FFC50C0EF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88F42A85-D8E8-4DB3-9AE8-49FFC50C0EF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1DC026C-CD54-49FA-838F-2F103BEDFABE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1DC026C-CD54-49FA-838F-2F103BEDFABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1DC026C-CD54-49FA-838F-2F103BEDFABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1DC026C-CD54-49FA-838F-2F103BEDFABE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

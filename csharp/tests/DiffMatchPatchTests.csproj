@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <StartupObject>diff_match_patchTest</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Speedtest1.txt" />
+    <None Remove="Speedtest2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Speedtest1.txt" />
+    <Content Include="Speedtest2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DiffMatchPatch.csproj" />
+  </ItemGroup>
+</Project>
