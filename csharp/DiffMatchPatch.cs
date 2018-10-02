@@ -1,4 +1,5 @@
 ﻿/*
+ * !IMPORTANT: This file is obsolete. All further development will continue from under C# solution (DiffMatchPatch.sln).
  * Diff Match and Patch
  * Copyright 2018 The diff-match-patch Authors.
  * https://github.com/google/diff-match-patch
@@ -55,6 +56,7 @@ namespace DiffMatchPatch {
   /**
    * Class representing one diff operation.
    */
+  [Obsolete]
   public class Diff {
     public Operation operation;
     // One of: INSERT, DELETE or EQUAL.
@@ -121,6 +123,7 @@ namespace DiffMatchPatch {
   /**
    * Class representing one patch operation.
    */
+  [Obsolete]
   public class Patch {
     public List<Diff> diffs = new List<Diff>();
     public int start1;
@@ -178,6 +181,7 @@ namespace DiffMatchPatch {
    * Class containing the diff, match and patch methods.
    * Also Contains the behaviour settings.
    */
+  [Obsolete]
   public class diff_match_patch {
     // Defaults.
     // Set these on your diff_match_patch instance to override the defaults.
