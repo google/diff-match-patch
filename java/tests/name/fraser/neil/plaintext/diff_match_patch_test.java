@@ -28,7 +28,6 @@ package name.fraser.neil.plaintext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -155,7 +154,7 @@ public class diff_match_patch_test {
     assertEquals("diff_charsToLines: Equality #2.", new Diff(EQUAL, "a"), new Diff(EQUAL, "a"));
 
     // Convert chars up to lines.
-    LinkedList<Diff> diffs = diffList(new Diff(EQUAL, "\u0001\u0002\u0001"), new Diff(INSERT, "\u0002\u0001\u0002"));
+    List<Diff> diffs = diffList(new Diff(EQUAL, "\u0001\u0002\u0001"), new Diff(INSERT, "\u0002\u0001\u0002"));
     ArrayList<String> tmpVector = new ArrayList<String>();
     tmpVector.add("");
     tmpVector.add("alpha\n");
@@ -191,12 +190,12 @@ public class diff_match_patch_test {
     LinesToCharsResult results = dmp.diff_linesToChars(chars, "");
     diffs = diffList(new Diff(INSERT, results.chars1));
     dmp.diff_charsToLines(diffs, results.lineArray);
-    assertEquals("diff_charsToLines: More than 65536.", chars, diffs.getFirst().text);
+    assertEquals("diff_charsToLines: More than 65536.", chars, diffs.get(0).text);
   }
 
   public static void testDiffCleanupMerge() {
     // Cleanup a messy diff.
-    LinkedList<Diff> diffs = diffList();
+    List<Diff> diffs = diffList();
     dmp.diff_cleanupMerge(diffs);
     assertEquals("diff_cleanupMerge: Null case.", diffList(), diffs);
 
@@ -255,7 +254,7 @@ public class diff_match_patch_test {
 
   public static void testDiffCleanupSemanticLossless() {
     // Slide diffs to match logical boundaries.
-    LinkedList<Diff> diffs = diffList();
+    List<Diff> diffs = diffList();
     dmp.diff_cleanupSemanticLossless(diffs);
     assertEquals("diff_cleanupSemanticLossless: Null case.", diffList(), diffs);
 
@@ -290,7 +289,7 @@ public class diff_match_patch_test {
 
   public static void testDiffCleanupSemantic() {
     // Cleanup semantically trivial equalities.
-    LinkedList<Diff> diffs = diffList();
+    List<Diff> diffs = diffList();
     dmp.diff_cleanupSemantic(diffs);
     assertEquals("diff_cleanupSemantic: Null case.", diffList(), diffs);
 
@@ -338,7 +337,7 @@ public class diff_match_patch_test {
   public static void testDiffCleanupEfficiency() {
     // Cleanup operationally trivial equalities.
     dmp.Diff_EditCost = 4;
-    LinkedList<Diff> diffs = diffList();
+    List<Diff> diffs = diffList();
     dmp.diff_cleanupEfficiency(diffs);
     assertEquals("diff_cleanupEfficiency: Null case.", diffList(), diffs);
 
@@ -367,20 +366,20 @@ public class diff_match_patch_test {
 
   public static void testDiffPrettyHtml() {
     // Pretty print.
-    LinkedList<Diff> diffs = diffList(new Diff(EQUAL, "a\n"), new Diff(DELETE, "<B>b</B>"), new Diff(INSERT, "c&d"));
+    List<Diff> diffs = diffList(new Diff(EQUAL, "a\n"), new Diff(DELETE, "<B>b</B>"), new Diff(INSERT, "c&d"));
     assertEquals("diff_prettyHtml:", "<span>a&para;<br></span><del style=\"background:#ffe6e6;\">&lt;B&gt;b&lt;/B&gt;</del><ins style=\"background:#e6ffe6;\">c&amp;d</ins>", dmp.diff_prettyHtml(diffs));
   }
 
   public static void testDiffText() {
     // Compute the source and destination texts.
-    LinkedList<Diff> diffs = diffList(new Diff(EQUAL, "jump"), new Diff(DELETE, "s"), new Diff(INSERT, "ed"), new Diff(EQUAL, " over "), new Diff(DELETE, "the"), new Diff(INSERT, "a"), new Diff(EQUAL, " lazy"));
+    List<Diff> diffs = diffList(new Diff(EQUAL, "jump"), new Diff(DELETE, "s"), new Diff(INSERT, "ed"), new Diff(EQUAL, " over "), new Diff(DELETE, "the"), new Diff(INSERT, "a"), new Diff(EQUAL, " lazy"));
     assertEquals("diff_text1:", "jumps over the lazy", dmp.diff_text1(diffs));
     assertEquals("diff_text2:", "jumped over a lazy", dmp.diff_text2(diffs));
   }
 
   public static void testDiffDelta() {
     // Convert a diff into delta string.
-    LinkedList<Diff> diffs = diffList(new Diff(EQUAL, "jump"), new Diff(DELETE, "s"), new Diff(INSERT, "ed"), new Diff(EQUAL, " over "), new Diff(DELETE, "the"), new Diff(INSERT, "a"), new Diff(EQUAL, " lazy"), new Diff(INSERT, "old dog"));
+    List<Diff> diffs = diffList(new Diff(EQUAL, "jump"), new Diff(DELETE, "s"), new Diff(INSERT, "ed"), new Diff(EQUAL, " over "), new Diff(DELETE, "the"), new Diff(INSERT, "a"), new Diff(EQUAL, " lazy"), new Diff(INSERT, "old dog"));
     String text1 = dmp.diff_text1(diffs);
     assertEquals("diff_text1: Base text.", "jumps over the lazy", text1);
 
@@ -450,7 +449,7 @@ public class diff_match_patch_test {
 
   public static void testDiffXIndex() {
     // Translate a location in text1 to text2.
-    LinkedList<Diff> diffs = diffList(new Diff(DELETE, "a"), new Diff(INSERT, "1234"), new Diff(EQUAL, "xyz"));
+    List<Diff> diffs = diffList(new Diff(DELETE, "a"), new Diff(INSERT, "1234"), new Diff(EQUAL, "xyz"));
     assertEquals("diff_xIndex: Translation on equality.", 5, dmp.diff_xIndex(diffs, 2));
 
     diffs = diffList(new Diff(EQUAL, "a"), new Diff(DELETE, "1234"), new Diff(EQUAL, "xyz"));
@@ -458,7 +457,7 @@ public class diff_match_patch_test {
   }
 
   public static void testDiffLevenshtein() {
-    LinkedList<Diff> diffs = diffList(new Diff(DELETE, "abc"), new Diff(INSERT, "1234"), new Diff(EQUAL, "xyz"));
+    List<Diff> diffs = diffList(new Diff(DELETE, "abc"), new Diff(INSERT, "1234"), new Diff(EQUAL, "xyz"));
     assertEquals("diff_levenshtein: Levenshtein with trailing equality.", 4, dmp.diff_levenshtein(diffs));
 
     diffs = diffList(new Diff(EQUAL, "xyz"), new Diff(DELETE, "abc"), new Diff(INSERT, "1234"));
@@ -475,7 +474,7 @@ public class diff_match_patch_test {
     // Since the resulting diff hasn't been normalized, it would be ok if
     // the insertion and deletion pairs are swapped.
     // If the order changes, tweak this test as required.
-    LinkedList<Diff> diffs = diffList(new Diff(DELETE, "c"), new Diff(INSERT, "m"), new Diff(EQUAL, "a"), new Diff(DELETE, "t"), new Diff(INSERT, "p"));
+    List<Diff> diffs = diffList(new Diff(DELETE, "c"), new Diff(INSERT, "m"), new Diff(EQUAL, "a"), new Diff(DELETE, "t"), new Diff(INSERT, "p"));
     assertEquals("diff_bisect: Normal.", diffs, dmp.diff_bisect(a, b, Long.MAX_VALUE));
 
     // Timeout.
@@ -485,7 +484,7 @@ public class diff_match_patch_test {
 
   public static void testDiffMain() {
     // Perform a trivial diff.
-    LinkedList<Diff> diffs = diffList();
+    List<Diff> diffs = diffList();
     assertEquals("diff_main: Null case.", diffs, dmp.diff_main("", "", false));
 
     diffs = diffList(new Diff(EQUAL, "abc"));
@@ -729,7 +728,7 @@ public class diff_match_patch_test {
 
   @SuppressWarnings("deprecation")
   public static void testPatchMake() {
-    LinkedList<Patch> patches;
+    List<Patch> patches;
     patches = dmp.patch_make("", "");
     assertEquals("patch_make: Null case.", "", dmp.patch_toText(patches));
 
@@ -744,7 +743,7 @@ public class diff_match_patch_test {
     patches = dmp.patch_make(text1, text2);
     assertEquals("patch_make: Text1+Text2 inputs.", expectedPatch, dmp.patch_toText(patches));
 
-    LinkedList<Diff> diffs = dmp.diff_main(text1, text2, false);
+    List<Diff> diffs = dmp.diff_main(text1, text2, false);
     patches = dmp.patch_make(diffs);
     assertEquals("patch_make: Diff input.", expectedPatch, dmp.patch_toText(patches));
 
@@ -780,7 +779,7 @@ public class diff_match_patch_test {
 
   public static void testPatchSplitMax() {
     // Assumes that Match_MaxBits is 32.
-    LinkedList<Patch> patches;
+    List<Patch> patches;
     patches = dmp.patch_make("abcdefghijklmnopqrstuvwxyz01234567890", "XabXcdXefXghXijXklXmnXopXqrXstXuvXwxXyzX01X23X45X67X89X0");
     dmp.patch_splitMax(patches);
     assertEquals("patch_splitMax: #1.", "@@ -1,32 +1,46 @@\n+X\n ab\n+X\n cd\n+X\n ef\n+X\n gh\n+X\n ij\n+X\n kl\n+X\n mn\n+X\n op\n+X\n qr\n+X\n st\n+X\n uv\n+X\n wx\n+X\n yz\n+X\n 012345\n@@ -25,13 +39,18 @@\n zX01\n+X\n 23\n+X\n 45\n+X\n 67\n+X\n 89\n+X\n 0\n", dmp.patch_toText(patches));
@@ -800,7 +799,7 @@ public class diff_match_patch_test {
   }
 
   public static void testPatchAddPadding() {
-    LinkedList<Patch> patches;
+    List<Patch> patches;
     patches = dmp.patch_make("", "test");
     assertEquals("patch_addPadding: Both edges full.", "@@ -0,0 +1,4 @@\n+test\n", dmp.patch_toText(patches));
     dmp.patch_addPadding(patches);
@@ -821,7 +820,7 @@ public class diff_match_patch_test {
     dmp.Match_Distance = 1000;
     dmp.Match_Threshold = 0.5f;
     dmp.Patch_DeleteThreshold = 0.5f;
-    LinkedList<Patch> patches;
+    List<Patch> patches;
     patches = dmp.patch_make("", "");
     Object[] results = dmp.patch_apply(patches, "Hello world.");
     boolean[] boolArray = (boolean[]) results[1];
@@ -941,7 +940,7 @@ public class diff_match_patch_test {
   }
 
   // Construct the two texts which made up the diff originally.
-  private static String[] diff_rebuildtexts(LinkedList<Diff> diffs) {
+  private static String[] diff_rebuildtexts(List<Diff> diffs) {
     String[] text = {"", ""};
     for (Diff myDiff : diffs) {
       if (myDiff.operation != diff_match_patch.Operation.INSERT) {
@@ -955,8 +954,8 @@ public class diff_match_patch_test {
   }
 
   // Private function for quickly building lists of diffs.
-  private static LinkedList<Diff> diffList(Diff... diffs) {
-      return new LinkedList<Diff>(Arrays.asList(diffs));
+  private static List<Diff> diffList(Diff... diffs) {
+      return new ArrayList<>(Arrays.asList(diffs));
   }
 
   public static void main(String args[]) {
