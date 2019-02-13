@@ -652,7 +652,7 @@ public class diff_match_patch_test {
 
     // Test null inputs.
     try {
-      dmp.match_main(null, null, 0);
+      dmp.match_main((String)null, null, 0);
       fail("match_main: Null inputs.");
     } catch (IllegalArgumentException ex) {
       // Error expected.
