@@ -2073,10 +2073,10 @@ public class diff_match_patch {
       if (text1.length() > this.Match_MaxBits) {
         // patch_splitMax will only provide an oversized pattern in the case of
         // a monster delete.
-        start_loc = match_main(sb.toString(),
+        start_loc = match_main(sb,
             text1.substring(0, this.Match_MaxBits), expected_loc);
         if (start_loc != -1) {
-          end_loc = match_main(sb.toString(),
+          end_loc = match_main(sb,
               text1.substring(text1.length() - this.Match_MaxBits),
               expected_loc + text1.length() - this.Match_MaxBits);
           if (end_loc == -1 || start_loc >= end_loc) {
@@ -2085,7 +2085,7 @@ public class diff_match_patch {
           }
         }
       } else {
-        start_loc = match_main(sb.toString(), text1, expected_loc);
+        start_loc = match_main(sb, text1, expected_loc);
       }
       if (start_loc == -1) {
         // No match found.  :(
