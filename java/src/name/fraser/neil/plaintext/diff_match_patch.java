@@ -2043,18 +2043,18 @@ public class diff_match_patch {
    * @return Two element Object array, containing the new text and an array of
    *      boolean values.
    */
-  public Object[] patch_apply(LinkedList<Patch> patches, String oritext) {
+  public Object[] patch_apply(LinkedList<Patch> patches, String text) {
     if (patches.isEmpty()) {
       return new Object[]{text, new boolean[0]};
     }
 
-    StringBuilder text = new StringBuilder(oritext);
+    StringBuilder sb = new StringBuilder(text);
     // Deep copy the patches so that no changes are made to originals.
     patches = patch_deepCopy(patches);
 
     String nullPadding = patch_addPadding(patches);
-    text.insert(0, nullPadding);
-    text.append(nullPadding);
+    sb.insert(0, nullPadding);
+    sb.append(nullPadding);
     // text = nullPadding + text + nullPadding;
     patch_splitMax(patches);
 
@@ -2073,10 +2073,10 @@ public class diff_match_patch {
       if (text1.length() > this.Match_MaxBits) {
         // patch_splitMax will only provide an oversized pattern in the case of
         // a monster delete.
-        start_loc = match_main(text.toString(),
+        start_loc = match_main(sb.toString(),
             text1.substring(0, this.Match_MaxBits), expected_loc);
         if (start_loc != -1) {
-          end_loc = match_main(text.toString(),
+          end_loc = match_main(sb.toString(),
               text1.substring(text1.length() - this.Match_MaxBits),
               expected_loc + text1.length() - this.Match_MaxBits);
           if (end_loc == -1 || start_loc >= end_loc) {
@@ -2085,7 +2085,7 @@ public class diff_match_patch {
           }
         }
       } else {
-        start_loc = match_main(text.toString(), text1, expected_loc);
+        start_loc = match_main(sb.toString(), text1, expected_loc);
       }
       if (start_loc == -1) {
         // No match found.  :(
@@ -2098,15 +2098,15 @@ public class diff_match_patch {
         delta = start_loc - expected_loc;
         String text2;
         if (end_loc == -1) {
-          text2 = text.substring(start_loc,
-              Math.min(start_loc + text1.length(), text.length()));
+          text2 = sb.substring(start_loc,
+              Math.min(start_loc + text1.length(), sb.length()));
         } else {
-          text2 = text.substring(start_loc,
-              Math.min(end_loc + this.Match_MaxBits, text.length()));
+          text2 = sb.substring(start_loc,
+              Math.min(end_loc + this.Match_MaxBits, sb.length()));
         }
         if (text1.equals(text2)) {
           // Perfect match, just shove the replacement text in.
-          text.replace(start_loc, start_loc + text1.length(), diff_text2(aPatch.diffs));
+          sb.replace(start_loc, start_loc + text1.length(), diff_text2(aPatch.diffs));
           // text = text.substring(0, start_loc) + diff_text2(aPatch.diffs)
           //     + text.substring(start_loc + text1.length());
         } else {
@@ -2126,12 +2126,12 @@ public class diff_match_patch {
                 int index2 = diff_xIndex(diffs, index1);
                 if (aDiff.operation == Operation.INSERT) {
                   // Insertion
-                  text.insert(start_loc + index2, aDiff.text);
+                  sb.insert(start_loc + index2, aDiff.text);
                   // text = text.substring(0, start_loc + index2) + aDiff.text
                   //     + text.substring(start_loc + index2);
                 } else if (aDiff.operation == Operation.DELETE) {
                   // Deletion
-                  text.delete(
+                  sb.delete(
                       start_loc + index2,
                       start_loc + diff_xIndex(diffs, index1 + aDiff.text.length()));
                   // text = text.substring(0, start_loc + index2)
@@ -2149,7 +2149,7 @@ public class diff_match_patch {
       x++;
     }
     // Strip the padding off.
-    String textRet = text.substring(nullPadding.length(), text.length() - nullPadding.length());
+    String textRet = sb.substring(nullPadding.length(), sb.length() - nullPadding.length());
     // text = text.substring(nullPadding.length(), text.length()
     //     - nullPadding.length());
     return new Object[]{textRet, results};
