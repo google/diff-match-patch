@@ -16,10 +16,6 @@
  * limitations under the License.
  */
 
-// Can't import DiffMatchPatch library since the private functions would be
-// unavailable.  Instead, import all the source files.
-import 'dart:collection';
-import 'dart:math';
 import '../DiffMatchPatch.dart';
 
 // Expect class disappeared from Dart unexpectedly.  Here's a minimal shim.
@@ -43,7 +39,7 @@ class Expect {
   static void throws(void f(), String msg) {
     try {
       f();
-    } catch (e, s) {
+    } catch (e) {
       return;
     }
     throw new Exception('Expect.throws($msg) fails');

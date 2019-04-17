@@ -52,6 +52,19 @@ class Diff {
    * [other] is another Diff to compare against.
    * Returns true or false.
    */
-  bool operator ==(Diff other) =>
-      operation == other.operation && text == other.text;
+  @override
+  bool operator ==(Object other) =>
+  	      identical(this, other) ||
+          other is Diff &&
+              runtimeType == other.runtimeType &&
+              operation == other.operation &&
+              text == other.text;
+
+  /**
+   * Generate a uniquely identifiable hashcode for this Diff.
+   * Returns numeric hashcode.
+   */
+  @override
+  int get hashCode =>
+      operation.hashCode ^ text.hashCode;
 }

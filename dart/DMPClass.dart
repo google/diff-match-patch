@@ -1401,7 +1401,7 @@ class DiffMatchPatch {
           param = param.replaceAll('+', '%2B');
           try {
             param = Uri.decodeFull(param);
-          } on ArgumentError catch (e) {
+          } on ArgumentError {
             // Malformed URI sequence.
             throw new ArgumentError('Illegal escape in diff_fromDelta: $param');
           }
@@ -1413,7 +1413,7 @@ class DiffMatchPatch {
           int n;
           try {
             n = int.parse(param);
-          } on FormatException catch (e) {
+          } on FormatException {
             throw new ArgumentError('Invalid number in diff_fromDelta: $param');
           }
           if (n < 0) {
@@ -1423,7 +1423,7 @@ class DiffMatchPatch {
           String text;
           try {
             text = text1.substring(pointer, pointer += n);
-          } on RangeError catch (e) {
+          } on RangeError {
             throw new ArgumentError('Delta length ($pointer)'
                 ' larger than source text length (${text1.length}).');
           }
@@ -2163,7 +2163,7 @@ class DiffMatchPatch {
           String line;
           try {
             line = Uri.decodeFull(text[textPointer].substring(1));
-          } on ArgumentError catch (e) {
+          } on ArgumentError {
             // Malformed URI sequence.
             throw new ArgumentError('Illegal escape in patch_fromText: $line');
           }
