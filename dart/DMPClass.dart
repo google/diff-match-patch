@@ -409,6 +409,13 @@ class DiffMatchPatch {
   }
 
   /**
+   * Hack to allow unit tests to call private method.  Do not use.
+   */
+  List<Diff> test_diff_bisect(String text1, String text2, DateTime deadline) {
+    return _diff_bisect(text1, text2, deadline);
+  }
+
+  /**
    * Given the location of the 'middle snake', split the diff in two parts
    * and recurse.
    * [text1] is the old string to be diffed.
@@ -456,6 +463,13 @@ class DiffMatchPatch {
     String chars1 = _diff_linesToCharsMunge(text1, lineArray, lineHash, 40000);
     String chars2 = _diff_linesToCharsMunge(text2, lineArray, lineHash, 65535);
     return {'chars1': chars1, 'chars2': chars2, 'lineArray': lineArray};
+  }
+
+  /**
+   * Hack to allow unit tests to call private method.  Do not use.
+   */
+  Map<String, dynamic> test_diff_linesToChars(String text1, String text2) {
+    return _diff_linesToChars(text1, text2);
   }
 
   /**
@@ -518,6 +532,13 @@ class DiffMatchPatch {
       diff.text = text.toString();
       text.clear();
     }
+  }
+
+  /**
+   * Hack to allow unit tests to call private method.  Do not use.
+   */
+  void test_diff_charsToLines(List<Diff> diffs, List<String> lineArray) {
+     _diff_charsToLines(diffs, lineArray);
   }
 
   /**
@@ -608,6 +629,13 @@ class DiffMatchPatch {
   }
 
   /**
+   * Hack to allow unit tests to call private method.  Do not use.
+   */
+  int test_diff_commonOverlap(String text1, String text2) {
+    return _diff_commonOverlap(text1, text2);
+  }
+
+  /**
    * Do the two texts share a substring which is at least half the length of
    * the longer text?
    * This speedup can produce non-minimal diffs.
@@ -653,6 +681,13 @@ class DiffMatchPatch {
     } else {
       return [hm[2], hm[3], hm[0], hm[1], hm[4]];
     }
+  }
+
+  /**
+   * Hack to allow unit tests to call private method.  Do not use.
+   */
+  List<String> test_diff_halfMatch(String text1, String text2) {
+    return _diff_halfMatch(text1, text2);
   }
 
   /**
@@ -935,6 +970,13 @@ class DiffMatchPatch {
       }
       pointer++;
     }
+  }
+
+  /**
+   * Hack to allow unit tests to call private method.  Do not use.
+   */
+  void test_diff_cleanupSemanticLossless(List<Diff> diffs) {
+    _diff_cleanupSemanticLossless(diffs);
   }
 
   // Define some regex patterns for matching boundaries.
@@ -1541,6 +1583,13 @@ class DiffMatchPatch {
   }
 
   /**
+   * Hack to allow unit tests to call private method.  Do not use.
+   */
+  int test_match_bitap(String text, String pattern, int loc) {
+    return _match_bitap(text, pattern, loc);
+  }
+
+  /**
    * Compute and return the score for a match with e errors and x location.
    * [e] is the number of errors in match.
    * [x] is the location of match.
@@ -1572,6 +1621,13 @@ class DiffMatchPatch {
       s[pattern[i]] = s[pattern[i]] | (1 << (pattern.length - i - 1));
     }
     return s;
+  }
+
+  /**
+   * Hack to allow unit tests to call private method.  Do not use.
+   */
+  Map<String, int> test_match_alphabet(String pattern) {
+    return _match_alphabet(pattern);
   }
 
   //  PATCH FUNCTIONS
@@ -1618,6 +1674,13 @@ class DiffMatchPatch {
     // Extend the lengths.
     patch.length1 += prefix.length + suffix.length;
     patch.length2 += prefix.length + suffix.length;
+  }
+
+  /**
+   * Hack to allow unit tests to call private method.  Do not use.
+   */
+  void test_patch_addContext(Patch patch, String text) {
+    _patch_addContext(patch, text);
   }
 
   /**
