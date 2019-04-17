@@ -2,7 +2,7 @@ import 'dart:html';
 import '../DiffMatchPatch.dart';
 
 // Compile with:
-// dart2js --out=Speedtest.dart.js Speedtest.dart
+// dart2js -O4 --out=Speedtest.dart.js Speedtest.dart
 
 void launch(Event e) {
   HtmlElement input1 = document.getElementById('text1');
