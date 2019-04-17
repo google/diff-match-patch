@@ -1738,6 +1738,9 @@
     setInnerHtml$1$x: function(receiver, a0) {
       return J.getInterceptor$x(receiver).setInnerHtml$1(receiver, a0);
     },
+    setInnerHtml$2$validator$x: function(receiver, a0, a1) {
+      return J.getInterceptor$x(receiver).setInnerHtml$2$validator(receiver, a0, a1);
+    },
     substring$2$s: function(receiver, a0, a1) {
       return J.getInterceptor$s(receiver).substring$2(receiver, a0, a1);
     },
@@ -2401,7 +2404,7 @@
       d = dmp.diff_main$3(text1, text2, false);
       text2 = Date.now();
       ds = dmp.diff_prettyHtml$1(d);
-      J.setInnerHtml$1$x(t1.getElementById("outputdiv"), ds + "<BR>Time: " + P.Duration$(0, text2 - input2).toString$0(0) + " (h:mm:ss.mmm)");
+      J.setInnerHtml$2$validator$x(t1.getElementById("outputdiv"), ds + "<BR>Time: " + P.Duration$(0, text2 - input2).toString$0(0) + " (h:mm:ss.mmm)", new O.TrustedNodeValidator());
     },
     main: function() {
       var t1, t2;
@@ -2410,6 +2413,8 @@
       t2.toString;
       J._addEventListener$3$x(t2, "click", H.functionTypeCheck(O.Speedtest__launch$closure(), {func: 1, args: [W.Event]}), null);
       J.setInnerHtml$1$x(t1.getElementById("outputdiv"), "");
+    },
+    TrustedNodeValidator: function TrustedNodeValidator() {
     }
   };
   var holders = [C, H, J, P, W, M, O];
@@ -3649,16 +3654,18 @@
     createFragment$3$treeSanitizer$validator: function(receiver, html, treeSanitizer, validator) {
       var t1, t2, contextElement, fragment;
       if (treeSanitizer == null) {
-        t1 = $.Element__defaultValidator;
-        if (t1 == null) {
-          t1 = H.setRuntimeTypeInfo([], [W.NodeValidator]);
-          t2 = new W.NodeValidatorBuilder(t1);
-          C.JSArray_methods.add$1(t1, W._Html5NodeValidator$(null));
-          C.JSArray_methods.add$1(t1, W._TemplatingNodeValidator$());
-          $.Element__defaultValidator = t2;
-          validator = t2;
-        } else
-          validator = t1;
+        if (validator == null) {
+          t1 = $.Element__defaultValidator;
+          if (t1 == null) {
+            t1 = H.setRuntimeTypeInfo([], [W.NodeValidator]);
+            t2 = new W.NodeValidatorBuilder(t1);
+            C.JSArray_methods.add$1(t1, W._Html5NodeValidator$(null));
+            C.JSArray_methods.add$1(t1, W._TemplatingNodeValidator$());
+            $.Element__defaultValidator = t2;
+            validator = t2;
+          } else
+            validator = t1;
+        }
         t1 = $.Element__defaultSanitizer;
         if (t1 == null) {
           t1 = new W._ValidatingTreeSanitizer(validator);
@@ -3668,7 +3675,8 @@
           t1.validator = validator;
           treeSanitizer = t1;
         }
-      }
+      } else if (validator != null)
+        throw H.wrapException(P.ArgumentError$("validator can only be passed if treeSanitizer is null"));
       if ($.Element__parseDocument == null) {
         t1 = document;
         t2 = t1.implementation.createHTMLDocument("");
@@ -3710,9 +3718,12 @@
     createFragment$2$treeSanitizer: function($receiver, html, treeSanitizer) {
       return this.createFragment$3$treeSanitizer$validator($receiver, html, treeSanitizer, null);
     },
-    setInnerHtml$1: function(receiver, html) {
+    setInnerHtml$2$validator: function(receiver, html, validator) {
       receiver.textContent = null;
-      receiver.appendChild(this.createFragment$3$treeSanitizer$validator(receiver, html, null, null));
+      receiver.appendChild(this.createFragment$3$treeSanitizer$validator(receiver, html, null, validator));
+    },
+    setInnerHtml$1: function($receiver, html) {
+      return this.setInnerHtml$2$validator($receiver, html, null);
     },
     $isElement: 1,
     get$tagName: function(receiver) {
@@ -3887,11 +3898,14 @@
     }
   };
   W.TemplateElement.prototype = {
-    setInnerHtml$1: function(receiver, html) {
+    setInnerHtml$2$validator: function(receiver, html, validator) {
       var fragment;
       receiver.textContent = null;
-      fragment = this.createFragment$3$treeSanitizer$validator(receiver, html, null, null);
+      fragment = this.createFragment$3$treeSanitizer$validator(receiver, html, null, validator);
       receiver.content.appendChild(fragment);
+    },
+    setInnerHtml$1: function($receiver, html) {
+      return this.setInnerHtml$2$validator($receiver, html, null);
     },
     $isTemplateElement: 1
   };
@@ -4284,11 +4298,14 @@
   P.SvgElement.prototype = {
     createFragment$3$treeSanitizer$validator: function(receiver, svg, treeSanitizer, validator) {
       var t1, html, t2, fragment, svgFragment, root;
-      t1 = H.setRuntimeTypeInfo([], [W.NodeValidator]);
-      C.JSArray_methods.add$1(t1, W._Html5NodeValidator$(null));
-      C.JSArray_methods.add$1(t1, W._TemplatingNodeValidator$());
-      C.JSArray_methods.add$1(t1, new W._SvgNodeValidator());
-      treeSanitizer = new W._ValidatingTreeSanitizer(new W.NodeValidatorBuilder(t1));
+      if (validator == null) {
+        t1 = H.setRuntimeTypeInfo([], [W.NodeValidator]);
+        validator = new W.NodeValidatorBuilder(t1);
+        C.JSArray_methods.add$1(t1, W._Html5NodeValidator$(null));
+        C.JSArray_methods.add$1(t1, W._TemplatingNodeValidator$());
+        C.JSArray_methods.add$1(t1, new W._SvgNodeValidator());
+      }
+      treeSanitizer = new W._ValidatingTreeSanitizer(validator);
       html = '<svg version="1.1">' + svg + "</svg>";
       t1 = document;
       t2 = t1.body;
@@ -4861,6 +4878,15 @@
       return this.operation === other.operation && this.text === other.text;
     }
   };
+  O.TrustedNodeValidator.prototype = {
+    allowsElement$1: function(element) {
+      return true;
+    },
+    allowsAttribute$3: function(element, attributeName, value) {
+      return true;
+    },
+    $isNodeValidator: 1
+  };
   (function aliases() {
     var _ = J.Interceptor.prototype;
     _.super$Interceptor$toString = _.toString$0;
@@ -4885,7 +4911,7 @@
       _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
     _inherit(P.Object, null);
-    _inheritMany(P.Object, [H.JS_CONST, J.Interceptor, J.ArrayIterator, P.Iterable, H.ListIterator, P.Iterator, H.TypeErrorDecoder, P.Error, H.Closure, P.MapMixin, H.LinkedHashMapCell, H.LinkedHashMapKeyIterator, H.JSSyntaxRegExp, P._SetBase, P._LinkedHashSetCell, P._LinkedHashSetIterator, P._ListBase_Object_ListMixin, P.ListMixin, P.bool, P.DateTime, P.num, P.Duration, P.StackOverflowError, P._Exception, P.FormatException, P.Function, P.List, P.Null, P.String, P.StringBuffer, W._Html5NodeValidator, W.ImmutableListMixin, W.NodeValidatorBuilder, W._SimpleNodeValidator, W._SvgNodeValidator, W.FixedSizeListIterator, W.NodeValidator, W._SameOriginUriPolicy, W._ValidatingTreeSanitizer, M.Operation, M.DiffMatchPatch, M.Diff]);
+    _inheritMany(P.Object, [H.JS_CONST, J.Interceptor, J.ArrayIterator, P.Iterable, H.ListIterator, P.Iterator, H.TypeErrorDecoder, P.Error, H.Closure, P.MapMixin, H.LinkedHashMapCell, H.LinkedHashMapKeyIterator, H.JSSyntaxRegExp, P._SetBase, P._LinkedHashSetCell, P._LinkedHashSetIterator, P._ListBase_Object_ListMixin, P.ListMixin, P.bool, P.DateTime, P.num, P.Duration, P.StackOverflowError, P._Exception, P.FormatException, P.Function, P.List, P.Null, P.String, P.StringBuffer, W._Html5NodeValidator, W.ImmutableListMixin, W.NodeValidatorBuilder, W._SimpleNodeValidator, W._SvgNodeValidator, W.FixedSizeListIterator, W.NodeValidator, W._SameOriginUriPolicy, W._ValidatingTreeSanitizer, M.Operation, M.DiffMatchPatch, M.Diff, O.TrustedNodeValidator]);
     _inheritMany(J.Interceptor, [J.JSBool, J.JSNull, J.JavaScriptObject, J.JSArray, J.JSNumber, J.JSString, W.EventTarget, W.DomException, W.Event, W.Location, W._NodeList_Interceptor_ListMixin, W.__NamedNodeMap_Interceptor_ListMixin]);
     _inheritMany(J.JavaScriptObject, [J.PlainJavaScriptObject, J.UnknownJavaScriptObject, J.JavaScriptFunction]);
     _inherit(J.JSUnmodifiableArray, J.JSArray);
