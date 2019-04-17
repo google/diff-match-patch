@@ -72,13 +72,13 @@ class Expect {
   static void mapEquals(Map expected, Map actual, String msg) {
     for (var k in actual.keys) {
       if (!expected.containsKey(k)) {
-        throw new Exception('Expect.mapEquals(unexpected key <$key> found '
+        throw new Exception('Expect.mapEquals(unexpected key <$k> found '
             'expected: <$expected>, actual: <$actual> $msg) fails');
       }
     }
     for (var k in expected.keys) {
       if (!actual.containsKey(k)) {
-        throw new Exception('Expect.mapEquals(key <$key> not found '
+        throw new Exception('Expect.mapEquals(key <$k> not found '
             'expected: <$expected>, actual: <$actual> $msg) fails');
       }
       Expect.equals(actual[k], expected[k], "$msg [Key: $k]");

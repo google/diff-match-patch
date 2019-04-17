@@ -1446,9 +1446,9 @@ class DiffMatchPatch {
    * Returns the best match index or -1.
    */
   int _match_bitap(String text, String pattern, int loc) {
-    Expect.isTrue(Match_MaxBits == 0 || pattern.length <= Match_MaxBits,
-        'Pattern too long for this application.');
-
+    if (Match_MaxBits != 0 && pattern.length > Match_MaxBits) {
+      throw new Exception('Pattern too long for this application.');
+    }
     // Initialise the alphabet.
     Map<String, int> s = _match_alphabet(pattern);
 
@@ -1967,7 +1967,7 @@ class DiffMatchPatch {
         }
         while (!bigpatch.diffs.isEmpty &&
             patch.length1 < patch_size - Patch_Margin) {
-          int diff_type = bigpatch.diffs[0].operation;
+          Operation diff_type = bigpatch.diffs[0].operation;
           String diff_text = bigpatch.diffs[0].text;
           if (diff_type == Operation.insert) {
             // Insertions are harmless.

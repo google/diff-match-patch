@@ -5,8 +5,10 @@ import '../DiffMatchPatch.dart';
 // dart2js --out=Speedtest.dart.js Speedtest.dart
 
 void launch(Event e) {
-  String text1 = document.query('#text1').value;
-  String text2 = document.query('#text2').value;
+  HtmlElement input1 = document.getElementById('text1');
+  HtmlElement input2 = document.getElementById('text2');
+  String text1 = input1.text;
+  String text2 = input2.text;
 
   DiffMatchPatch dmp = new DiffMatchPatch();
   dmp.Diff_Timeout = 0.0;
@@ -17,12 +19,11 @@ void launch(Event e) {
   DateTime date_end = new DateTime.now();
 
   var ds = dmp.diff_prettyHtml(d);
-  document.query('#outputdiv').setInnerHtml(
+  document.getElementById('outputdiv').setInnerHtml(
       '$ds<BR>Time: ${date_end.difference(date_start)} (h:mm:ss.mmm)');
 }
 
 void main() {
-  document.query('#launch').addEventListener('click', launch);
-  document.query('#outputdiv').setInnerHtml('');
+  document.getElementById('launch').addEventListener('click', launch);
+  document.getElementById('outputdiv').setInnerHtml('');
 }
-
