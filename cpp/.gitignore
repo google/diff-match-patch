@@ -1,0 +1,3 @@
+libdiff_match_patch.a
+objs/
+test_diff_match_patch
