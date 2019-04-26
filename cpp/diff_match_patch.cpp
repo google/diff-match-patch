@@ -536,29 +536,34 @@ std::vector<std::dmp_variant> diff_match_patch::diff_linesToChars(const std::wst
 std::wstring diff_match_patch::diff_linesToCharsMunge(const std::wstring &text,
                                                       std::wstring_list &lineArray,
                                                       std::unordered_map<std::wstring, int> &lineHash) {
-    int lineStart = 0;
-    int lineEnd = -1;
+    std::wstring::size_type lineStart = 0;
+    std::wstring::size_type lineEnd = 0;
     std::wstring line;
     std::wstring chars;
+
+    if (text.length() == 0)
+        return chars;
+
     // Walk the text, pulling out a substring for each line.
     // text.split('\n') would would temporarily double our memory footprint.
     // Modifying text would create many large strings to garbage collect.
-    while (lineEnd < text.length() - 1) {
+    do {
         lineEnd = text.find(L'\n', lineStart);
-        if (lineEnd == -1) {
+        if (lineEnd == std::wstring::npos) {
             lineEnd = text.length() - 1;
         }
         line = safeMid(text, lineStart, lineEnd + 1 - lineStart);
         lineStart = lineEnd + 1;
 
         if (lineHash.find(line) != lineHash.end()) {
-            chars += char(static_cast<unsigned short>(lineHash[line]));
+            chars += wchar_t(lineHash[line]);
         } else {
             lineArray.push_back(line);
             lineHash.emplace(line, lineArray.size() - 1);
-            chars += char(static_cast<unsigned short>(lineArray.size() - 1));
+            chars += wchar_t(lineArray.size() - 1);
         }
-    }
+    } while (lineEnd < text.length() - 1);
+
     return chars;
 }
 
@@ -570,7 +575,7 @@ void diff_match_patch::diff_charsToLines(std::vector<Diff> &diffs,
     while (i != diffs.end()) {
         Diff &diff = *i;
         std::wstring text;
-        for (int y = 0; y < diff.text.length(); y++) {
+        for (std::wstring::size_type y = 0; y < diff.text.length(); y++) {
             text += lineArray.at(static_cast<size_t>(diff.text[y]));
         }
         diff.text = text;
@@ -636,7 +641,7 @@ int diff_match_patch::diff_commonOverlap(const std::wstring &text1,
     int length = 1;
     while (true) {
         std::wstring pattern = text1_trunc.substr(text1_trunc.length() - length);
-        int found = text2_trunc.find(pattern);
+        auto found = text2_trunc.find(pattern);
         if (found == std::wstring::npos) {
             return best;
         }
@@ -698,11 +703,11 @@ std::wstring_list diff_match_patch::diff_halfMatchI(const std::wstring &longtext
                                                     int i) {
     // Start with a 1/4 length substring at position i as a seed.
     const std::wstring seed = safeMid(longtext, i, longtext.length() / 4);
-    int j = -1;
+    std::wstring::size_type j = 0;
     std::wstring best_common;
     std::wstring best_longtext_a, best_longtext_b;
     std::wstring best_shorttext_a, best_shorttext_b;
-    while ((j = shorttext.find(seed, j + 1)) != std::wstring::npos) {
+    while ((j = shorttext.find(seed, j)) != std::wstring::npos) {
         const int prefixLength = diff_commonPrefix(safeMid(longtext, i),
                                                    safeMid(shorttext, j));
         const int suffixLength = diff_commonSuffix(longtext.substr(0, i),
@@ -715,6 +720,8 @@ std::wstring_list diff_match_patch::diff_halfMatchI(const std::wstring &longtext
             best_shorttext_a = shorttext.substr(0, j - suffixLength);
             best_shorttext_b = safeMid(shorttext, j + prefixLength);
         }
+
+        j++;
     }
     if (best_common.length() * 2 >= longtext.length()) {
         std::wstring_list listRet;
@@ -1490,13 +1497,13 @@ int diff_match_patch::match_bitap(const std::wstring &text, const std::wstring &
     // Highest score beyond which we give up.
     double score_threshold = Match_Threshold;
     // Is there a nearby exact match? (speedup)
-    int best_loc = text.find(pattern, loc);
-    if (best_loc != -1) {
+    auto best_loc = text.find(pattern, loc);
+    if (best_loc != std::wstring::npos) {
         score_threshold = std::min(match_bitapScore(0, best_loc, loc, pattern),
                                    score_threshold);
         // What about in the other direction? (speedup)
         best_loc = text.find_last_of(pattern, loc + pattern.length());
-        if (best_loc != -1) {
+        if (best_loc != std::wstring::npos) {
             score_threshold = std::min(match_bitapScore(0, best_loc, loc, pattern),
                                        score_threshold);
         }
@@ -1563,7 +1570,7 @@ int diff_match_patch::match_bitap(const std::wstring &text, const std::wstring &
                     best_loc = j - 1;
                     if (best_loc > loc) {
                         // When passing loc, don't exceed our current distance from loc.
-                        start = std::max(1, 2 * loc - best_loc);
+                        start = std::max((std::wstring::size_type)1, 2 * loc - best_loc);
                     } else {
                         // Already passed loc, downhill from here on in.
                         break;

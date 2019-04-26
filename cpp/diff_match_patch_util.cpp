@@ -59,28 +59,49 @@ std::wstring_list split(const std::wstring & s, wchar_t delimiter, bool skip_emp
 std::wstring format(const wchar_t * f, ...)
 {
     va_list args;
-    va_start (args, f);
-    size_t len = std::vswprintf(NULL, 0, f, args);
-    va_end (args);
-    std::vector<wchar_t> vec(len + 1);
-    va_start (args, f);
-    std::vswprintf(&vec[0], len + 1, f, args);
-    va_end (args);
+
+    size_t len = 4096;
+    int result = -1;
+    std::vector<wchar_t> vec{};
+
+    do {
+        vec.resize(len);
+        va_start (args, f);
+        result = std::vswprintf(&vec[0], len - 1, f, args);
+
+        if (result > 0) {
+            vec[result] = 0;
+        } else {
+            len *= 2;
+        }
+        va_end (args);
+    } while(result < 0);
+
     return std::wstring{&vec[0]};
 }
 
 void debug_print(const wchar_t * f, ...)
 {
     va_list args;
-    va_start (args, f);
-    size_t len = std::vswprintf(NULL, 0, f, args);
-    va_end (args);
-    std::vector<wchar_t> vec(len + 1);
-    va_start (args, f);
-    std::vswprintf(&vec[0], len + 1, f, args);
-    va_end (args);
 
-    std::wcerr << std::wstring{&vec[0]};
+    size_t len = 4096;
+    int result = -1;
+    std::vector<wchar_t> vec{};
+
+    do {
+        vec.resize(len);
+        va_start (args, f);
+        result = std::vswprintf(&vec[0], len - 1, f, args);
+
+        if (result > 0) {
+            vec[result] = 0;
+        } else {
+            len *= 2;
+        }
+        va_end (args);
+    } while(result < 0);
+
+    std::wcerr << std::wstring{&vec[0]} << std::endl;
 }
 
 

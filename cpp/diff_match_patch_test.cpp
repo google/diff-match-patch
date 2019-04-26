@@ -23,7 +23,7 @@
 #include "diff_match_patch.h"
 #include "diff_match_patch_test.h"
 
-#define qPrintable(x) (x.c_str())
+#define qPrintable(x) (url_encode(x, " !~*'();/?:@&=+$,#-_.~").c_str())
 
 int main(int argc, char **argv) {
     diff_match_patch_test dmp_test;
@@ -147,8 +147,8 @@ void diff_match_patch_test::testDiffLinesToChars() {
     tmpVector.push_back(L"");
     tmpVector.push_back(L"alpha\n");
     tmpVector.push_back(L"beta\n");
-    tmpVarList.push_back(std::dmp_variant(std::wstring() + wchar_t(1) + wchar_t(2) + wchar_t(1)));  //((L"\u0001\u0002\u0001"));
-    tmpVarList.push_back(std::dmp_variant(std::wstring() + wchar_t(2) + wchar_t(1) + wchar_t(2)));  // ((L"\u0002\u0001\u0002"));
+    tmpVarList.push_back(std::dmp_variant(L"\u0001\u0002\u0001"));  //((L"\u0001\u0002\u0001"));
+    tmpVarList.push_back(std::dmp_variant(L"\u0002\u0001\u0002"));  // ((L"\u0002\u0001\u0002"));
     tmpVarList.push_back(std::dmp_variant(tmpVector));
     assertEquals(L"diff_linesToChars:", tmpVarList, dmp.diff_linesToChars(L"alpha\nbeta\nalpha\n", L"beta\nalpha\nbeta\n"));
 
@@ -159,7 +159,7 @@ void diff_match_patch_test::testDiffLinesToChars() {
     tmpVector.push_back(L"beta\r\n");
     tmpVector.push_back(L"\r\n");
     tmpVarList.push_back(std::dmp_variant(std::wstring(L"")));
-    tmpVarList.push_back(std::dmp_variant(std::wstring() + wchar_t(1) + wchar_t(2) + wchar_t(3) + wchar_t(3)));  // ((L"\u0001\u0002\u0003\u0003"));
+    tmpVarList.push_back(std::dmp_variant(L"\u0001\u0002\u0003\u0003"));  // ((L"\u0001\u0002\u0003\u0003"));
     tmpVarList.push_back(std::dmp_variant(tmpVector));
     assertEquals(L"diff_linesToChars:", tmpVarList, dmp.diff_linesToChars(L"", L"alpha\r\nbeta\r\n\r\n\r\n"));
 
@@ -168,8 +168,8 @@ void diff_match_patch_test::testDiffLinesToChars() {
     tmpVector.push_back(L"");
     tmpVector.push_back(L"a");
     tmpVector.push_back(L"b");
-    tmpVarList.push_back(std::dmp_variant(std::wstring() + wchar_t(1)));  // ((L"\u0001")));
-    tmpVarList.push_back(std::dmp_variant(std::wstring() + wchar_t(2)));  // ((L"\u0002"));
+    tmpVarList.push_back(std::dmp_variant(L"\u0001"));  // ((L"\u0001")));
+    tmpVarList.push_back(std::dmp_variant(L"\u0002"));  // ((L"\u0002"));
     tmpVarList.push_back(std::dmp_variant(tmpVector));
     assertEquals(L"diff_linesToChars:", tmpVarList, dmp.diff_linesToChars(L"a", L"b"));
 
@@ -186,11 +186,11 @@ void diff_match_patch_test::testDiffLinesToChars() {
     }
     assertEquals(L"diff_linesToChars: More than 256 (setup).", n, tmpVector.size());
     assertEquals(L"diff_linesToChars: More than 256 (setup).", n, chars.length());
-    tmpVector.push_back(L"");
+    tmpVector.insert(tmpVector.begin(), L"");
     tmpVarList.push_back(std::dmp_variant(chars));
     tmpVarList.push_back(std::dmp_variant(std::wstring(L"")));
     tmpVarList.push_back(std::dmp_variant(tmpVector));
-    assertEquals(L"diff_linesToChars: More than 256.", tmpVarList, dmp.diff_linesToChars(lines, L""));
+    assertEquals(L"1. diff_linesToChars: More than 256.", tmpVarList, dmp.diff_linesToChars(lines, L""));
 }
 
 void diff_match_patch_test::testDiffCharsToLines() {
@@ -201,8 +201,8 @@ void diff_match_patch_test::testDiffCharsToLines() {
 
     // Convert chars up to lines.
     std::vector<Diff> diffs;
-    diffs.push_back(Diff(EQUAL, std::wstring() + wchar_t(1) + wchar_t(2) + wchar_t(1)));  // (L"\u0001\u0002\u0001");
-    diffs.push_back(Diff(INSERT, std::wstring() + wchar_t(2) + wchar_t(1) + wchar_t(2)));  // (L"\u0002\u0001\u0002");
+    diffs.push_back(Diff(EQUAL, L"\u0001\u0002\u0001"));  // (L"\u0001\u0002\u0001");
+    diffs.push_back(Diff(INSERT, L"\u0002\u0001\u0002"));  // (L"\u0002\u0001\u0002");
     std::wstring_list tmpVector;
     tmpVector.push_back(L"");
     tmpVector.push_back(L"alpha\n");
@@ -223,10 +223,10 @@ void diff_match_patch_test::testDiffCharsToLines() {
     }
     assertEquals(L"diff_linesToChars: More than 256 (setup).", n, tmpVector.size());
     assertEquals(L"diff_linesToChars: More than 256 (setup).", n, chars.length());
-    tmpVector.push_back(L"");
+    tmpVector.insert(tmpVector.begin(), L"");
     diffs = diffList(Diff(DELETE, chars));
     dmp.diff_charsToLines(diffs, tmpVector);
-    assertEquals(L"diff_charsToLines: More than 256.", diffList(Diff(DELETE, lines)), diffs);
+    assertEquals(L"2. diff_charsToLines: More than 256.", diffList(Diff(DELETE, lines)), diffs);
 }
 
 void diff_match_patch_test::testDiffCleanupMerge() {
@@ -1001,6 +1001,7 @@ void diff_match_patch_test::assertEquals(const std::wstring &strCase, const std:
         for(std::dmp_variant q1: list1) {
             std::dmp_variant q2 = list2[i];
             if (q1 != q2) {
+                std::debug_print(L"variable %d not equal, (%ls)_____________ (%ls)", i, qPrintable(var_to_string(q1)), qPrintable(var_to_string(q2)));
                 fail = true;
                 break;
             }
