@@ -353,7 +353,7 @@ std::vector<Diff> diff_match_patch::diff_lineMode(std::wstring text1, std::wstri
             // Upon reaching an equality, check for prior redundancies.
             if (count_delete >= 1 && count_insert >= 1) {
                 // Delete the offending records and add the merged ones.
-                std::prev(pointer);
+                pointer = std::prev(pointer);
                 for (int j = 0; j < count_delete + count_insert; j++) {
                     diffs.erase(pointer - 1);
                 }
@@ -889,8 +889,12 @@ void diff_match_patch::diff_cleanupSemantic(std::vector<Diff> &diffs) {
 
 namespace std {
 template<typename T>
-T * safe_next_element(std::vector<T> v, typename std::vector<T>::iterator & it) {
-    if (it != std::prev(v.end())) return &(*std::next(it));
+T * safe_next_element(const std::vector<T> & v, typename std::vector<T>::iterator & it) {
+    if (it != v.end()) {
+        T * p = &(*it);
+        it++;
+        return p;
+    }
 
     return nullptr;
 }
@@ -955,10 +959,8 @@ void diff_match_patch::diff_cleanupSemanticLossless(std::vector<Diff> &diffs) {
                     prevDiff->text = bestEquality1;
                 } else {
                     std::advance(pointer, -3);
-                    auto v = pointer + 1; //this diff
                     diffs.erase(pointer);
-                    pointer = v; //to this diff
-                    std::next(pointer);//pass next diff
+                    pointer = std::next(pointer);//pass next diff
                 }
                 thisDiff->text = bestEdit;
                 if (!bestEquality2.empty()) {
@@ -1084,16 +1086,15 @@ void diff_match_patch::diff_cleanupEfficiency(std::vector<Diff> &diffs) {
                 // printf("Splitting: '%s'\n", qPrintable(lastequality));
                 // Walk back to offending equality.
                 while (*thisDiff != equalities.front()) {
-                    thisDiff = &(*std::prev(pointer));
+                    pointer = std::prev(pointer);
+                    thisDiff = &(*pointer);
                 }
-                std::next(pointer);
 
                 // Replace equality with a delete.
                 *pointer = Diff(DELETE, lastequality);
                 // Insert a corresponding an insert.
                 diffs.insert(pointer, Diff(INSERT, lastequality));
                 thisDiff = &(*std::prev(pointer));
-                std::next(pointer);
 
                 equalities.pop_front();  // Throw away the equality we just deleted.
                 lastequality = std::wstring();
@@ -1159,26 +1160,22 @@ void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
             if (count_delete + count_insert > 1) {
                 bool both_types = count_delete != 0 && count_insert != 0;
                 // Delete the offending records.
-                std::prev(pointer);  // Reverse direction.
-                while (count_delete-- > 0) {
-                    diffs.erase(pointer - 1);
-                }
-                while (count_insert-- > 0) {
-                    diffs.erase(pointer - 1);
-                }
+                pointer = std::prev(pointer);//go back to thisDiff
+                pointer = diffs.erase(pointer - count_delete - count_insert, pointer);
+
                 if (both_types) {
                     // Factor out any common prefixies.
                     commonlength = diff_commonPrefix(text_insert, text_delete);
                     if (commonlength != 0) {
                         if (pointer != diffs.begin()) {
-                            thisDiff = &(*std::prev(pointer));
+                            thisDiff = &(*(pointer - 1));
                             if (thisDiff->operation != EQUAL) {
                                 throw "Previous diff should have been an equality.";
                             }
                             thisDiff->text += text_insert.substr(0, commonlength);
-                            std::next(pointer);
                         } else {
                             diffs.insert(pointer, Diff(EQUAL, text_insert.substr(0, commonlength)));
+                            pointer = std::next(pointer);
                         }
                         text_insert = safeMid(text_insert, commonlength);
                         text_delete = safeMid(text_delete, commonlength);
@@ -1186,32 +1183,32 @@ void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
                     // Factor out any common suffixies.
                     commonlength = diff_commonSuffix(text_insert, text_delete);
                     if (commonlength != 0) {
-                        thisDiff = &(*std::next(pointer));
+                        thisDiff = &(*pointer);
                         thisDiff->text = safeMid(text_insert, text_insert.length()
                                                  - commonlength) + thisDiff->text;
                         text_insert = text_insert.substr(0, text_insert.length()
                                                          - commonlength);
                         text_delete = text_delete.substr(0, text_delete.length()
                                                          - commonlength);
-                        std::prev(pointer);
                     }
                 }
                 // Insert the merged records.
                 if (!text_delete.empty()) {
                     diffs.insert(pointer, Diff(DELETE, text_delete));
+                    pointer = std::next(pointer);
                 }
                 if (!text_insert.empty()) {
                     diffs.insert(pointer, Diff(INSERT, text_insert));
+                    pointer = std::next(pointer);
                 }
                 // Step forward to the equality.
                 thisDiff = std::safe_next_element(diffs, pointer);
-
             } else if (prevEqual != NULL) {
                 // Merge this equality with the previous one.
                 prevEqual->text += thisDiff->text;
-                diffs.erase(pointer++);
-                thisDiff = &(*std::prev(pointer));
-                std::next(pointer);  // Forward direction
+                pointer = std::prev(pointer);//move back to thisDiff
+                pointer = diffs.erase(pointer);
+                thisDiff = prevEqual;
             }
             count_insert = 0;
             count_delete = 0;
@@ -1222,6 +1219,7 @@ void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
         }
         thisDiff = std::safe_next_element(diffs, pointer);
     }
+
     if (diffs.back().text.empty()) {
         diffs.erase(diffs.end() - 1);
     }
@@ -1251,7 +1249,8 @@ void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
                                                 - prevDiff->text.length());
                 nextDiff->text = prevDiff->text + nextDiff->text;
                 std::advance(pointer, -3);
-                diffs.erase(pointer++);  // Delete prevDiff.
+                pointer = diffs.erase(pointer);  // Delete prevDiff.
+                pointer = std::next(pointer);//Walk past thisDiff
                 thisDiff = std::safe_next_element(diffs, pointer);
                 nextDiff = std::safe_next_element(diffs, pointer);
                 changes = true;
@@ -1260,8 +1259,9 @@ void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
                 prevDiff->text += nextDiff->text;
                 thisDiff->text = safeMid(thisDiff->text, nextDiff->text.length())
                         + nextDiff->text;
-                diffs.erase(pointer++); // Delete nextDiff.
-                nextDiff = (pointer != diffs.end()) ? &(*pointer) : NULL;
+                pointer = std::prev(pointer);//back to next diff
+                pointer = diffs.erase(pointer); // Delete nextDiff.
+                nextDiff = std::safe_next_element(diffs, pointer);
                 changes = true;
             }
         }

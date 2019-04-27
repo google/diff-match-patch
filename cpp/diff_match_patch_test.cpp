@@ -190,7 +190,7 @@ void diff_match_patch_test::testDiffLinesToChars() {
     tmpVarList.push_back(std::dmp_variant(chars));
     tmpVarList.push_back(std::dmp_variant(std::wstring(L"")));
     tmpVarList.push_back(std::dmp_variant(tmpVector));
-    assertEquals(L"1. diff_linesToChars: More than 256.", tmpVarList, dmp.diff_linesToChars(lines, L""));
+    assertEquals(L"diff_linesToChars: More than 256.", tmpVarList, dmp.diff_linesToChars(lines, L""));
 }
 
 void diff_match_patch_test::testDiffCharsToLines() {
@@ -226,7 +226,7 @@ void diff_match_patch_test::testDiffCharsToLines() {
     tmpVector.insert(tmpVector.begin(), L"");
     diffs = diffList(Diff(DELETE, chars));
     dmp.diff_charsToLines(diffs, tmpVector);
-    assertEquals(L"2. diff_charsToLines: More than 256.", diffList(Diff(DELETE, lines)), diffs);
+    assertEquals(L"diff_charsToLines: More than 256.", diffList(Diff(DELETE, lines)), diffs);
 }
 
 void diff_match_patch_test::testDiffCleanupMerge() {
