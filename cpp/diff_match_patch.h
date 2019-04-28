@@ -105,7 +105,7 @@ public:
      */
     Patch();
     bool isNull() const;
-    std::wstring toString();
+    std::wstring toString() const;
 };
 
 

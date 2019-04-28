@@ -124,7 +124,7 @@ bool Patch::isNull() const {
  * Indices are printed as 1-based, not 0-based.
  * @return The GNU diff string
  */
-std::wstring Patch::toString() {
+std::wstring Patch::toString() const {
     std::wstring coords1, coords2;
     if (length1 == 0) {
         coords1 = std::to_wstring(start1) + std::wstring(L",0");
@@ -357,7 +357,7 @@ std::list<Diff> diff_match_patch::diff_lineMode(std::wstring text1, std::wstring
                 std::advance(p2, -1 * (count_delete + count_insert));
 
                 diffs.erase(p2, pointer);
-                for(Diff newDiff:
+                for(auto const & newDiff:
                             diff_main(text_delete, text_insert, false, deadline)) {
                     pointer = std::next(diffs.insert(pointer, newDiff));
                 }
@@ -1257,7 +1257,7 @@ int diff_match_patch::diff_xIndex(const std::list<Diff> &diffs, int loc) {
     int last_chars1 = 0;
     int last_chars2 = 0;
     Diff lastDiff;
-    for(Diff aDiff: diffs) {
+    for(const auto & aDiff: diffs) {
         if (aDiff.operation != INSERT) {
             // Equality or deletion.
             chars1 += aDiff.text.length();
@@ -1286,7 +1286,7 @@ int diff_match_patch::diff_xIndex(const std::list<Diff> &diffs, int loc) {
 std::wstring diff_match_patch::diff_prettyHtml(const std::list<Diff> &diffs) {
     std::wstring html;
     std::wstring text;
-    for(Diff aDiff : diffs) {
+    for(const auto & aDiff : diffs) {
         text = aDiff.text;
         std::replace_all(text, L"&", L"&amp;");
         std::replace_all(text, L"<", L"&lt;");
@@ -1312,7 +1312,7 @@ std::wstring diff_match_patch::diff_prettyHtml(const std::list<Diff> &diffs) {
 
 std::wstring diff_match_patch::diff_text1(const std::list<Diff> &diffs) {
     std::wstring text;
-    for(Diff aDiff: diffs) {
+    for(const auto & aDiff: diffs) {
         if (aDiff.operation != INSERT) {
             text += aDiff.text;
         }
@@ -1323,7 +1323,7 @@ std::wstring diff_match_patch::diff_text1(const std::list<Diff> &diffs) {
 
 std::wstring diff_match_patch::diff_text2(const std::list<Diff> &diffs) {
     std::wstring text;
-    for(Diff aDiff : diffs) {
+    for(const auto & aDiff : diffs) {
         if (aDiff.operation != DELETE) {
             text += aDiff.text;
         }
@@ -1336,7 +1336,7 @@ int diff_match_patch::diff_levenshtein(const std::list<Diff> &diffs) {
     int levenshtein = 0;
     int insertions = 0;
     int deletions = 0;
-    for(Diff aDiff : diffs) {
+    for(const auto & aDiff : diffs) {
         switch (aDiff.operation) {
         case INSERT:
             insertions += aDiff.text.length();
@@ -1391,7 +1391,7 @@ std::list<Diff> diff_match_patch::diff_fromDelta(const std::wstring &text1,
     std::list<Diff> diffs;
     int pointer = 0;  // Cursor in text1
     std::wstring_list tokens = std::split(delta, '\t');
-    for(std::wstring token: tokens) {
+    for(const auto & token: tokens) {
         if (token.empty()) {
             // Blank tokens are ok (from a trailing \t).
             continue;
@@ -1683,7 +1683,7 @@ std::list<Patch> diff_match_patch::patch_make(const std::wstring &text1,
     // context info.
     std::wstring prepatch_text = text1;
     std::wstring postpatch_text = text1;
-    for(Diff aDiff : diffs) {
+    for(const auto & aDiff : diffs) {
         if (patch.diffs.empty() && aDiff.operation != EQUAL) {
             // A new patch starts here.
             patch.start1 = char_count1;
@@ -1749,9 +1749,9 @@ std::list<Patch> diff_match_patch::patch_make(const std::wstring &text1,
 
 std::list<Patch> diff_match_patch::patch_deepCopy(std::list<Patch> &patches) {
     std::list<Patch> patchesCopy;
-    for(Patch aPatch: patches) {
+    for(const auto & aPatch: patches) {
         Patch patchCopy = Patch();
-        for(Diff aDiff: aPatch.diffs) {
+        for(const auto & aDiff: aPatch.diffs) {
             Diff diffCopy = Diff(aDiff.operation, aDiff.text);
             patchCopy.diffs.push_back(diffCopy);
         }
@@ -1786,7 +1786,7 @@ std::pair<std::wstring, std::vector<bool> > diff_match_patch::patch_apply(
     // has an effective expected position of 22.
     int delta = 0;
     std::vector<bool> results(patchesCopy.size());
-    for(Patch aPatch: patchesCopy) {
+    for(const auto & aPatch: patchesCopy) {
         int expected_loc = aPatch.start2 + delta;
         std::wstring text1 = diff_text1(aPatch.diffs);
         int start_loc;
@@ -1837,7 +1837,7 @@ std::pair<std::wstring, std::vector<bool> > diff_match_patch::patch_apply(
                 } else {
                     diff_cleanupSemanticLossless(diffs);
                     int index1 = 0;
-                    for(Diff aDiff: aPatch.diffs) {
+                    for(const auto & aDiff: aPatch.diffs) {
                         if (aDiff.operation != EQUAL) {
                             int index2 = diff_xIndex(diffs, index1);
                             if (aDiff.operation == INSERT) {
@@ -2030,7 +2030,7 @@ void diff_match_patch::patch_splitMax(std::list<Patch> &patches) {
 
 std::wstring diff_match_patch::patch_toText(const std::list<Patch> &patches) {
     std::wstring text;
-    for(Patch aPatch: patches) {
+    for(const auto & aPatch: patches) {
         text.append(aPatch.toString());
     }
     return text;

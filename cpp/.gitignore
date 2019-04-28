@@ -1,3 +1,4 @@
 libdiff_match_patch.a
 objs/
+.d/
 test_diff_match_patch
