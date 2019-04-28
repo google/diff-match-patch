@@ -146,7 +146,7 @@ std::wstring Patch::toString() {
     text = std::wstring(L"@@ -") + coords1 + std::wstring(L" +") + coords2
             + std::wstring(L" @@\n");
     // Escape the body of the patch with %xx notation.
-    for(Diff aDiff : diffs) {
+    for(const auto & aDiff : diffs) {
         switch (aDiff.operation) {
         case INSERT:
             text += std::wstring(L"+");
@@ -1468,12 +1468,12 @@ int diff_match_patch::match_bitap(const std::wstring &text, const std::wstring &
     // Highest score beyond which we give up.
     double score_threshold = Match_Threshold;
     // Is there a nearby exact match? (speedup)
-    auto best_loc = text.find(pattern, loc);
+    int best_loc = text.find(pattern, loc);
     if (best_loc != std::wstring::npos) {
         score_threshold = std::min(match_bitapScore(0, best_loc, loc, pattern),
                                    score_threshold);
         // What about in the other direction? (speedup)
-        best_loc = text.find_last_of(pattern, loc + pattern.length());
+        best_loc = text.rfind(pattern, loc + pattern.length());
         if (best_loc != std::wstring::npos) {
             score_threshold = std::min(match_bitapScore(0, best_loc, loc, pattern),
                                        score_threshold);
@@ -1541,7 +1541,10 @@ int diff_match_patch::match_bitap(const std::wstring &text, const std::wstring &
                     best_loc = j - 1;
                     if (best_loc > loc) {
                         // When passing loc, don't exceed our current distance from loc.
-                        start = std::max((std::wstring::size_type)1, 2 * loc - best_loc);
+                        if (2 * loc > best_loc)
+                            start = std::max(1, 2 * loc - best_loc);
+                        else
+                            start = 1;
                     } else {
                         // Already passed loc, downhill from here on in.
                         break;
@@ -1596,12 +1599,13 @@ void diff_match_patch::patch_addContext(Patch &patch, const std::wstring &text) 
     if (text.empty()) {
         return;
     }
+
     std::wstring pattern = safeMid(text, patch.start2, patch.length1);
     int padding = 0;
 
     // Look for the first and last matches of pattern in text.  If two different
     // matches are found, increase the pattern length.
-    while (text.find(pattern) != text.find_last_of(pattern)
+    while (text.find(pattern) != text.rfind(pattern)
            && pattern.length() < Match_MaxBits - Patch_Margin - Patch_Margin) {
         padding += Patch_Margin;
         pattern = safeMid(text, std::max(0, patch.start2 - padding),
@@ -1614,8 +1618,9 @@ void diff_match_patch::patch_addContext(Patch &patch, const std::wstring &text) 
     // Add the prefix.
     std::wstring prefix = safeMid(text, std::max(0, patch.start2 - padding),
                                   patch.start2 - std::max(0, patch.start2 - padding));
+
     if (!prefix.empty()) {
-        patch.diffs.insert(patch.diffs.begin(), Diff(EQUAL, prefix));
+        patch.diffs.push_front(Diff(EQUAL, prefix));
     }
     // Add the suffix.
     std::wstring suffix = safeMid(text, patch.start2 + patch.length1,
@@ -1870,9 +1875,7 @@ std::wstring diff_match_patch::patch_addPadding(std::list<Patch> &patches) {
     }
 
     // Bump all the patches forward.
-    auto pointer = patches.begin();
-    while (pointer != patches.end()) {
-        Patch &aPatch = *pointer;
+    for(auto & aPatch : patches) {
         aPatch.start1 += paddingLength;
         aPatch.start2 += paddingLength;
     }
@@ -1943,6 +1946,7 @@ void diff_match_patch::patch_splitMax(std::list<Patch> &patches) {
         pointer = patches.erase(pointer);
         start1 = bigpatch.start1;
         start2 = bigpatch.start2;
+
         precontext = L"";
         while (!bigpatch.diffs.empty()) {
             // Create one of several smaller patches.

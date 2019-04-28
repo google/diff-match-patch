@@ -714,6 +714,8 @@ void diff_match_patch_test::testPatchFromText() {
 
     assertEquals(L"patch_fromText: #4.", L"@@ -0,0 +1,3 @@\n+abc\n", dmp.patch_fromText(L"@@ -0,0 +1,3 @@\n+abc\n").begin()->toString());
 
+    assertEquals(L"patch_fromText: #5.", L"@@ -21,4 +21,10 @@\n-jump\n+somersault\n", dmp.patch_fromText(L"@@ -21,4 +21,10 @@\n-jump\n+somersault\n").front().toString());
+
     // Generates error.
     try {
         dmp.patch_fromText(L"Bad\nPatch\n");
@@ -736,7 +738,7 @@ void diff_match_patch_test::testPatchToText() {
 
 void diff_match_patch_test::testPatchAddContext() {
     dmp.Patch_Margin = 4;
-    Patch & p = dmp.patch_fromText(L"@@ -21,4 +21,10 @@\n-jump\n+somersault\n").front();
+    Patch p = dmp.patch_fromText(L"@@ -21,4 +21,10 @@\n-jump\n+somersault\n").front();
     dmp.patch_addContext(p, L"The quick brown fox jumps over the lazy dog.");
     assertEquals(L"patch_addContext: Simple case.", L"@@ -17,12 +17,18 @@\n fox \n-jump\n+somersault\n s ov\n", p.toString());
 

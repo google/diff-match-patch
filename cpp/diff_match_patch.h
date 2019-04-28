@@ -600,7 +600,7 @@ public:
      */
 private:
     static inline std::wstring safeMid(const std::wstring &str, int pos) {
-        return (pos == str.length()) ? std::wstring(L"") : str.substr(pos);
+        return safeMid(str, pos, -1);
     }
 
     /**
@@ -613,7 +613,24 @@ private:
      */
 private:
     static inline std::wstring safeMid(const std::wstring &str, int pos, int len) {
-        return (pos == str.length()) ? std::wstring(L"") : str.substr(pos, len);
+        if (str.empty() || pos >= str.length())
+            return std::wstring(L"");
+
+        if (len < 0)
+            len = str.length() - pos;
+
+        if (pos < 0) {
+            len += pos;
+            pos = 0;
+        }
+
+        if (len + pos > str.length())
+            len = str.length() - pos;
+
+        if (pos == 0 && len == str.length())
+            return str;
+
+        return str.substr(pos, len);
     }
 };
 
