@@ -65,8 +65,8 @@ private:
     void assertEquals(const std::wstring &strCase, int n1, int n2);
     void assertEquals(const std::wstring &strCase, const std::wstring &s1, const std::wstring &s2);
     void assertEquals(const std::wstring &strCase, const Diff &d1, const Diff &d2);
-    void assertEquals(const std::wstring &strCase, const std::vector<Diff> &list1, const std::vector<Diff> &list2);
-    void assertEquals(const std::wstring &strCase, const std::vector<std::dmp_variant> &list1, const std::vector<std::dmp_variant> &list2);
+    void assertEquals(const std::wstring &strCase, const std::list<Diff> &list1, const std::list<Diff> &list2);
+    void assertEquals(const std::wstring &strCase, const std::list<std::dmp_variant> &list1, const std::list<std::dmp_variant> &list2);
     void assertEquals(const std::wstring &strCase, const std::dmp_variant &var1, const std::dmp_variant &var2);
     void assertEquals(const std::wstring &strCase, const std::unordered_map<wchar_t, int> &m1, const std::unordered_map<wchar_t, int> &m2);
     void assertEquals(const std::wstring &strCase, const std::wstring_list &list1, const std::wstring_list &list2);
@@ -75,9 +75,9 @@ private:
     void assertEmpty(const std::wstring &strCase, const std::wstring_list &list);
 
     // Construct the two texts which made up the diff originally.
-    std::wstring_list diff_rebuildtexts(std::vector<Diff> diffs);
+    std::wstring_list diff_rebuildtexts(std::list<Diff> diffs);
     // Private function for quickly building lists of diffs.
-    std::vector<Diff> diffList(
+    std::list<Diff> diffList(
         // Diff(INSERT, NULL) is invalid and thus is used as the default argument.
         Diff d1 = Diff(INSERT, NULL), Diff d2 = Diff(INSERT, NULL),
         Diff d3 = Diff(INSERT, NULL), Diff d4 = Diff(INSERT, NULL),

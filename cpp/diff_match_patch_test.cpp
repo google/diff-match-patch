@@ -18,7 +18,7 @@
 
 // Code known to compile and run with Qt 4.3 through Qt 4.7.
 #include <string>
-#include <vector>
+#include <list>
 #include <unordered_map>
 #include "diff_match_patch.h"
 #include "diff_match_patch_test.h"
@@ -142,54 +142,54 @@ void diff_match_patch_test::testDiffHalfmatch() {
 
 void diff_match_patch_test::testDiffLinesToChars() {
     // Convert lines down to characters.
-    std::wstring_list tmpVector;
-    std::vector<std::dmp_variant> tmpVarList;
-    tmpVector.push_back(L"");
-    tmpVector.push_back(L"alpha\n");
-    tmpVector.push_back(L"beta\n");
+    std::wstring_list tmpList;
+    std::list<std::dmp_variant> tmpVarList;
+    tmpList.push_back(L"");
+    tmpList.push_back(L"alpha\n");
+    tmpList.push_back(L"beta\n");
     tmpVarList.push_back(std::dmp_variant(L"\u0001\u0002\u0001"));  //((L"\u0001\u0002\u0001"));
     tmpVarList.push_back(std::dmp_variant(L"\u0002\u0001\u0002"));  // ((L"\u0002\u0001\u0002"));
-    tmpVarList.push_back(std::dmp_variant(tmpVector));
+    tmpVarList.push_back(std::dmp_variant(tmpList));
     assertEquals(L"diff_linesToChars:", tmpVarList, dmp.diff_linesToChars(L"alpha\nbeta\nalpha\n", L"beta\nalpha\nbeta\n"));
 
-    tmpVector.clear();
+    tmpList.clear();
     tmpVarList.clear();
-    tmpVector.push_back(L"");
-    tmpVector.push_back(L"alpha\r\n");
-    tmpVector.push_back(L"beta\r\n");
-    tmpVector.push_back(L"\r\n");
+    tmpList.push_back(L"");
+    tmpList.push_back(L"alpha\r\n");
+    tmpList.push_back(L"beta\r\n");
+    tmpList.push_back(L"\r\n");
     tmpVarList.push_back(std::dmp_variant(std::wstring(L"")));
     tmpVarList.push_back(std::dmp_variant(L"\u0001\u0002\u0003\u0003"));  // ((L"\u0001\u0002\u0003\u0003"));
-    tmpVarList.push_back(std::dmp_variant(tmpVector));
+    tmpVarList.push_back(std::dmp_variant(tmpList));
     assertEquals(L"diff_linesToChars:", tmpVarList, dmp.diff_linesToChars(L"", L"alpha\r\nbeta\r\n\r\n\r\n"));
 
-    tmpVector.clear();
+    tmpList.clear();
     tmpVarList.clear();
-    tmpVector.push_back(L"");
-    tmpVector.push_back(L"a");
-    tmpVector.push_back(L"b");
+    tmpList.push_back(L"");
+    tmpList.push_back(L"a");
+    tmpList.push_back(L"b");
     tmpVarList.push_back(std::dmp_variant(L"\u0001"));  // ((L"\u0001")));
     tmpVarList.push_back(std::dmp_variant(L"\u0002"));  // ((L"\u0002"));
-    tmpVarList.push_back(std::dmp_variant(tmpVector));
+    tmpVarList.push_back(std::dmp_variant(tmpList));
     assertEquals(L"diff_linesToChars:", tmpVarList, dmp.diff_linesToChars(L"a", L"b"));
 
     // More than 256 to reveal any 8-bit limitations.
     int n = 300;
-    tmpVector.clear();
+    tmpList.clear();
     tmpVarList.clear();
     std::wstring lines;
     std::wstring chars;
     for (int x = 1; x < n + 1; x++) {
-        tmpVector.push_back(std::to_wstring(x) + L"\n");
+        tmpList.push_back(std::to_wstring(x) + L"\n");
         lines += std::to_wstring(x) + L"\n";
         chars += wchar_t(x);
     }
-    assertEquals(L"diff_linesToChars: More than 256 (setup).", n, tmpVector.size());
+    assertEquals(L"diff_linesToChars: More than 256 (setup).", n, tmpList.size());
     assertEquals(L"diff_linesToChars: More than 256 (setup).", n, chars.length());
-    tmpVector.insert(tmpVector.begin(), L"");
+    tmpList.insert(tmpList.begin(), L"");
     tmpVarList.push_back(std::dmp_variant(chars));
     tmpVarList.push_back(std::dmp_variant(std::wstring(L"")));
-    tmpVarList.push_back(std::dmp_variant(tmpVector));
+    tmpVarList.push_back(std::dmp_variant(tmpList));
     assertEquals(L"diff_linesToChars: More than 256.", tmpVarList, dmp.diff_linesToChars(lines, L""));
 }
 
@@ -200,38 +200,38 @@ void diff_match_patch_test::testDiffCharsToLines() {
     assertEquals(L"diff_charsToLines:", Diff(EQUAL, L"a"), Diff(EQUAL, L"a"));
 
     // Convert chars up to lines.
-    std::vector<Diff> diffs;
+    std::list<Diff> diffs;
     diffs.push_back(Diff(EQUAL, L"\u0001\u0002\u0001"));  // (L"\u0001\u0002\u0001");
     diffs.push_back(Diff(INSERT, L"\u0002\u0001\u0002"));  // (L"\u0002\u0001\u0002");
-    std::wstring_list tmpVector;
-    tmpVector.push_back(L"");
-    tmpVector.push_back(L"alpha\n");
-    tmpVector.push_back(L"beta\n");
-    dmp.diff_charsToLines(diffs, tmpVector);
+    std::wstring_list tmpList;
+    tmpList.push_back(L"");
+    tmpList.push_back(L"alpha\n");
+    tmpList.push_back(L"beta\n");
+    dmp.diff_charsToLines(diffs, tmpList);
     assertEquals(L"diff_charsToLines:", diffList(Diff(EQUAL, L"alpha\nbeta\nalpha\n"), Diff(INSERT, L"beta\nalpha\nbeta\n")), diffs);
 
     // More than 256 to reveal any 8-bit limitations.
     int n = 300;
-    tmpVector.clear();
-    std::vector<std::dmp_variant> tmpVarList;
+    tmpList.clear();
+    std::list<std::dmp_variant> tmpVarList;
     std::wstring lines;
     std::wstring chars;
     for (int x = 1; x < n + 1; x++) {
-        tmpVector.push_back(std::to_wstring(x) + L"\n");
+        tmpList.push_back(std::to_wstring(x) + L"\n");
         lines += std::to_wstring(x) + L"\n";
         chars += wchar_t(x);
     }
-    assertEquals(L"diff_linesToChars: More than 256 (setup).", n, tmpVector.size());
+    assertEquals(L"diff_linesToChars: More than 256 (setup).", n, tmpList.size());
     assertEquals(L"diff_linesToChars: More than 256 (setup).", n, chars.length());
-    tmpVector.insert(tmpVector.begin(), L"");
+    tmpList.insert(tmpList.begin(), L"");
     diffs = diffList(Diff(DELETE, chars));
-    dmp.diff_charsToLines(diffs, tmpVector);
+    dmp.diff_charsToLines(diffs, tmpList);
     assertEquals(L"diff_charsToLines: More than 256.", diffList(Diff(DELETE, lines)), diffs);
 }
 
 void diff_match_patch_test::testDiffCleanupMerge() {
     // Cleanup a messy diff.
-    std::vector<Diff> diffs;
+    std::list<Diff> diffs;
     dmp.diff_cleanupMerge(diffs);
     assertEquals(L"diff_cleanupMerge: Null case.", diffList(), diffs);
 
@@ -282,7 +282,7 @@ void diff_match_patch_test::testDiffCleanupMerge() {
 
 void diff_match_patch_test::testDiffCleanupSemanticLossless() {
     // Slide diffs to match logical boundaries.
-    std::vector<Diff> diffs = diffList();
+    std::list<Diff> diffs = diffList();
     dmp.diff_cleanupSemanticLossless(diffs);
     assertEquals(L"diff_cleanupSemantic: Null case.", diffList(), diffs);
 
@@ -317,7 +317,7 @@ void diff_match_patch_test::testDiffCleanupSemanticLossless() {
 
 void diff_match_patch_test::testDiffCleanupSemantic() {
     // Cleanup semantically trivial equalities.
-    std::vector<Diff> diffs = diffList();
+    std::list<Diff> diffs = diffList();
     dmp.diff_cleanupSemantic(diffs);
     assertEquals(L"diff_cleanupSemantic: Null case.", diffList(), diffs);
 
@@ -365,7 +365,7 @@ void diff_match_patch_test::testDiffCleanupSemantic() {
 void diff_match_patch_test::testDiffCleanupEfficiency() {
     // Cleanup operationally trivial equalities.
     dmp.Diff_EditCost = 4;
-    std::vector<Diff> diffs = diffList();
+    std::list<Diff> diffs = diffList();
     dmp.diff_cleanupEfficiency(diffs);
     assertEquals(L"diff_cleanupEfficiency: Null case.", diffList(), diffs);
 
@@ -394,20 +394,20 @@ void diff_match_patch_test::testDiffCleanupEfficiency() {
 
 void diff_match_patch_test::testDiffPrettyHtml() {
     // Pretty print.
-    std::vector<Diff> diffs = diffList(Diff(EQUAL, L"a\n"), Diff(DELETE, L"<B>b</B>"), Diff(INSERT, L"c&d"));
+    std::list<Diff> diffs = diffList(Diff(EQUAL, L"a\n"), Diff(DELETE, L"<B>b</B>"), Diff(INSERT, L"c&d"));
     assertEquals(L"diff_prettyHtml:", L"<span>a&para;<br></span><del style=\"background:#ffe6e6;\">&lt;B&gt;b&lt;/B&gt;</del><ins style=\"background:#e6ffe6;\">c&amp;d</ins>", dmp.diff_prettyHtml(diffs));
 }
 
 void diff_match_patch_test::testDiffText() {
     // Compute the source and destination texts.
-    std::vector<Diff> diffs = diffList(Diff(EQUAL, L"jump"), Diff(DELETE, L"s"), Diff(INSERT, L"ed"), Diff(EQUAL, L" over "), Diff(DELETE, L"the"), Diff(INSERT, L"a"), Diff(EQUAL, L" lazy"));
+    std::list<Diff> diffs = diffList(Diff(EQUAL, L"jump"), Diff(DELETE, L"s"), Diff(INSERT, L"ed"), Diff(EQUAL, L" over "), Diff(DELETE, L"the"), Diff(INSERT, L"a"), Diff(EQUAL, L" lazy"));
     assertEquals(L"diff_text1:", L"jumps over the lazy", dmp.diff_text1(diffs));
     assertEquals(L"diff_text2:", L"jumped over a lazy", dmp.diff_text2(diffs));
 }
 
 void diff_match_patch_test::testDiffDelta() {
     // Convert a diff into delta string.
-    std::vector<Diff> diffs = diffList(Diff(EQUAL, L"jump"), Diff(DELETE, L"s"), Diff(INSERT, L"ed"), Diff(EQUAL, L" over "), Diff(DELETE, L"the"), Diff(INSERT, L"a"), Diff(EQUAL, L" lazy"), Diff(INSERT, L"old dog"));
+    std::list<Diff> diffs = diffList(Diff(EQUAL, L"jump"), Diff(DELETE, L"s"), Diff(INSERT, L"ed"), Diff(EQUAL, L" over "), Diff(DELETE, L"the"), Diff(INSERT, L"a"), Diff(EQUAL, L" lazy"), Diff(INSERT, L"old dog"));
     std::wstring text1 = dmp.diff_text1(diffs);
     assertEquals(L"diff_text1: Base text.", L"jumps over the lazy", text1);
 
@@ -467,7 +467,7 @@ void diff_match_patch_test::testDiffDelta() {
 
 void diff_match_patch_test::testDiffXIndex() {
     // Translate a location in text1 to text2.
-    std::vector<Diff> diffs = diffList(Diff(DELETE, L"a"), Diff(INSERT, L"1234"), Diff(EQUAL, L"xyz"));
+    std::list<Diff> diffs = diffList(Diff(DELETE, L"a"), Diff(INSERT, L"1234"), Diff(EQUAL, L"xyz"));
     assertEquals(L"diff_xIndex: Translation on equality.", 5, dmp.diff_xIndex(diffs, 2));
 
     diffs = diffList(Diff(EQUAL, L"a"), Diff(DELETE, L"1234"), Diff(EQUAL, L"xyz"));
@@ -475,7 +475,7 @@ void diff_match_patch_test::testDiffXIndex() {
 }
 
 void diff_match_patch_test::testDiffLevenshtein() {
-    std::vector<Diff> diffs = diffList(Diff(DELETE, L"abc"), Diff(INSERT, L"1234"), Diff(EQUAL, L"xyz"));
+    std::list<Diff> diffs = diffList(Diff(DELETE, L"abc"), Diff(INSERT, L"1234"), Diff(EQUAL, L"xyz"));
     assertEquals(L"diff_levenshtein: Trailing equality.", 4, dmp.diff_levenshtein(diffs));
 
     diffs = diffList(Diff(EQUAL, L"xyz"), Diff(DELETE, L"abc"), Diff(INSERT, L"1234"));
@@ -492,7 +492,7 @@ void diff_match_patch_test::testDiffBisect() {
     // Since the resulting diff hasn't been normalized, it would be ok if
     // the insertion and deletion pairs are swapped.
     // If the order changes, tweak this test as required.
-    std::vector<Diff> diffs = diffList(Diff(DELETE, L"c"), Diff(INSERT, L"m"), Diff(EQUAL, L"a"), Diff(DELETE, L"t"), Diff(INSERT, L"p"));
+    std::list<Diff> diffs = diffList(Diff(DELETE, L"c"), Diff(INSERT, L"m"), Diff(EQUAL, L"a"), Diff(DELETE, L"t"), Diff(INSERT, L"p"));
     assertEquals(L"diff_bisect: Normal.", diffs, dmp.diff_bisect(a, b, std::numeric_limits<clock_t>::max()));
 
     // Timeout.
@@ -502,7 +502,7 @@ void diff_match_patch_test::testDiffBisect() {
 
 void diff_match_patch_test::testDiffMain() {
     // Perform a trivial diff.
-    std::vector<Diff> diffs = diffList();
+    std::list<Diff> diffs = diffList();
     assertEquals(L"diff_main: Null case.", diffs, dmp.diff_main(L"", L"", false));
 
     diffs = diffList(Diff(EQUAL, L"abc"));
@@ -698,13 +698,13 @@ void diff_match_patch_test::testPatchFromText() {
     assertTrue(L"patch_fromText: #0.", dmp.patch_fromText(L"").size() == 0);
 
     std::wstring strp = L"@@ -21,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n %0Alaz\n";
-    assertEquals(L"patch_fromText: #1.", strp, dmp.patch_fromText(strp)[0].toString());
+    assertEquals(L"patch_fromText: #1.", strp, dmp.patch_fromText(strp).begin()->toString());
 
-    assertEquals(L"patch_fromText: #2.", L"@@ -1 +1 @@\n-a\n+b\n", dmp.patch_fromText(L"@@ -1 +1 @@\n-a\n+b\n")[0].toString());
+    assertEquals(L"patch_fromText: #2.", L"@@ -1 +1 @@\n-a\n+b\n", dmp.patch_fromText(L"@@ -1 +1 @@\n-a\n+b\n").begin()->toString());
 
-    assertEquals(L"patch_fromText: #3.", L"@@ -1,3 +0,0 @@\n-abc\n", dmp.patch_fromText(L"@@ -1,3 +0,0 @@\n-abc\n")[0].toString());
+    assertEquals(L"patch_fromText: #3.", L"@@ -1,3 +0,0 @@\n-abc\n", dmp.patch_fromText(L"@@ -1,3 +0,0 @@\n-abc\n").begin()->toString());
 
-    assertEquals(L"patch_fromText: #4.", L"@@ -0,0 +1,3 @@\n+abc\n", dmp.patch_fromText(L"@@ -0,0 +1,3 @@\n+abc\n")[0].toString());
+    assertEquals(L"patch_fromText: #4.", L"@@ -0,0 +1,3 @@\n+abc\n", dmp.patch_fromText(L"@@ -0,0 +1,3 @@\n+abc\n").begin()->toString());
 
     // Generates error.
     try {
@@ -717,7 +717,7 @@ void diff_match_patch_test::testPatchFromText() {
 
 void diff_match_patch_test::testPatchToText() {
     std::wstring strp = L"@@ -21,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n  laz\n";
-    std::vector<Patch> patches;
+    std::list<Patch> patches;
     patches = dmp.patch_fromText(strp);
     assertEquals(L"patch_toText: Single", strp, dmp.patch_toText(patches));
 
@@ -728,26 +728,25 @@ void diff_match_patch_test::testPatchToText() {
 
 void diff_match_patch_test::testPatchAddContext() {
     dmp.Patch_Margin = 4;
-    Patch p;
-    p = dmp.patch_fromText(L"@@ -21,4 +21,10 @@\n-jump\n+somersault\n")[0];
+    Patch & p = dmp.patch_fromText(L"@@ -21,4 +21,10 @@\n-jump\n+somersault\n").front();
     dmp.patch_addContext(p, L"The quick brown fox jumps over the lazy dog.");
     assertEquals(L"patch_addContext: Simple case.", L"@@ -17,12 +17,18 @@\n fox \n-jump\n+somersault\n s ov\n", p.toString());
 
-    p = dmp.patch_fromText(L"@@ -21,4 +21,10 @@\n-jump\n+somersault\n")[0];
+    p = dmp.patch_fromText(L"@@ -21,4 +21,10 @@\n-jump\n+somersault\n").front();
     dmp.patch_addContext(p, L"The quick brown fox jumps.");
     assertEquals(L"patch_addContext: Not enough trailing context.", L"@@ -17,10 +17,16 @@\n fox \n-jump\n+somersault\n s.\n", p.toString());
 
-    p = dmp.patch_fromText(L"@@ -3 +3,2 @@\n-e\n+at\n")[0];
+    p = dmp.patch_fromText(L"@@ -3 +3,2 @@\n-e\n+at\n").front();
     dmp.patch_addContext(p, L"The quick brown fox jumps.");
     assertEquals(L"patch_addContext: Not enough leading context.", L"@@ -1,7 +1,8 @@\n Th\n-e\n+at\n  qui\n", p.toString());
 
-    p = dmp.patch_fromText(L"@@ -3 +3,2 @@\n-e\n+at\n")[0];
+    p = dmp.patch_fromText(L"@@ -3 +3,2 @@\n-e\n+at\n").front();
     dmp.patch_addContext(p, L"The quick brown fox jumps.  The quick brown fox crashes.");
     assertEquals(L"patch_addContext: Ambiguity.", L"@@ -1,27 +1,28 @@\n Th\n-e\n+at\n  quick brown fox jumps. \n", p.toString());
 }
 
 void diff_match_patch_test::testPatchMake() {
-    std::vector<Patch> patches;
+    std::list<Patch> patches;
     patches = dmp.patch_make(L"", L"");
     assertEquals(L"patch_make: Null case", L"", dmp.patch_toText(patches));
 
@@ -762,7 +761,7 @@ void diff_match_patch_test::testPatchMake() {
     patches = dmp.patch_make(text1, text2);
     assertEquals(L"patch_make: Text1+Text2 inputs", expectedPatch, dmp.patch_toText(patches));
 
-    std::vector<Diff> diffs = dmp.diff_main(text1, text2, false);
+    std::list<Diff> diffs = dmp.diff_main(text1, text2, false);
     patches = dmp.patch_make(diffs);
     assertEquals(L"patch_make: Diff input", expectedPatch, dmp.patch_toText(patches));
 
@@ -776,7 +775,7 @@ void diff_match_patch_test::testPatchMake() {
     assertEquals(L"patch_toText: Character encoding.", L"@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;',./\n+~!@#$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n", dmp.patch_toText(patches));
 
     diffs = diffList(Diff(DELETE, L"`1234567890-=[]\\;',./"), Diff(INSERT, L"~!@#$%^&*()_+{}|:\"<>?"));
-    assertEquals(L"patch_fromText: Character decoding.", diffs, dmp.patch_fromText(L"@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;',./\n+~!@#$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n")[0].diffs);
+    assertEquals(L"patch_fromText: Character decoding.", diffs, dmp.patch_fromText(L"@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;',./\n+~!@#$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n").front().diffs);
 
     text1 = L"";
     for (int x = 0; x < 100; x++) {
@@ -798,7 +797,7 @@ void diff_match_patch_test::testPatchMake() {
 
 void diff_match_patch_test::testPatchSplitMax() {
     // Assumes that Match_MaxBits is 32.
-    std::vector<Patch> patches;
+    std::list<Patch> patches;
     patches = dmp.patch_make(L"abcdefghijklmnopqrstuvwxyz01234567890", L"XabXcdXefXghXijXklXmnXopXqrXstXuvXwxXyzX01X23X45X67X89X0");
     dmp.patch_splitMax(patches);
     assertEquals(L"patch_splitMax: #1.", L"@@ -1,32 +1,46 @@\n+X\n ab\n+X\n cd\n+X\n ef\n+X\n gh\n+X\n ij\n+X\n kl\n+X\n mn\n+X\n op\n+X\n qr\n+X\n st\n+X\n uv\n+X\n wx\n+X\n yz\n+X\n 012345\n@@ -25,13 +39,18 @@\n zX01\n+X\n 23\n+X\n 45\n+X\n 67\n+X\n 89\n+X\n 0\n", dmp.patch_toText(patches));
@@ -818,7 +817,7 @@ void diff_match_patch_test::testPatchSplitMax() {
 }
 
 void diff_match_patch_test::testPatchAddPadding() {
-    std::vector<Patch> patches;
+    std::list<Patch> patches;
     patches = dmp.patch_make(L"", L"test");
     assertEquals(L"patch_addPadding: Both edges full.", L"@@ -0,0 +1,4 @@\n+test\n", dmp.patch_toText(patches));
     dmp.patch_addPadding(patches);
@@ -839,7 +838,7 @@ void diff_match_patch_test::testPatchApply() {
     dmp.Match_Distance = 1000;
     dmp.Match_Threshold = 0.5f;
     dmp.Patch_DeleteThreshold = 0.5f;
-    std::vector<Patch> patches;
+    std::list<Patch> patches;
     patches = dmp.patch_make(L"", L"");
     std::pair<std::wstring, std::vector<bool> > results = dmp.patch_apply(patches, L"Hello world.");
     std::vector<bool> boolArray = results.second;
@@ -949,12 +948,14 @@ void diff_match_patch_test::assertEquals(const std::wstring &strCase, const Diff
     std::debug_print(L"%ls OK", qPrintable(strCase));
 }
 
-void diff_match_patch_test::assertEquals(const std::wstring &strCase, const std::vector<Diff> &list1, const std::vector<Diff> &list2) {
+void diff_match_patch_test::assertEquals(const std::wstring &strCase, const std::list<Diff> &list1, const std::list<Diff> &list2) {
     bool fail = false;
     if (list1.size() == list2.size()) {
         int i = 0;
-        for(Diff d1: list1) {
-            Diff d2 = list2[i];
+        for(const Diff & d1: list1) {
+            auto it = list2.begin();
+            std::advance(it, i);
+            const Diff & d2 = *it;
             if (d1 != d2) {
                 fail = true;
                 break;
@@ -994,12 +995,15 @@ void diff_match_patch_test::assertEquals(const std::wstring &strCase, const std:
     std::debug_print(L"%ls OK", qPrintable(strCase));
 }
 
-void diff_match_patch_test::assertEquals(const std::wstring &strCase, const std::vector<std::dmp_variant> &list1, const std::vector<std::dmp_variant> &list2) {
+void diff_match_patch_test::assertEquals(const std::wstring &strCase, const std::list<std::dmp_variant> &list1, const std::list<std::dmp_variant> &list2) {
     bool fail = false;
     if (list1.size() == list2.size()) {
         int i = 0;
-        for(std::dmp_variant q1: list1) {
-            std::dmp_variant q2 = list2[i];
+        for(const auto & q1: list1) {
+            auto it = list2.begin();
+            std::advance(it, i);
+
+            const auto & q2 = *it;
             if (q1 != q2) {
                 std::debug_print(L"variable %d not equal, (%ls)_____________ (%ls)", i, qPrintable(var_to_string(q1)), qPrintable(var_to_string(q2)));
                 fail = true;
@@ -1103,7 +1107,7 @@ void diff_match_patch_test::assertFalse(const std::wstring &strCase, bool value)
 
 
 // Construct the two texts which made up the diff originally.
-std::wstring_list diff_match_patch_test::diff_rebuildtexts(std::vector<Diff> diffs) {
+std::wstring_list diff_match_patch_test::diff_rebuildtexts(std::list<Diff> diffs) {
     std::wstring_list text;
     text.push_back(std::wstring(L""));
     text.push_back(std::wstring(L""));
@@ -1126,10 +1130,10 @@ void diff_match_patch_test::assertEmpty(const std::wstring &strCase, const std::
 
 
 // Private function for quickly building lists of diffs.
-std::vector<Diff> diff_match_patch_test::diffList(Diff d1, Diff d2, Diff d3, Diff d4, Diff d5,
+std::list<Diff> diff_match_patch_test::diffList(Diff d1, Diff d2, Diff d3, Diff d4, Diff d5,
                                                   Diff d6, Diff d7, Diff d8, Diff d9, Diff d10) {
     // Diff(INSERT, NULL) is invalid and thus is used as the default argument.
-    std::vector<Diff> listRet;
+    std::list<Diff> listRet;
     if (d1.operation == INSERT && d1.invalid) {
         return listRet;
     }

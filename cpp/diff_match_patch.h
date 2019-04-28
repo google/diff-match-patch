@@ -27,7 +27,7 @@
  * @author fraser@google.com (Neil Fraser)
  *
  #include <string>
- #include <vector>
+ #include <list>
  #include <unordered_map>
  #include <variant>
  #include <regex>
@@ -94,7 +94,7 @@ public:
  */
 class Patch {
 public:
-    std::vector<Diff> diffs;
+    std::list<Diff> diffs;
     int start1;
     int start2;
     int length1;
@@ -164,7 +164,7 @@ public:
      * @param text2 New string to be diffed.
      * @return Linked List of Diff objects.
      */
-    std::vector<Diff> diff_main(const std::wstring &text1, const std::wstring &text2);
+    std::list<Diff> diff_main(const std::wstring &text1, const std::wstring &text2);
 
     /**
      * Find the differences between two texts.
@@ -175,7 +175,7 @@ public:
      *     If true, then run a faster slightly less optimal diff.
      * @return Linked List of Diff objects.
      */
-    std::vector<Diff> diff_main(const std::wstring &text1, const std::wstring &text2, bool checklines);
+    std::list<Diff> diff_main(const std::wstring &text1, const std::wstring &text2, bool checklines);
 
     /**
      * Find the differences between two texts.  Simplifies the problem by
@@ -190,7 +190,7 @@ public:
      * @return Linked List of Diff objects.
      */
 private:
-    std::vector<Diff> diff_main(const std::wstring &text1, const std::wstring &text2, bool checklines, clock_t deadline);
+    std::list<Diff> diff_main(const std::wstring &text1, const std::wstring &text2, bool checklines, clock_t deadline);
 
     /**
      * Find the differences between two texts.  Assumes that the texts do not
@@ -204,7 +204,7 @@ private:
      * @return Linked List of Diff objects.
      */
 private:
-    std::vector<Diff> diff_compute(std::wstring text1, std::wstring text2, bool checklines, clock_t deadline);
+    std::list<Diff> diff_compute(std::wstring text1, std::wstring text2, bool checklines, clock_t deadline);
 
     /**
      * Do a quick line-level diff on both strings, then rediff the parts for
@@ -216,7 +216,7 @@ private:
      * @return Linked List of Diff objects.
      */
 private:
-    std::vector<Diff> diff_lineMode(std::wstring text1, std::wstring text2, clock_t deadline);
+    std::list<Diff> diff_lineMode(std::wstring text1, std::wstring text2, clock_t deadline);
 
     /**
      * Find the 'middle snake' of a diff, split the problem in two
@@ -227,7 +227,7 @@ private:
      * @return Linked List of Diff objects.
      */
 protected:
-    std::vector<Diff> diff_bisect(const std::wstring &text1, const std::wstring &text2, clock_t deadline);
+    std::list<Diff> diff_bisect(const std::wstring &text1, const std::wstring &text2, clock_t deadline);
 
     /**
      * Given the location of the 'middle snake', split the diff in two parts
@@ -240,7 +240,7 @@ protected:
      * @return LinkedList of Diff objects.
      */
 private:
-    std::vector<Diff> diff_bisectSplit(const std::wstring &text1, const std::wstring &text2, int x, int y, clock_t deadline);
+    std::list<Diff> diff_bisectSplit(const std::wstring &text1, const std::wstring &text2, int x, int y, clock_t deadline);
 
     /**
      * Split two texts into a list of strings.  Reduce the texts to a string of
@@ -252,7 +252,7 @@ private:
      *     of the List of unique strings is intentionally blank.
      */
 protected:
-    std::vector<std::dmp_variant> diff_linesToChars(const std::wstring &text1, const std::wstring &text2); // return elems 0 and 1 are std::wstring, elem 2 is std::wstring_list
+    std::list<std::dmp_variant> diff_linesToChars(const std::wstring &text1, const std::wstring &text2); // return elems 0 and 1 are std::wstring, elem 2 is std::wstring_list
 
     /**
      * Split a text into a list of strings.  Reduce the texts to a string of
@@ -273,7 +273,7 @@ private:
      * @param lineArray List of unique strings.
      */
 private:
-    void diff_charsToLines(std::vector<Diff> &diffs, const std::wstring_list &lineArray);
+    void diff_charsToLines(std::list<Diff> &diffs, const std::wstring_list &lineArray);
 
     /**
      * Determine the common prefix of two strings.
@@ -334,7 +334,7 @@ private:
      * @param diffs LinkedList of Diff objects.
      */
 public:
-    void diff_cleanupSemantic(std::vector<Diff> &diffs);
+    void diff_cleanupSemantic(std::list<Diff> &diffs);
 
     /**
      * Look for single edits surrounded on both sides by equalities
@@ -343,7 +343,7 @@ public:
      * @param diffs LinkedList of Diff objects.
      */
 public:
-    void diff_cleanupSemanticLossless(std::vector<Diff> &diffs);
+    void diff_cleanupSemanticLossless(std::list<Diff> &diffs);
 
     /**
      * Given two strings, compute a score representing whether the internal
@@ -361,7 +361,7 @@ private:
      * @param diffs LinkedList of Diff objects.
      */
 public:
-    void diff_cleanupEfficiency(std::vector<Diff> &diffs);
+    void diff_cleanupEfficiency(std::list<Diff> &diffs);
 
     /**
      * Reorder and merge like edit sections.  Merge equalities.
@@ -369,7 +369,7 @@ public:
      * @param diffs LinkedList of Diff objects.
      */
 public:
-    void diff_cleanupMerge(std::vector<Diff> &diffs);
+    void diff_cleanupMerge(std::list<Diff> &diffs);
 
     /**
      * loc is a location in text1, compute and return the equivalent location in
@@ -380,7 +380,7 @@ public:
      * @return Location within text2.
      */
 public:
-    int diff_xIndex(const std::vector<Diff> &diffs, int loc);
+    int diff_xIndex(const std::list<Diff> &diffs, int loc);
 
     /**
      * Convert a Diff list into a pretty HTML report.
@@ -388,7 +388,7 @@ public:
      * @return HTML representation.
      */
 public:
-    std::wstring diff_prettyHtml(const std::vector<Diff> &diffs);
+    std::wstring diff_prettyHtml(const std::list<Diff> &diffs);
 
     /**
      * Compute and return the source text (all equalities and deletions).
@@ -396,7 +396,7 @@ public:
      * @return Source text.
      */
 public:
-    std::wstring diff_text1(const std::vector<Diff> &diffs);
+    std::wstring diff_text1(const std::list<Diff> &diffs);
 
     /**
      * Compute and return the destination text (all equalities and insertions).
@@ -404,7 +404,7 @@ public:
      * @return Destination text.
      */
 public:
-    std::wstring diff_text2(const std::vector<Diff> &diffs);
+    std::wstring diff_text2(const std::list<Diff> &diffs);
 
     /**
      * Compute the Levenshtein distance; the number of inserted, deleted or
@@ -413,7 +413,7 @@ public:
      * @return Number of changes.
      */
 public:
-    int diff_levenshtein(const std::vector<Diff> &diffs);
+    int diff_levenshtein(const std::list<Diff> &diffs);
 
     /**
      * Crush the diff into an encoded string which describes the operations
@@ -424,7 +424,7 @@ public:
      * @return Delta text.
      */
 public:
-    std::wstring diff_toDelta(const std::vector<Diff> &diffs);
+    std::wstring diff_toDelta(const std::list<Diff> &diffs);
 
     /**
      * Given the original text1, and an encoded string which describes the
@@ -435,7 +435,7 @@ public:
      * @throws std::wstring If invalid input.
      */
 public:
-    std::vector<Diff> diff_fromDelta(const std::wstring &text1, const std::wstring &delta);
+    std::list<Diff> diff_fromDelta(const std::wstring &text1, const std::wstring &delta);
 
 
     //  MATCH FUNCTIONS
@@ -503,7 +503,7 @@ protected:
      * @return LinkedList of Patch objects.
      */
 public:
-    std::vector<Patch> patch_make(const std::wstring &text1, const std::wstring &text2);
+    std::list<Patch> patch_make(const std::wstring &text1, const std::wstring &text2);
 
     /**
      * Compute a list of patches to turn text1 into text2.
@@ -512,7 +512,7 @@ public:
      * @return LinkedList of Patch objects.
      */
 public:
-    std::vector<Patch> patch_make(const std::vector<Diff> &diffs);
+    std::list<Patch> patch_make(const std::list<Diff> &diffs);
 
     /**
      * Compute a list of patches to turn text1 into text2.
@@ -521,10 +521,10 @@ public:
      * @param text2 Ignored.
      * @param diffs Array of diff tuples for text1 to text2.
      * @return LinkedList of Patch objects.
-     * @deprecated Prefer patch_make(const std::wstring &text1, const std::vector<Diff> &diffs).
+     * @deprecated Prefer patch_make(const std::wstring &text1, const std::list<Diff> &diffs).
      */
 public:
-    std::vector<Patch> patch_make(const std::wstring &text1, const std::wstring &text2, const std::vector<Diff> &diffs);
+    std::list<Patch> patch_make(const std::wstring &text1, const std::wstring &text2, const std::list<Diff> &diffs);
 
     /**
      * Compute a list of patches to turn text1 into text2.
@@ -534,7 +534,7 @@ public:
      * @return LinkedList of Patch objects.
      */
 public:
-    std::vector<Patch> patch_make(const std::wstring &text1, const std::vector<Diff> &diffs);
+    std::list<Patch> patch_make(const std::wstring &text1, const std::list<Diff> &diffs);
 
     /**
      * Given an array of patches, return another array that is identical.
@@ -542,7 +542,7 @@ public:
      * @return Array of patch objects.
      */
 public:
-    std::vector<Patch> patch_deepCopy(std::vector<Patch> &patches);
+    std::list<Patch> patch_deepCopy(std::list<Patch> &patches);
 
     /**
      * Merge a set of patches onto the text.  Return a patched text, as well
@@ -553,7 +553,7 @@ public:
      *      boolean values.
      */
 public:
-    std::pair<std::wstring,std::vector<bool> > patch_apply(std::vector<Patch> &patches, const std::wstring &text);
+    std::pair<std::wstring,std::vector<bool> > patch_apply(std::list<Patch> &patches, const std::wstring &text);
 
     /**
      * Add some padding on text start and end so that edges can match something.
@@ -562,7 +562,7 @@ public:
      * @return The padding string added to each side.
      */
 public:
-    std::wstring patch_addPadding(std::vector<Patch> &patches);
+    std::wstring patch_addPadding(std::list<Patch> &patches);
 
     /**
      * Look through the patches and break up any which are longer than the
@@ -571,7 +571,7 @@ public:
      * @param patches LinkedList of Patch objects.
      */
 public:
-    void patch_splitMax(std::vector<Patch> &patches);
+    void patch_splitMax(std::list<Patch> &patches);
 
     /**
      * Take a list of patches and return a textual representation.
@@ -579,7 +579,7 @@ public:
      * @return Text representation of patches.
      */
 public:
-    std::wstring patch_toText(const std::vector<Patch> &patches);
+    std::wstring patch_toText(const std::list<Patch> &patches);
 
     /**
      * Parse a textual representation of patches and return a List of Patch
@@ -589,7 +589,7 @@ public:
      * @throws std::wstring If invalid input.
      */
 public:
-    std::vector<Patch> patch_fromText(const std::wstring &textline);
+    std::list<Patch> patch_fromText(const std::wstring &textline);
 
     /**
      * A safer version of std::wstring.mid(pos).  This one returns "" instead of

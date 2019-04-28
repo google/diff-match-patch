@@ -1,10 +1,11 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <list>
 #include <unordered_map>
 #include <variant>
 #include <sstream>
+#include <vector>
 
 namespace std {
 using wstring_list = std::vector<std::wstring>;

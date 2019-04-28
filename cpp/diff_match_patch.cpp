@@ -183,12 +183,12 @@ diff_match_patch::diff_match_patch() :
 }
 
 
-std::vector<Diff> diff_match_patch::diff_main(const std::wstring &text1,
+std::list<Diff> diff_match_patch::diff_main(const std::wstring &text1,
                                               const std::wstring &text2) {
     return diff_main(text1, text2, true);
 }
 
-std::vector<Diff> diff_match_patch::diff_main(const std::wstring &text1,
+std::list<Diff> diff_match_patch::diff_main(const std::wstring &text1,
                                               const std::wstring &text2, bool checklines) {
     // Set a deadline by which time the diff must be complete.
     clock_t deadline;
@@ -200,7 +200,7 @@ std::vector<Diff> diff_match_patch::diff_main(const std::wstring &text1,
     return diff_main(text1, text2, checklines, deadline);
 }
 
-std::vector<Diff> diff_match_patch::diff_main(const std::wstring &text1,
+std::list<Diff> diff_match_patch::diff_main(const std::wstring &text1,
                                               const std::wstring &text2, bool checklines, clock_t deadline) {
     // Check for null inputs.
     if (text1.empty() || text2.empty()) {
@@ -208,7 +208,7 @@ std::vector<Diff> diff_match_patch::diff_main(const std::wstring &text1,
     }
 
     // Check for equality (speedup).
-    std::vector<Diff> diffs;
+    std::list<Diff> diffs;
     if (text1 == text2) {
         if (!text1.empty()) {
             diffs.push_back(Diff(EQUAL, text1));
@@ -245,9 +245,9 @@ std::vector<Diff> diff_match_patch::diff_main(const std::wstring &text1,
 }
 
 
-std::vector<Diff> diff_match_patch::diff_compute(std::wstring text1, std::wstring text2,
+std::list<Diff> diff_match_patch::diff_compute(std::wstring text1, std::wstring text2,
                                                  bool checklines, clock_t deadline) {
-    std::vector<Diff> diffs;
+    std::list<Diff> diffs;
 
     if (text1.empty()) {
         // Just add some text (speedup).
@@ -288,15 +288,16 @@ std::vector<Diff> diff_match_patch::diff_compute(std::wstring text1, std::wstrin
     const std::wstring_list hm = diff_halfMatch(text1, text2);
     if (hm.size() > 0) {
         // A half-match was found, sort out the return data.
-        const std::wstring text1_a = hm[0];
-        const std::wstring text1_b = hm[1];
-        const std::wstring text2_a = hm[2];
-        const std::wstring text2_b = hm[3];
-        const std::wstring mid_common = hm[4];
+        auto it = hm.begin();
+        const std::wstring text1_a = *it++;
+        const std::wstring text1_b = *it++;
+        const std::wstring text2_a = *it++;
+        const std::wstring text2_b = *it++;
+        const std::wstring mid_common = *it++;
         // Send both pairs off for separate processing.
-        const std::vector<Diff> diffs_a = diff_main(text1_a, text2_a,
+        const std::list<Diff> diffs_a = diff_main(text1_a, text2_a,
                                                     checklines, deadline);
-        const std::vector<Diff> diffs_b = diff_main(text1_b, text2_b,
+        const std::list<Diff> diffs_b = diff_main(text1_b, text2_b,
                                                     checklines, deadline);
         // Merge the results.
         diffs = diffs_a;
@@ -314,15 +315,16 @@ std::vector<Diff> diff_match_patch::diff_compute(std::wstring text1, std::wstrin
 }
 
 
-std::vector<Diff> diff_match_patch::diff_lineMode(std::wstring text1, std::wstring text2,
+std::list<Diff> diff_match_patch::diff_lineMode(std::wstring text1, std::wstring text2,
                                                   clock_t deadline) {
     // Scan the text on a line-by-line basis first.
-    const std::vector<std::dmp_variant> b = diff_linesToChars(text1, text2);
-    text1 = std::get<std::wstring>(b[0]);
-    text2 = std::get<std::wstring>(b[1]);
-    std::wstring_list linearray = std::get<std::wstring_list>(b[2]);
+    const std::list<std::dmp_variant> b = diff_linesToChars(text1, text2);
+    auto it = b.begin();
+    text1 = std::get<std::wstring>(*it++);
+    text2 = std::get<std::wstring>(*it++);
+    std::wstring_list linearray = std::get<std::wstring_list>(*it++);
 
-    std::vector<Diff> diffs = diff_main(text1, text2, false, deadline);
+    std::list<Diff> diffs = diff_main(text1, text2, false, deadline);
 
     // Convert the diff back to original text.
     diff_charsToLines(diffs, linearray);
@@ -337,7 +339,7 @@ std::vector<Diff> diff_match_patch::diff_lineMode(std::wstring text1, std::wstri
     std::wstring text_delete = L"";
     std::wstring text_insert = L"";
 
-    std::vector<Diff>::iterator pointer = diffs.begin();
+    std::list<Diff>::iterator pointer = diffs.begin();
     while (pointer != diffs.end()) {
         Diff *thisDiff = &(*pointer);
         switch (thisDiff->operation) {
@@ -354,12 +356,14 @@ std::vector<Diff> diff_match_patch::diff_lineMode(std::wstring text1, std::wstri
             if (count_delete >= 1 && count_insert >= 1) {
                 // Delete the offending records and add the merged ones.
                 pointer = std::prev(pointer);
-                for (int j = 0; j < count_delete + count_insert; j++) {
-                    diffs.erase(pointer - 1);
-                }
+
+                auto p2 = pointer;
+                std::advance(p2, -1 * (count_delete + count_insert));
+
+                diffs.erase(p2, pointer);
                 for(Diff newDiff:
                             diff_main(text_delete, text_insert, false, deadline)) {
-                    diffs.insert(pointer, newDiff);
+                    pointer = std::next(diffs.insert(pointer, newDiff));
                 }
             }
             count_insert = 0;
@@ -371,13 +375,13 @@ std::vector<Diff> diff_match_patch::diff_lineMode(std::wstring text1, std::wstri
 
         pointer++;
     }
-    diffs.erase(diffs.end() - 1);
+    diffs.erase(--diffs.end());
 
     return diffs;
 }
 
 
-std::vector<Diff> diff_match_patch::diff_bisect(const std::wstring &text1,
+std::list<Diff> diff_match_patch::diff_bisect(const std::wstring &text1,
                                                 const std::wstring &text2, clock_t deadline) {
     // Cache the text lengths to prevent multiple calls.
     const int text1_length = text1.length();
@@ -489,13 +493,13 @@ std::vector<Diff> diff_match_patch::diff_bisect(const std::wstring &text1,
     delete [] v2;
     // Diff took too long and hit the deadline or
     // number of diffs equals number of characters, no commonality at all.
-    std::vector<Diff> diffs;
+    std::list<Diff> diffs;
     diffs.push_back(Diff(DELETE, text1));
     diffs.push_back(Diff(INSERT, text2));
     return diffs;
 }
 
-std::vector<Diff> diff_match_patch::diff_bisectSplit(const std::wstring &text1,
+std::list<Diff> diff_match_patch::diff_bisectSplit(const std::wstring &text1,
                                                      const std::wstring &text2, int x, int y, clock_t deadline) {
     std::wstring text1a = text1.substr(0, x);
     std::wstring text2a = text2.substr(0, y);
@@ -503,15 +507,15 @@ std::vector<Diff> diff_match_patch::diff_bisectSplit(const std::wstring &text1,
     std::wstring text2b = safeMid(text2, y);
 
     // Compute both diffs serially.
-    std::vector<Diff> diffs = diff_main(text1a, text2a, false, deadline);
-    std::vector<Diff> diffsb = diff_main(text1b, text2b, false, deadline);
+    std::list<Diff> diffs = diff_main(text1a, text2a, false, deadline);
+    std::list<Diff> diffsb = diff_main(text1b, text2b, false, deadline);
 
     diffs.insert(std::end(diffs), std::begin(diffsb), std::end(diffsb));
 
     return diffs;
 }
 
-std::vector<std::dmp_variant> diff_match_patch::diff_linesToChars(const std::wstring &text1,
+std::list<std::dmp_variant> diff_match_patch::diff_linesToChars(const std::wstring &text1,
                                                                   const std::wstring &text2) {
     std::wstring_list lineArray;
     std::unordered_map<std::wstring, int> lineHash;
@@ -525,7 +529,7 @@ std::vector<std::dmp_variant> diff_match_patch::diff_linesToChars(const std::wst
     const std::wstring chars1 = diff_linesToCharsMunge(text1, lineArray, lineHash);
     const std::wstring chars2 = diff_linesToCharsMunge(text2, lineArray, lineHash);
 
-    std::vector<std::dmp_variant> listRet;
+    std::list<std::dmp_variant> listRet;
     listRet.push_back(std::dmp_variant{chars1});
     listRet.push_back(std::dmp_variant{chars2});
     listRet.push_back(std::dmp_variant{lineArray});
@@ -569,9 +573,9 @@ std::wstring diff_match_patch::diff_linesToCharsMunge(const std::wstring &text,
 
 
 
-void diff_match_patch::diff_charsToLines(std::vector<Diff> &diffs,
+void diff_match_patch::diff_charsToLines(std::list<Diff> &diffs,
                                          const std::wstring_list &lineArray) {
-    std::vector<Diff>::iterator i = diffs.begin();
+    std::list<Diff>::iterator i = diffs.begin();
     while (i != diffs.end()) {
         Diff &diff = *i;
         std::wstring text;
@@ -737,14 +741,14 @@ std::wstring_list diff_match_patch::diff_halfMatchI(const std::wstring &longtext
 }
 
 
-void diff_match_patch::diff_cleanupSemantic(std::vector<Diff> &diffs) {
+void diff_match_patch::diff_cleanupSemantic(std::list<Diff> &diffs) {
     if (diffs.empty()) {
         return;
     }
     bool changes = false;
     std::deque<Diff> equalities;  // Stack of equalities.
     std::wstring lastequality;  // Always equal to equalities.lastElement().text
-    std::vector<Diff>::iterator pointer = diffs.begin();
+    std::list<Diff>::iterator pointer = diffs.begin();
     // Number of characters that changed prior to the equality.
     int length_insertions1 = 0;
     int length_deletions1 = 0;
@@ -786,7 +790,7 @@ void diff_match_patch::diff_cleanupSemantic(std::vector<Diff> &diffs) {
                 // Replace equality with a delete.
                 *pointer = Diff(DELETE, lastequality);
                 // Insert a corresponding an insert.
-                diffs.insert(pointer, Diff(INSERT, lastequality));
+                pointer = std::next(diffs.insert(pointer, Diff(INSERT, lastequality)));
 
                 equalities.pop_front();  // Throw away the equality we just deleted.
                 if (!equalities.empty()) {
@@ -851,7 +855,7 @@ void diff_match_patch::diff_cleanupSemantic(std::vector<Diff> &diffs) {
                     overlap_length1 >= insertion.length() / 2.0) {
                     // Overlap found.  Insert an equality and trim the surrounding edits.
                     pointer--;
-                    diffs.insert(pointer, Diff(EQUAL, insertion.substr(0, overlap_length1)));
+                    pointer = std::next(diffs.insert(pointer, Diff(EQUAL, insertion.substr(0, overlap_length1))));
                     prevDiff->text =
                             deletion.substr(0, deletion.length() - overlap_length1);
                     thisDiff->text = safeMid(insertion, overlap_length1);
@@ -864,7 +868,7 @@ void diff_match_patch::diff_cleanupSemantic(std::vector<Diff> &diffs) {
                     // Reverse overlap found.
                     // Insert an equality and swap and trim the surrounding edits.
                     pointer--;
-                    diffs.insert(pointer, Diff(EQUAL, deletion.substr(0, overlap_length2)));
+                    pointer = std::next(diffs.insert(pointer, Diff(EQUAL, deletion.substr(0, overlap_length2))));
                     prevDiff->operation = INSERT;
                     prevDiff->text =
                             insertion.substr(0, insertion.length() - overlap_length2);
@@ -889,7 +893,7 @@ void diff_match_patch::diff_cleanupSemantic(std::vector<Diff> &diffs) {
 
 namespace std {
 template<typename T>
-T * safe_next_element(const std::vector<T> & v, typename std::vector<T>::iterator & it) {
+T * safe_next_element(const std::list<T> & v, typename std::list<T>::iterator & it) {
     if (it != v.end()) {
         T * p = &(*it);
         it++;
@@ -901,20 +905,21 @@ T * safe_next_element(const std::vector<T> & v, typename std::vector<T>::iterato
 }
 
 
-void diff_match_patch::diff_cleanupSemanticLossless(std::vector<Diff> &diffs) {
+void diff_match_patch::diff_cleanupSemanticLossless(std::list<Diff> &diffs) {
     std::wstring equality1, edit, equality2;
     std::wstring commonString;
     int commonOffset;
     int score, bestScore;
     std::wstring bestEquality1, bestEdit, bestEquality2;
     // Create a new iterator at the start.
-    std::vector<Diff>::iterator pointer = diffs.begin();
+    std::list<Diff>::iterator pointer = diffs.begin();
     Diff *prevDiff = std::safe_next_element(diffs, pointer);
     Diff *thisDiff = std::safe_next_element(diffs, pointer);
     Diff *nextDiff = std::safe_next_element(diffs, pointer);
 
     // Intentionally ignore the first and last element (don't need checking).
     while (nextDiff != NULL) {
+        std::cout << "-------" << std::endl;
         if (prevDiff->operation == EQUAL &&
             nextDiff->operation == EQUAL) {
             // This is a single edit surrounded by equalities.
@@ -925,10 +930,20 @@ void diff_match_patch::diff_cleanupSemanticLossless(std::vector<Diff> &diffs) {
             // First, shift the edit as far left as possible.
             commonOffset = diff_commonSuffix(equality1, edit);
             if (commonOffset != 0) {
+                std::wcout << L"-------???" << commonString
+                           << ", [" << equality1
+                           << "], [" << edit
+                           << "], [" << equality2 << "]"
+                           << std::endl;
                 commonString = safeMid(edit, edit.length() - commonOffset);
                 equality1 = equality1.substr(0, equality1.length() - commonOffset);
                 edit = commonString + edit.substr(0, edit.length() - commonOffset);
                 equality2 = commonString + equality2;
+                std::wcout << L"-------???" << commonString
+                           << ", [" << equality1
+                           << "], [" << edit
+                           << "], [" << equality2 << "]"
+                           << std::endl;
             }
 
             // Second, step character by character right, looking for the best fit.
@@ -952,21 +967,42 @@ void diff_match_patch::diff_cleanupSemanticLossless(std::vector<Diff> &diffs) {
                     bestEquality2 = equality2;
                 }
             }
+            std::wcout << L"***-------???"
+                       << "[" << equality1
+                           << "], [" << edit
+                           << "], [" << equality2 << "]"
+                       << "---------[" << bestEquality1
+                           << "], [" << bestEdit
+                           << "], [" << bestEquality2 << "]"
+                           << std::endl;
 
             if (prevDiff->text != bestEquality1) {
                 // We have an improvement, save it back to the diff.
+                    std::wcout << L"++++++++++++++++++"
+                               << nextDiff->text
+                               << ", " << bestEquality2
+                               << ", " << &diffs.back()
+                               << ", " << nextDiff
+                               << std::endl;
                 if (!bestEquality1.empty()) {
                     prevDiff->text = bestEquality1;
                 } else {
                     std::advance(pointer, -3);
-                    diffs.erase(pointer);
-                    pointer = std::next(pointer);//pass next diff
+                    pointer = diffs.erase(pointer);
+                    std::advance(pointer, 2);//pass next diff
                 }
                 thisDiff->text = bestEdit;
                 if (!bestEquality2.empty()) {
                     nextDiff->text = bestEquality2;
+                    std::wcout << L"++++++++++++++++++"
+                               << nextDiff->text
+                               << ", " << bestEquality2
+                               << ", " << &diffs.back()
+                               << ", " << nextDiff
+                               << std::endl;
                 } else {
-                    diffs.erase(pointer); // Delete nextDiff.
+                    pointer = std::prev(pointer);//move back to nextDiff
+                    pointer = diffs.erase(pointer); // Delete nextDiff.
                     nextDiff = thisDiff;
                     thisDiff = prevDiff;
                 }
@@ -991,6 +1027,7 @@ int diff_match_patch::diff_cleanupSemanticScore(const std::wstring &one,
     // 'whitespace'.  Since this function's purpose is largely cosmetic,
     // the choice has been made to use each language's native features
     // rather than force total conformity.
+    std::wsmatch m;
     char char1 = one[one.length() - 1];
     char char2 = two[0];
     bool nonAlphaNumeric1 = !std::isalnum(char1);
@@ -999,8 +1036,8 @@ int diff_match_patch::diff_cleanupSemanticScore(const std::wstring &one,
     bool whitespace2 = nonAlphaNumeric2 && std::isspace(char2);
     bool lineBreak1 = whitespace1 && std::iscntrl(char1);
     bool lineBreak2 = whitespace2 && std::iscntrl(char2);
-    bool blankLine1 = lineBreak1 && std::regex_match(one, BLANKLINEEND);
-    bool blankLine2 = lineBreak2 && std::regex_match(two, BLANKLINESTART);
+    bool blankLine1 = lineBreak1 && std::regex_search(one, m, BLANKLINEEND);
+    bool blankLine2 = lineBreak2 && std::regex_search(two, m, BLANKLINESTART);
 
     if (blankLine1 || blankLine2) {
         // Five points for blank lines.
@@ -1027,14 +1064,14 @@ std::wregex diff_match_patch::BLANKLINEEND{L"\\n\\r?\\n$"};
 std::wregex diff_match_patch::BLANKLINESTART{L"^\\r?\\n\\r?\\n"};
 
 
-void diff_match_patch::diff_cleanupEfficiency(std::vector<Diff> &diffs) {
+void diff_match_patch::diff_cleanupEfficiency(std::list<Diff> &diffs) {
     if (diffs.empty()) {
         return;
     }
     bool changes = false;
     std::deque<Diff> equalities;  // Stack of equalities.
     std::wstring lastequality;  // Always equal to equalities.lastElement().text
-    std::vector<Diff>::iterator pointer = diffs.begin();
+    std::list<Diff>::iterator pointer = diffs.begin();
     // Is there an insertion operation before the last equality.
     bool pre_ins = false;
     // Is there a deletion operation before the last equality.
@@ -1093,7 +1130,8 @@ void diff_match_patch::diff_cleanupEfficiency(std::vector<Diff> &diffs) {
                 // Replace equality with a delete.
                 *pointer = Diff(DELETE, lastequality);
                 // Insert a corresponding an insert.
-                diffs.insert(pointer, Diff(INSERT, lastequality));
+                pointer = std::next(diffs.insert(pointer, Diff(INSERT, lastequality)));
+
                 thisDiff = &(*std::prev(pointer));
 
                 equalities.pop_front();  // Throw away the equality we just deleted.
@@ -1134,9 +1172,9 @@ void diff_match_patch::diff_cleanupEfficiency(std::vector<Diff> &diffs) {
 }
 
 
-void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
+void diff_match_patch::diff_cleanupMerge(std::list<Diff> &diffs) {
     diffs.push_back(Diff(EQUAL, L""));  // Add a dummy entry at the end.
-    std::vector<Diff>::iterator pointer = diffs.begin();
+    std::list<Diff>::iterator pointer = diffs.begin();
     int count_delete = 0;
     int count_insert = 0;
     std::wstring text_delete = L"";
@@ -1161,21 +1199,23 @@ void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
                 bool both_types = count_delete != 0 && count_insert != 0;
                 // Delete the offending records.
                 pointer = std::prev(pointer);//go back to thisDiff
-                pointer = diffs.erase(pointer - count_delete - count_insert, pointer);
+
+                auto p2 = pointer;
+                std::advance(p2, - count_delete - count_insert);
+                pointer = diffs.erase(p2, pointer);
 
                 if (both_types) {
                     // Factor out any common prefixies.
                     commonlength = diff_commonPrefix(text_insert, text_delete);
                     if (commonlength != 0) {
                         if (pointer != diffs.begin()) {
-                            thisDiff = &(*(pointer - 1));
+                            thisDiff = &(*(std::prev(pointer)));
                             if (thisDiff->operation != EQUAL) {
                                 throw "Previous diff should have been an equality.";
                             }
                             thisDiff->text += text_insert.substr(0, commonlength);
                         } else {
-                            diffs.insert(pointer, Diff(EQUAL, text_insert.substr(0, commonlength)));
-                            pointer = std::next(pointer);
+                            pointer = std::next(diffs.insert(pointer, Diff(EQUAL, text_insert.substr(0, commonlength))));
                         }
                         text_insert = safeMid(text_insert, commonlength);
                         text_delete = safeMid(text_delete, commonlength);
@@ -1194,12 +1234,10 @@ void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
                 }
                 // Insert the merged records.
                 if (!text_delete.empty()) {
-                    diffs.insert(pointer, Diff(DELETE, text_delete));
-                    pointer = std::next(pointer);
+                    pointer = std::next(diffs.insert(pointer, Diff(DELETE, text_delete)));
                 }
                 if (!text_insert.empty()) {
-                    diffs.insert(pointer, Diff(INSERT, text_insert));
-                    pointer = std::next(pointer);
+                    pointer = std::next(diffs.insert(pointer, Diff(INSERT, text_insert)));
                 }
                 // Step forward to the equality.
                 thisDiff = std::safe_next_element(diffs, pointer);
@@ -1221,7 +1259,7 @@ void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
     }
 
     if (diffs.back().text.empty()) {
-        diffs.erase(diffs.end() - 1);
+        diffs.erase(std::prev(diffs.end()));
     }
 
     /*
@@ -1276,7 +1314,7 @@ void diff_match_patch::diff_cleanupMerge(std::vector<Diff> &diffs) {
 }
 
 
-int diff_match_patch::diff_xIndex(const std::vector<Diff> &diffs, int loc) {
+int diff_match_patch::diff_xIndex(const std::list<Diff> &diffs, int loc) {
     int chars1 = 0;
     int chars2 = 0;
     int last_chars1 = 0;
@@ -1308,7 +1346,7 @@ int diff_match_patch::diff_xIndex(const std::vector<Diff> &diffs, int loc) {
 }
 
 
-std::wstring diff_match_patch::diff_prettyHtml(const std::vector<Diff> &diffs) {
+std::wstring diff_match_patch::diff_prettyHtml(const std::list<Diff> &diffs) {
     std::wstring html;
     std::wstring text;
     for(Diff aDiff : diffs) {
@@ -1335,7 +1373,7 @@ std::wstring diff_match_patch::diff_prettyHtml(const std::vector<Diff> &diffs) {
 }
 
 
-std::wstring diff_match_patch::diff_text1(const std::vector<Diff> &diffs) {
+std::wstring diff_match_patch::diff_text1(const std::list<Diff> &diffs) {
     std::wstring text;
     for(Diff aDiff: diffs) {
         if (aDiff.operation != INSERT) {
@@ -1346,7 +1384,7 @@ std::wstring diff_match_patch::diff_text1(const std::vector<Diff> &diffs) {
 }
 
 
-std::wstring diff_match_patch::diff_text2(const std::vector<Diff> &diffs) {
+std::wstring diff_match_patch::diff_text2(const std::list<Diff> &diffs) {
     std::wstring text;
     for(Diff aDiff : diffs) {
         if (aDiff.operation != DELETE) {
@@ -1357,7 +1395,7 @@ std::wstring diff_match_patch::diff_text2(const std::vector<Diff> &diffs) {
 }
 
 
-int diff_match_patch::diff_levenshtein(const std::vector<Diff> &diffs) {
+int diff_match_patch::diff_levenshtein(const std::list<Diff> &diffs) {
     int levenshtein = 0;
     int insertions = 0;
     int deletions = 0;
@@ -1382,7 +1420,7 @@ int diff_match_patch::diff_levenshtein(const std::vector<Diff> &diffs) {
 }
 
 
-std::wstring diff_match_patch::diff_toDelta(const std::vector<Diff> &diffs) {
+std::wstring diff_match_patch::diff_toDelta(const std::list<Diff> &diffs) {
     std::wstring text;
     for(Diff aDiff : diffs) {
         switch (aDiff.operation) {
@@ -1410,9 +1448,9 @@ std::wstring diff_match_patch::diff_toDelta(const std::vector<Diff> &diffs) {
 }
 
 
-std::vector<Diff> diff_match_patch::diff_fromDelta(const std::wstring &text1,
+std::list<Diff> diff_match_patch::diff_fromDelta(const std::wstring &text1,
                                                    const std::wstring &delta) {
-    std::vector<Diff> diffs;
+    std::list<Diff> diffs;
     int pointer = 0;  // Cursor in text1
     std::wstring_list tokens = std::split(delta, '\t');
     for(std::wstring token: tokens) {
@@ -1663,7 +1701,7 @@ void diff_match_patch::patch_addContext(Patch &patch, const std::wstring &text) 
 }
 
 
-std::vector<Patch> diff_match_patch::patch_make(const std::wstring &text1,
+std::list<Patch> diff_match_patch::patch_make(const std::wstring &text1,
                                                 const std::wstring &text2) {
     // Check for null inputs.
     if (text1.empty() || text2.empty()) {
@@ -1671,7 +1709,7 @@ std::vector<Patch> diff_match_patch::patch_make(const std::wstring &text1,
     }
 
     // No diffs provided, compute our own.
-    std::vector<Diff> diffs = diff_main(text1, text2, true);
+    std::list<Diff> diffs = diff_main(text1, text2, true);
     if (diffs.size() > 2) {
         diff_cleanupSemantic(diffs);
         diff_cleanupEfficiency(diffs);
@@ -1681,16 +1719,16 @@ std::vector<Patch> diff_match_patch::patch_make(const std::wstring &text1,
 }
 
 
-std::vector<Patch> diff_match_patch::patch_make(const std::vector<Diff> &diffs) {
+std::list<Patch> diff_match_patch::patch_make(const std::list<Diff> &diffs) {
     // No origin string provided, compute our own.
     const std::wstring text1 = diff_text1(diffs);
     return patch_make(text1, diffs);
 }
 
 
-std::vector<Patch> diff_match_patch::patch_make(const std::wstring &text1,
+std::list<Patch> diff_match_patch::patch_make(const std::wstring &text1,
                                                 const std::wstring &text2,
-                                                const std::vector<Diff> &diffs) {
+                                                const std::list<Diff> &diffs) {
     // text2 is entirely unused.
     return patch_make(text1, diffs);
 
@@ -1698,14 +1736,14 @@ std::vector<Patch> diff_match_patch::patch_make(const std::wstring &text1,
 }
 
 
-std::vector<Patch> diff_match_patch::patch_make(const std::wstring &text1,
-                                                const std::vector<Diff> &diffs) {
+std::list<Patch> diff_match_patch::patch_make(const std::wstring &text1,
+                                                const std::list<Diff> &diffs) {
     // Check for null inputs.
     if (text1.empty()) {
         throw "Null inputs. (patch_make)";
     }
 
-    std::vector<Patch> patches;
+    std::list<Patch> patches;
     if (diffs.empty()) {
         return patches;  // Get rid of the null case.
     }
@@ -1781,8 +1819,8 @@ std::vector<Patch> diff_match_patch::patch_make(const std::wstring &text1,
 }
 
 
-std::vector<Patch> diff_match_patch::patch_deepCopy(std::vector<Patch> &patches) {
-    std::vector<Patch> patchesCopy;
+std::list<Patch> diff_match_patch::patch_deepCopy(std::list<Patch> &patches) {
+    std::list<Patch> patchesCopy;
     for(Patch aPatch: patches) {
         Patch patchCopy = Patch();
         for(Diff aDiff: aPatch.diffs) {
@@ -1800,14 +1838,14 @@ std::vector<Patch> diff_match_patch::patch_deepCopy(std::vector<Patch> &patches)
 
 
 std::pair<std::wstring, std::vector<bool> > diff_match_patch::patch_apply(
-    std::vector<Patch> &patches, const std::wstring &sourceText) {
+    std::list<Patch> &patches, const std::wstring &sourceText) {
     std::wstring text = sourceText;  // Copy to preserve original.
     if (patches.empty()) {
         return std::pair<std::wstring,std::vector<bool> >(text, std::vector<bool>(0));
     }
 
     // Deep copy the patches so that no changes are made to originals.
-    std::vector<Patch> patchesCopy = patch_deepCopy(patches);
+    std::list<Patch> patchesCopy = patch_deepCopy(patches);
 
     std::wstring nullPadding = patch_addPadding(patchesCopy);
     text = nullPadding + text + nullPadding;
@@ -1862,7 +1900,7 @@ std::pair<std::wstring, std::vector<bool> > diff_match_patch::patch_apply(
             } else {
                 // Imperfect match.  Run a diff to get a framework of equivalent
                 // indices.
-                std::vector<Diff> diffs = diff_main(text1, text2, false);
+                std::list<Diff> diffs = diff_main(text1, text2, false);
                 if (text1.length() > Match_MaxBits
                     && diff_levenshtein(diffs) / static_cast<float> (text1.length())
                     > Patch_DeleteThreshold) {
@@ -1901,7 +1939,7 @@ std::pair<std::wstring, std::vector<bool> > diff_match_patch::patch_apply(
 }
 
 
-std::wstring diff_match_patch::patch_addPadding(std::vector<Patch> &patches) {
+std::wstring diff_match_patch::patch_addPadding(std::list<Patch> &patches) {
     short paddingLength = Patch_Margin;
     std::wstring nullPadding = L"";
     for (short x = 1; x <= paddingLength; x++) {
@@ -1918,7 +1956,7 @@ std::wstring diff_match_patch::patch_addPadding(std::vector<Patch> &patches) {
 
     // Add some padding on start of first diff.
     Patch &firstPatch = patches.front();
-    std::vector<Diff> &firstPatchDiffs = firstPatch.diffs;
+    std::list<Diff> &firstPatchDiffs = firstPatch.diffs;
     if (firstPatchDiffs.empty() || firstPatchDiffs.front().operation != EQUAL) {
         // Add nullPadding equality.
         firstPatchDiffs.insert(firstPatchDiffs.begin(), Diff(EQUAL, nullPadding));
@@ -1940,7 +1978,7 @@ std::wstring diff_match_patch::patch_addPadding(std::vector<Patch> &patches) {
 
     // Add some padding on end of last diff.
     Patch &lastPatch = patches.front();
-    std::vector<Diff> &lastPatchDiffs = lastPatch.diffs;
+    std::list<Diff> &lastPatchDiffs = lastPatch.diffs;
     if (lastPatchDiffs.empty() || lastPatchDiffs.back().operation != EQUAL) {
         // Add nullPadding equality.
         lastPatchDiffs.push_back(Diff(EQUAL, nullPadding));
@@ -1959,7 +1997,7 @@ std::wstring diff_match_patch::patch_addPadding(std::vector<Patch> &patches) {
 }
 
 
-void diff_match_patch::patch_splitMax(std::vector<Patch> &patches) {
+void diff_match_patch::patch_splitMax(std::list<Patch> &patches) {
     short patch_size = Match_MaxBits;
     std::wstring precontext, postcontext;
     Patch patch;
@@ -1983,9 +2021,7 @@ void diff_match_patch::patch_splitMax(std::vector<Patch> &patches) {
             continue;
         }
         // Remove the big old patch.
-        auto tmp_pointer = pointer + 1;
-        patches.erase(pointer);
-        pointer = tmp_pointer;
+        pointer = patches.erase(pointer);
         start1 = bigpatch.start1;
         start2 = bigpatch.start2;
         precontext = L"";
@@ -2060,7 +2096,7 @@ void diff_match_patch::patch_splitMax(std::vector<Patch> &patches) {
                 }
             }
             if (!empty) {
-                patches.insert(pointer, patch);
+                pointer = std::next(patches.insert(pointer, patch));
             }
         }
         if (pointer != patches.end())
@@ -2071,7 +2107,7 @@ void diff_match_patch::patch_splitMax(std::vector<Patch> &patches) {
 }
 
 
-std::wstring diff_match_patch::patch_toText(const std::vector<Patch> &patches) {
+std::wstring diff_match_patch::patch_toText(const std::list<Patch> &patches) {
     std::wstring text;
     for(Patch aPatch: patches) {
         text.append(aPatch.toString());
@@ -2080,8 +2116,8 @@ std::wstring diff_match_patch::patch_toText(const std::vector<Patch> &patches) {
 }
 
 
-std::vector<Patch> diff_match_patch::patch_fromText(const std::wstring &textline) {
-    std::vector<Patch> patches;
+std::list<Patch> diff_match_patch::patch_fromText(const std::wstring &textline) {
+    std::list<Patch> patches;
     if (textline.empty()) {
         return patches;
     }
@@ -2144,7 +2180,7 @@ std::vector<Patch> diff_match_patch::patch_fromText(const std::wstring &textline
             } else {
                 // WTF?
                 throw std::format(L"Invalid patch mode '%c' in: %ls", sign, line.c_str());
-                return std::vector<Patch>();
+                return std::list<Patch>();
             }
             text.erase(text.begin());
         }

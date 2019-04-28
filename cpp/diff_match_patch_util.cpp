@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <locale>
 #include <codecvt>
-
+#include <list>
 
 #include "diff_match_patch_util.h"
 
