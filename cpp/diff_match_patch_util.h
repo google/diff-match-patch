@@ -21,6 +21,8 @@ std::wstring url_encode(const std::wstring &value, const std::string & exclude="
 std::string url_decode(const std::string &value);
 std::wstring url_decode(const std::wstring &value);
 void debug_print(const wchar_t * f, ...);
+std::wstring var_to_string(const dmp_variant & var);
+
 template<class InputIterator, class value_type = typename InputIterator::value_type>
 std::wstring join(const InputIterator & begin,
                  const InputIterator & end,
@@ -37,5 +39,27 @@ std::wstring join(const v_t & v, const std::wstring & delimiters) {
     return join<typename v_t::const_iterator, value_type>(v.begin(), v.end(), delimiters);
 }
 
-std::wstring var_to_string(const dmp_variant & var);
+template<typename T>
+T * safe_next_element_ptr(const std::list<T> & v, typename std::list<T>::iterator & it) {
+    if (it != v.end()) {
+        T * p = &(*it);
+        it++;
+        return p;
+    }
+
+    return nullptr;
+}
+
+template<typename T>
+T safe_next_element(const std::list<T> & v, typename std::list<T>::iterator & it) {
+    if (it != v.end()) {
+        T p = (*it);
+        it++;
+        return p;
+    }
+
+    return T();
+}
+
+
 }

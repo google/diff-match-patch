@@ -20,6 +20,7 @@
 #include <string>
 #include <list>
 #include <unordered_map>
+#include <iostream>
 #include "diff_match_patch.h"
 #include "diff_match_patch_test.h"
 
@@ -74,7 +75,10 @@ void diff_match_patch_test::run_all_tests() {
         std::debug_print(L"All tests passed.");
     } catch (std::wstring strCase) {
         std::debug_print(L"Test failed: %ls", qPrintable(strCase));
+    } catch (char const *strCase) {
+        std::cout << "Test failed:" << strCase << std::endl;
     }
+
 }
 
 //  DIFF TEST FUNCTIONS
@@ -582,6 +586,7 @@ void diff_match_patch_test::testDiffMain() {
     std::wstring_list texts_textmode = diff_rebuildtexts(dmp.diff_main(a, b, false));
     assertEquals(L"diff_main: Overlap line-mode.", texts_textmode, texts_linemode);
 
+    /*invalid case
     // Test null inputs.
     try {
         dmp.diff_main(NULL, NULL);
@@ -589,6 +594,7 @@ void diff_match_patch_test::testDiffMain() {
     } catch (const char* ex) {
         // Exception expected.
     }
+    */
 }
 
 
@@ -669,6 +675,7 @@ void diff_match_patch_test::testMatchMain() {
     assertEquals(L"match_main: Complex match.", 4, dmp.match_main(L"I am the very model of a modern major general.", L" that berry ", 5));
     dmp.Match_Threshold = 0.5f;
 
+    /* invalid case for std::wstring
     // Test null inputs.
     try {
         dmp.match_main(NULL, NULL, 0);
@@ -676,6 +683,7 @@ void diff_match_patch_test::testMatchMain() {
     } catch (const char* ex) {
         // Exception expected.
     }
+    */
 }
 
 
@@ -787,12 +795,14 @@ void diff_match_patch_test::testPatchMake() {
     assertEquals(L"patch_make: Long string with repeats.", expectedPatch, dmp.patch_toText(patches));
 
     // Test null inputs.
+    /* invalid case
     try {
         dmp.patch_make(NULL, NULL);
         assertFalse(L"patch_make: Null inputs.", true);
     } catch (const char* ex) {
         // Exception expected.
     }
+    */
 }
 
 void diff_match_patch_test::testPatchSplitMax() {
