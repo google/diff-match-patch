@@ -387,7 +387,7 @@ var diff_match_patch = /** @class */ (function () {
      */
     diff_match_patch.prototype.diff_linesToChars_ = function (text1, text2) {
         var lineArray = []; // e.g. lineArray[4] == 'Hello\n'
-        var lineHash = {}; // e.g. lineHash['Hello\n'] == 4
+        var lineHash = Object.create(null); // e.g. lineHash['Hello\n'] == 4
         // '\x00' is a valid character, but various debuggers don't like it.
         // So we'll insert a junk entry to avoid generating a null character.
         lineArray[0] = '';
