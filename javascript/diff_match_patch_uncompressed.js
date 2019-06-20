@@ -23,6 +23,16 @@
  */
 
 /**
+ * Determine if the index is inside a surrogate pair.
+ * @param {string} str The string
+ * @param {numer} idx The index
+ */
+function insideSurrogate(str, idx) {
+  var code = str.charCodeAt(idx);
+  return code >= 0xDC00 && code <= 0xDFFF;
+}
+
+/**
  * Class containing the diff, match and patch methods.
  * @constructor
  */
@@ -361,6 +371,11 @@ diff_match_patch.prototype.diff_bisect_ = function(text1, text2, deadline) {
         x1++;
         y1++;
       }
+      if (insideSurrogate(text1, x1)) {
+        x1--;
+        y1--;
+      }
+
       v1[k1_offset] = x1;
       if (x1 > text1_length) {
         // Ran off the right of the graph.
@@ -569,6 +584,9 @@ diff_match_patch.prototype.diff_commonPrefix = function(text1, text2) {
     }
     pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
   }
+  if (insideSurrogate(text1, pointermid)) {
+    pointermid--;
+  }
   return pointermid;
 };
 
@@ -600,6 +618,9 @@ diff_match_patch.prototype.diff_commonSuffix = function(text1, text2) {
       pointermax = pointermid;
     }
     pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
+  }
+  if (insideSurrogate(text1, text1.length - pointermid)) {
+    pointermid--;
   }
   return pointermid;
 };
