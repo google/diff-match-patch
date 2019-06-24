@@ -28,8 +28,7 @@ Pod::Spec.new do |spec|
     Diff Match Patch
                    DESC
 
-  spec.homepage     = "https://github.com/verkada/diff-match-patch"
-  # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
+  spec.homepage     = "https://github.com/google/diff-match-patch"
 
 
   # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -51,11 +50,6 @@ Pod::Spec.new do |spec|
   #  Specify a social_media_url where others can refer to, for example a twitter
   #  profile URL.
   #
-
-  spec.author             = { "Joohae Kim" => "joohae.kim@verkada.com" }
-  # Or just: spec.author    = "Joohae Kim"
-  # spec.authors            = { "Joohae Kim" => "joohae.kim@verkada.com" }
-  # spec.social_media_url   = "https://twitter.com/Joohae Kim"
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
