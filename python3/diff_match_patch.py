@@ -1804,7 +1804,7 @@ class diff_match_patch:
       return patches
     text = textline.split('\n')
     while len(text) != 0:
-      m = re.match("^@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@$", text[0])
+      m = re.match(r"^@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@$", text[0])
       if not m:
         raise ValueError("Invalid patch string: " + text[0])
       patch = patch_obj()
