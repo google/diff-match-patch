@@ -50,6 +50,7 @@ Pod::Spec.new do |spec|
   #  Specify a social_media_url where others can refer to, for example a twitter
   #  profile URL.
   #
+  spec.authors      = { 'Jan Weiß' => 'jan@geheimwerk.de' }
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
