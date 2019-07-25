@@ -1663,9 +1663,9 @@ diff_match_patch.prototype.patch_addContext_ = function(patch, text) {
  *
  * @param {string|!Array.<!diff_match_patch.Diff>} a text1 (methods 1,3,4) or
  * Array of diff tuples for text1 to text2 (method 2).
- * @param {string|!Array.<!diff_match_patch.Diff>} opt_b text2 (methods 1,4) or
+ * @param {string|!Array.<!diff_match_patch.Diff>=} opt_b text2 (methods 1,4) or
  * Array of diff tuples for text1 to text2 (method 3) or undefined (method 2).
- * @param {string|!Array.<!diff_match_patch.Diff>} opt_c Array of diff tuples
+ * @param {string|!Array.<!diff_match_patch.Diff>=} opt_c Array of diff tuples
  * for text1 to text2 (method 4) or undefined (methods 1,2,3).
  * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
  */
