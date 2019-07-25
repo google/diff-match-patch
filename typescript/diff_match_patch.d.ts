@@ -1,4 +1,4 @@
-export declare class diff_match_patch {
+export default class diff_match_patch {
     Diff_Timeout: number;
     Diff_EditCost: number;
     Match_Threshold: number;
@@ -55,13 +55,10 @@ export declare class diff_match_patch {
 export declare const DIFF_DELETE = -1;
 export declare const DIFF_INSERT = 1;
 export declare const DIFF_EQUAL = 0;
-export interface IDiff<T0, T1> {
-    0: T0;
-    1: T1;
-}
-export declare class Diff implements IDiff<number, string> {
+export declare class Diff {
     0: number;
     1: string;
+    length: number;
     constructor(op: number, text: string);
     toString(): string;
 }

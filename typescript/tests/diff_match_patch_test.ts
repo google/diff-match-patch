@@ -18,7 +18,7 @@
 
 'use strict';
 
-import { diff_match_patch, Diff, patch_obj, DIFF_EQUAL, DIFF_INSERT, DIFF_DELETE } from '../diff_match_patch';
+import diff_match_patch, { Diff, patch_obj, DIFF_EQUAL, DIFF_INSERT, DIFF_DELETE } from '../diff_match_patch';
 
 import { assertEquals, assertTrue, assertFalse } from './testrunner';
 

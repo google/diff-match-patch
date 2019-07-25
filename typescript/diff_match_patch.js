@@ -1499,12 +1499,13 @@
         diff_match_patch.blanklineStartRegex_ = /^\r?\n\r?\n/;
         return diff_match_patch;
     }());
-    exports.diff_match_patch = diff_match_patch;
+    exports["default"] = diff_match_patch;
     exports.DIFF_DELETE = -1;
     exports.DIFF_INSERT = 1;
     exports.DIFF_EQUAL = 0;
     var Diff = (function () {
         function Diff(op, text) {
+            this.length = 2;
             this[0] = op;
             this[1] = text;
         }

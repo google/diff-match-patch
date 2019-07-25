@@ -26,7 +26,7 @@
  * Class containing the diff, match and patch methods.
  * @constructor
  */
-export class diff_match_patch {
+export default class diff_match_patch {
 
   public Diff_Timeout: number;
   public Diff_EditCost: number;
@@ -2160,12 +2160,6 @@ export const DIFF_EQUAL = 0;
  */
 
 
-
-export interface IDiff<T0, T1> {
-  0: T0;
-  1: T1;
-}
-
 /**
  * Class representing one diff tuple.
  * Attempts to look like a two-element array (which is what this used to be).
@@ -2173,10 +2167,12 @@ export interface IDiff<T0, T1> {
  * @param {string} text Text to be deleted, inserted, or retained.
  * @constructor
  */
-export class Diff implements IDiff<number, string> {
+export class Diff {
 
   0: number;
   1: string;
+
+  length = 2;
 
   constructor(op: number, text: string) {
     this[0] = op;
