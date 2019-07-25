@@ -9,3 +9,5 @@ xcuserdata
 
 dart/tests/Speedtest.dart.js.deps
 dart/tests/Speedtest.dart.js.map
+
+typescript/tests/dist

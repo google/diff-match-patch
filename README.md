@@ -11,7 +11,7 @@ operations required for synchronizing plain text.
    * Apply a list of patches onto plain text. Use best-effort to apply patch even when the underlying text doesn't match.
    * [Patch Demo](https://neil.fraser.name/software/diff_match_patch/demos/patch.html)
 
-Originally built in 2006 to power Google Docs, this library is now available in C++, C#, Dart, Java, JavaScript, Lua, Objective C, and Python.
+Originally built in 2006 to power Google Docs, this library is now available in C++, C#, Dart, Java, JavaScript, TypeScript, Lua, Objective C, and Python.
 
 ### Reference
 
