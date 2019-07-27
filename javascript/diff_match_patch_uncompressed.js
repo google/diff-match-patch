@@ -232,6 +232,74 @@ diff_match_patch.prototype.diff_compute_ = function(text1, text2, checklines,
   return this.diff_bisect_(text1, text2, deadline);
 };
 
+/**
+ * Do a quick word-level diff on both strings, then rediff the parts for
+ * greater accuracy.
+ * This speedup can produce non-minimal diffs.
+ * @param {string} text1 Old string to be diffed.
+ * @param {string} text2 New string to be diffed.
+ * @param {number} deadline Time when the diff should be complete by.
+ * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
+ * @private
+ */
+diff_match_patch.prototype.diff_wordMode_ = function(text1, text2, deadline) {
+  // Scan the text on a line-by-line basis first.
+  var a = this.diff_linesToWords_(text1, text2);
+  text1 = a.chars1;
+  text2 = a.chars2;
+  var linearray = a.lineArray;
+
+  var diffs = this.diff_main(text1, text2, false, deadline);
+
+  // Convert the diff back to original text.
+  this.diff_charsToLines_(diffs, linearray);
+  // Eliminate freak matches (e.g. blank lines)
+  this.diff_cleanupSemantic(diffs);
+
+  // Rediff any replacement blocks, this time character-by-character.
+  // Add a dummy entry at the end.
+  diffs.push(new diff_match_patch.Diff(DIFF_EQUAL, ''));
+  var pointer = 0;
+  var count_delete = 0;
+  var count_insert = 0;
+  var text_delete = '';
+  var text_insert = '';
+  while (pointer < diffs.length) {
+    switch (diffs[pointer][0]) {
+      case DIFF_INSERT:
+        count_insert++;
+        text_insert += diffs[pointer][1];
+        break;
+      case DIFF_DELETE:
+        count_delete++;
+        text_delete += diffs[pointer][1];
+        break;
+      case DIFF_EQUAL:
+        // Upon reaching an equality, check for prior redundancies.
+        if (count_delete >= 1 && count_insert >= 1) {
+          // Delete the offending records and add the merged ones.
+          diffs.splice(pointer - count_delete - count_insert,
+                       count_delete + count_insert);
+          pointer = pointer - count_delete - count_insert;
+          var subDiff =
+              this.diff_main(text_delete, text_insert, false, deadline);
+          for (var j = subDiff.length - 1; j >= 0; j--) {
+            diffs.splice(pointer, 0, subDiff[j]);
+          }
+          pointer = pointer + subDiff.length;
+        }
+        count_insert = 0;
+        count_delete = 0;
+        text_delete = '';
+        text_insert = '';
+        break;
+    }
+    pointer++;
+  }
+  diffs.pop();  // Remove the dummy entry at the end.
+
+  return diffs;
+};
 
 /**
  * Do a quick line-level diff on both strings, then rediff the parts for
@@ -451,6 +519,75 @@ diff_match_patch.prototype.diff_bisectSplit_ = function(text1, text2, x, y,
   return diffs.concat(diffsb);
 };
 
+
+/**
+ * Split two texts into an array of strings.  Reduce the texts to a string of
+ * hashes where each Unicode character represents one word.
+ * @param {string} text1 First string.
+ * @param {string} text2 Second string.
+ * @return {{chars1: string, chars2: string, lineArray: !Array.<string>}}
+ *     An object containing the encoded text1, the encoded text2 and
+ *     the array of unique strings.
+ *     The zeroth element of the array of unique strings is intentionally blank.
+ * @private
+ */
+diff_match_patch.prototype.diff_linesToWords_ = function(text1, text2) {
+  var lineArray = [];  // e.g. lineArray[4] == 'Hello\n'
+  var lineHash = {};   // e.g. lineHash['Hello\n'] == 4
+
+  // '\x00' is a valid character, but various debuggers don't like it.
+  // So we'll insert a junk entry to avoid generating a null character.
+  lineArray[0] = '';
+
+  /**
+   * Split a text into an array of strings.  Reduce the texts to a string of
+   * hashes where each Unicode character represents one line.
+   * Modifies linearray and linehash through being a closure.
+   * @param {string} text String to encode.
+   * @return {string} Encoded string.
+   * @private
+   */
+  function diff_linesToCharsMunge_(text) {
+    var chars = '';
+    // Walk the text, pulling out a substring for each line.
+    // text.split('\n') would would temporarily double our memory footprint.
+    // Modifying text would create many large strings to garbage collect.
+    var lineStart = 0;
+    var lineEnd = -1;
+    // Keeping our own length variable is faster than looking it up.
+    var lineArrayLength = lineArray.length;
+    while (lineEnd < text.length - 1) {
+      lineEnd = text.replace(/[\n\.,;:]/g,' ').indexOf(' ', lineStart);
+      if (lineEnd == -1) {
+        lineEnd = text.length - 1;
+      }
+      var line = text.substring(lineStart, lineEnd + 1);
+
+      if (lineHash.hasOwnProperty ? lineHash.hasOwnProperty(line) :
+          (lineHash[line] !== undefined)) {
+        chars += String.fromCharCode(lineHash[line]);
+      } else {
+        if (lineArrayLength == maxLines) {
+          // Bail out at 65535 because
+          // String.fromCharCode(65536) == String.fromCharCode(0)
+          line = text.substring(lineStart);
+          lineEnd = text.length;
+        }
+        chars += String.fromCharCode(lineArrayLength);
+        lineHash[line] = lineArrayLength;
+        lineArray[lineArrayLength++] = line;
+      }
+      lineStart = lineEnd + 1;
+    }
+    return chars;
+  }
+  // Allocate 2/3rds of the space for text1, the rest for text2.
+  var maxLines = 40000;
+  var chars1 = diff_linesToCharsMunge_(text1);
+  maxLines = 65535;
+  var chars2 = diff_linesToCharsMunge_(text2);
+  return {chars1: chars1, chars2: chars2, lineArray: lineArray};
+};
 
 /**
  * Split two texts into an array of strings.  Reduce the texts to a string of
