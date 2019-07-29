@@ -767,6 +767,57 @@ function testPatchToText() {
   strp = '@@ -1,9 +1,9 @@\n-f\n+F\n oo+fooba\n@@ -7,9 +7,9 @@\n obar\n-,\n+.\n  tes\n';
   p = dmp.patch_fromText(strp);
   assertEquals(strp, dmp.patch_toText(p));
+
+}
+
+function testPatchSurrogates() {
+  var p, p2, strp;
+
+  // These share the same high surrogate prefix
+  p = dmp.patch_make('\u{1F30D}', '\u{1F308}');
+  strp = dmp.patch_toText(p);
+  p2 = dmp.patch_fromText(strp);
+  assertEquivalent(p, p2);
+
+  // These share the same low surrogate suffix
+  p = dmp.patch_make('\u{10120}', '\u{10520}');
+  strp = dmp.patch_toText(p);
+  p2 = dmp.patch_fromText(strp);
+  assertEquivalent(p, p2);
+
+  // No common prefix, but later there's the same high surrogate char
+  p = dmp.patch_make('abbb\u{1F30D}', 'cbbb\u{1F308}');
+  strp = dmp.patch_toText(p);
+  p2 = dmp.patch_fromText(strp);
+  assertEquivalent(p, p2);
+
+  // No common suffix, but earlier there's the same low surrogate char
+  p = dmp.patch_make('\u{10120}aaac', '\u{10520}aaab');
+  strp = dmp.patch_toText(p);
+  p2 = dmp.patch_fromText(strp);
+  assertEquivalent(p, p2);
+
+  // No common suffix, but earlier there's the same low surrogate char
+  p = dmp.patch_make('abbb\u{10120}aaac', '\u{10520}aaab');
+  strp = dmp.patch_toText(p);
+  p2 = dmp.patch_fromText(strp);
+  assertEquivalent(p, p2);
+
+  var padding1 = "";
+  while (padding1.length < 100) {
+    padding1 += String.fromCharCode(50 + padding1.length);
+  }
+
+  var padding2 = "";
+  while (padding2.length < 100) {
+    padding2 += String.fromCharCode(200 + padding2.length);
+  }
+
+  // Add some random padding
+  p = dmp.patch_make(padding1+'\u{10120}'+padding2, padding2+'\u{10520}'+padding1);
+  strp = dmp.patch_toText(p);
+  p2 = dmp.patch_fromText(strp);
+  assertEquivalent(p, p2);
 }
 
 function testPatchAddContext() {
