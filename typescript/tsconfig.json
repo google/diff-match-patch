@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "UMD",
+        "target": "es5",
+        "declaration": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outDir": "./"
+    },
+    "files": [
+        "diff_match_patch.ts"
+    ]
+}
