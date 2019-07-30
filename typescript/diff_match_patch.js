@@ -8,7 +8,7 @@
     }
 })(function (require, exports) {
     "use strict";
-    exports.__esModule = true;
+    Object.defineProperty(exports, "__esModule", { value: true });
     var diff_match_patch = (function () {
         function diff_match_patch() {
             this.Diff_Timeout = 1.0;
@@ -1499,15 +1499,38 @@
         diff_match_patch.blanklineStartRegex_ = /^\r?\n\r?\n/;
         return diff_match_patch;
     }());
-    exports["default"] = diff_match_patch;
+    exports.default = diff_match_patch;
     exports.DIFF_DELETE = -1;
     exports.DIFF_INSERT = 1;
     exports.DIFF_EQUAL = 0;
     var Diff = (function () {
         function Diff(op, text) {
-            this.operation = op;
-            this.text = text;
+            this[0] = op;
+            this[1] = text;
         }
+        Diff.fromArray = function (diffArray) {
+            return new Diff(diffArray[0], diffArray[1]);
+        };
+        Object.defineProperty(Diff.prototype, "operation", {
+            get: function () {
+                return this[0];
+            },
+            set: function (op) {
+                this[0] = op;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Diff.prototype, "text", {
+            get: function () {
+                return this[1];
+            },
+            set: function (text) {
+                this[1] = text;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Diff.prototype.toString = function () {
             return this.operation + ',' + this.text;
         };

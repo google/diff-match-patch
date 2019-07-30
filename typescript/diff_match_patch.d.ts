@@ -50,9 +50,12 @@ export declare const DIFF_DELETE = -1;
 export declare const DIFF_INSERT = 1;
 export declare const DIFF_EQUAL = 0;
 export declare class Diff {
+    0: number;
+    1: string;
+    constructor(op: number, text: string);
+    static fromArray(diffArray: [number, string]): Diff;
     operation: number;
     text: string;
-    constructor(op: number, text: string);
     toString(): string;
 }
 export declare class patch_obj {

@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "module": "UMD",
+        "target": "es5",
         "declaration": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
