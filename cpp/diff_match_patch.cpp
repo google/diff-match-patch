@@ -234,7 +234,7 @@ QList<Diff> diff_match_patch::diff_main(const QString &text1,
 }
 
 
-QList<Diff> diff_match_patch::diff_compute(QString text1, QString text2,
+QList<Diff> diff_match_patch::diff_compute(const QString &text1, const QString &text2,
     bool checklines, clock_t deadline) {
   QList<Diff> diffs;
 
@@ -1739,7 +1739,7 @@ QList<Patch> diff_match_patch::patch_make(const QString &text1,
 }
 
 
-QList<Patch> diff_match_patch::patch_deepCopy(QList<Patch> &patches) {
+QList<Patch> diff_match_patch::patch_deepCopy(const QList<Patch> &patches) {
   QList<Patch> patchesCopy;
   foreach(Patch aPatch, patches) {
     Patch patchCopy = Patch();
