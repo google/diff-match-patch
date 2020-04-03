@@ -51,6 +51,10 @@ var diff_match_patch = function() {
 
   // The number of bits in an int.
   this.Match_MaxBits = 32;
+
+  // Disable style injection for stricter CSP environments.
+  // Applies exclusively to diff_prettyHtml.
+  this.Style_Injection = true;
 };
 
 
@@ -1254,6 +1258,14 @@ diff_match_patch.prototype.diff_prettyHtml = function(diffs) {
   var pattern_lt = /</g;
   var pattern_gt = />/g;
   var pattern_para = /\n/g;
+  if (this.Style_Injection) {
+    var ins_style = 'style="background:#e6ffe6;"'
+    var del_style = 'style="background:#ffe6e6;"'
+  } else {
+    var ins_style = 'class="ins_style"'
+    var del_style = 'class="del_style"'
+  }
+
   for (var x = 0; x < diffs.length; x++) {
     var op = diffs[x][0];    // Operation (insert, delete, equal)
     var data = diffs[x][1];  // Text of change.
@@ -1261,10 +1273,10 @@ diff_match_patch.prototype.diff_prettyHtml = function(diffs) {
         .replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
     switch (op) {
       case DIFF_INSERT:
-        html[x] = '<ins style="background:#e6ffe6;">' + text + '</ins>';
+        html[x] = '<ins ' + ins_style + '>' + text + '</ins>';
         break;
       case DIFF_DELETE:
-        html[x] = '<del style="background:#ffe6e6;">' + text + '</del>';
+        html[x] = '<del ' + del_style + '>' + text + '</del>';
         break;
       case DIFF_EQUAL:
         html[x] = '<span>' + text + '</span>';
