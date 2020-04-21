@@ -2244,7 +2244,7 @@ namespace DiffMatchPatch {
     /// </summary>
     /// <param name="textline">Text representation of patches.</param>
     /// <returns>List of Patch objects.</returns>
-    /// <exception cref="ArgumentException">ArgumentException If invalid input.</exception>
+    /// <exception cref="ArgumentException">If invalid input.</exception>
     public List<Patch> patch_fromText(string textline) {
       List<Patch> patches = new List<Patch>();
       if (textline.Length == 0) {
