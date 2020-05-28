@@ -1,3 +1,4 @@
+# Diff Match Patch
 The Diff Match and Patch libraries offer robust algorithms to perform the
 operations required for synchronizing plain text.
 
