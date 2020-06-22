@@ -24,36 +24,32 @@
 #import <DiffMatchPatch/DiffMatchPatch.h>
 
 int main (int argc, const char * argv[]) {
-  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+  @autoreleasepool {
+    NSString *directory = @"";
+    if (argc >= 1) {
+      directory = [NSString stringWithCString:argv[1] encoding:NSUTF8StringEncoding];
+    }
 
-  NSString *directory = @"";
-  if (argc >= 1) {
-     directory = [NSString stringWithCString:argv[1] encoding:NSUTF8StringEncoding];
+    NSString *filePath1 =
+    [directory stringByAppendingPathComponent:@"Tests/Speedtest1.txt"];
+    NSString *text1 = [NSString stringWithContentsOfFile:filePath1
+                                                encoding:NSUTF8StringEncoding
+                                                   error:NULL];
+
+    NSString *filePath2 =
+    [directory stringByAppendingPathComponent:@"Tests/Speedtest2.txt"];
+    NSString *text2 = [NSString stringWithContentsOfFile:filePath2
+                                                encoding:NSUTF8StringEncoding
+                                                   error:NULL];
+
+    DiffMatchPatch *dmp = [DiffMatchPatch new];
+    dmp.Diff_Timeout = 0;
+
+    NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+    [dmp diff_mainOfOldString:text1 andNewString:text2];
+    NSTimeInterval duration = [NSDate timeIntervalSinceReferenceDate] - start;
+
+    NSLog(@"Elapsed time: %.4lf", (double)duration);
   }
-
-  NSString *filePath1 =
-      [directory stringByAppendingPathComponent:@"Tests/Speedtest1.txt"];
-  NSString *text1 = [NSString stringWithContentsOfFile:filePath1
-                        encoding:NSUTF8StringEncoding
-                           error:NULL];
-
-  NSString *filePath2 =
-      [directory stringByAppendingPathComponent:@"Tests/Speedtest2.txt"];
-  NSString *text2 = [NSString stringWithContentsOfFile:filePath2
-                        encoding:NSUTF8StringEncoding
-                           error:NULL];
-
-  DiffMatchPatch *dmp = [DiffMatchPatch new];
-  dmp.Diff_Timeout = 0;
-
-  NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-  [dmp diff_mainOfOldString:text1 andNewString:text2];
-  NSTimeInterval duration = [NSDate timeIntervalSinceReferenceDate] - start;
-
-  [dmp release];
-
-  NSLog(@"Elapsed time: %.4lf", (double)duration);
-
-  [pool drain];
   return 0;
 }

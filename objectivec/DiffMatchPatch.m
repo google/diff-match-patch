@@ -61,7 +61,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 + (id)diffWithOperation:(Operation)anOperation
                 andText:(NSString *)aText;
 {
-  return [[[self alloc] initWithOperation:anOperation andText:aText] autorelease];
+  return [[self alloc] initWithOperation:anOperation andText:aText];
 }
 
 - (id)initWithOperation:(Operation)anOperation
@@ -79,8 +79,6 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (void)dealloc
 {
   self.text = nil;
-
-  [super dealloc];
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -181,8 +179,6 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (void)dealloc
 {
   self.diffs = nil;
-
-  [super dealloc];
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -284,11 +280,6 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   return self;
 }
 
-- (void)dealloc
-{
-  [super dealloc];
-}
-
 
 #pragma mark Diff Functions
 //  DIFF FUNCTIONS
@@ -367,13 +358,13 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   }
 
   // Trim off common prefix (speedup).
-  NSUInteger commonlength = (NSUInteger)diff_commonPrefix((CFStringRef)text1, (CFStringRef)text2);
+  NSUInteger commonlength = (NSUInteger)diff_commonPrefix((__bridge CFStringRef)text1, (__bridge CFStringRef)text2);
   NSString *commonprefix = [text1 substringWithRange:NSMakeRange(0, commonlength)];
   text1 = [text1 substringFromIndex:commonlength];
   text2 = [text2 substringFromIndex:commonlength];
 
   // Trim off common suffix (speedup).
-  commonlength = (NSUInteger)diff_commonSuffix((CFStringRef)text1, (CFStringRef)text2);
+  commonlength = (NSUInteger)diff_commonSuffix((__bridge CFStringRef)text1, (__bridge CFStringRef)text2);
   NSString *commonsuffix = [text1 substringFromIndex:text1.length - commonlength];
   text1 = [text1 substringWithRange:NSMakeRange(0, text1.length - commonlength)];
   text2 = [text2 substringWithRange:NSMakeRange(0, text2.length - commonlength)];
@@ -402,7 +393,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSUInteger)diff_commonPrefixOfFirstString:(NSString *)text1
                              andSecondString:(NSString *)text2;
 {
-  return (NSUInteger)diff_commonPrefix((CFStringRef)text1, (CFStringRef)text2);
+  return (NSUInteger)diff_commonPrefix((__bridge CFStringRef)text1, (__bridge CFStringRef)text2);
 }
 
 /**
@@ -414,7 +405,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSUInteger)diff_commonSuffixOfFirstString:(NSString *)text1
                              andSecondString:(NSString *)text2;
 {
-  return (NSUInteger)diff_commonSuffix((CFStringRef)text1, (CFStringRef)text2);
+  return (NSUInteger)diff_commonSuffix((__bridge CFStringRef)text1, (__bridge CFStringRef)text2);
 }
 
 /**
@@ -427,7 +418,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSUInteger)diff_commonOverlapOfFirstString:(NSString *)text1
                               andSecondString:(NSString *)text2;
 {
-  return (NSUInteger)diff_commonOverlap((CFStringRef)text1, (CFStringRef)text2);
+  return (NSUInteger)diff_commonOverlap((__bridge CFStringRef)text1, (__bridge CFStringRef)text2);
 }
 
 /**
@@ -443,7 +434,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSArray *)diff_halfMatchOfFirstString:(NSString *)text1
                          andSecondString:(NSString *)text2;
 {
-  return [(NSArray *)diff_halfMatchCreate((CFStringRef)text1, (CFStringRef)text2, Diff_Timeout) autorelease];
+  return (__bridge NSArray *)diff_halfMatchCreate((__bridge CFStringRef)text1, (__bridge CFStringRef)text2, Diff_Timeout);
 }
 
 /**
@@ -460,7 +451,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                           andShortString:(NSString *)shorttext
                                    index:(NSInteger)index;
 {
-  return [((NSArray *)diff_halfMatchICreate((CFStringRef)longtext, (CFStringRef)shorttext, (CFIndex)index)) autorelease];
+  return ((__bridge NSArray *)diff_halfMatchICreate((__bridge CFStringRef)longtext, (__bridge CFStringRef)shorttext, (CFIndex)index));
 }
 
 /**
@@ -514,36 +505,31 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   }
 
   // Check to see if the problem can be split in two.
-  NSArray *hm = [(NSArray *)diff_halfMatchCreate((CFStringRef)text1, (CFStringRef)text2, Diff_Timeout) autorelease];
+  NSArray *hm = (__bridge NSArray *)diff_halfMatchCreate((__bridge CFStringRef)text1, (__bridge CFStringRef)text2, Diff_Timeout);
   if (hm != nil) {
-    NSAutoreleasePool *splitPool = [NSAutoreleasePool new];
-    // A half-match was found, sort out the return data.
-    NSString *text1_a = [hm objectAtIndex:0];
-    NSString *text1_b = [hm objectAtIndex:1];
-    NSString *text2_a = [hm objectAtIndex:2];
-    NSString *text2_b = [hm objectAtIndex:3];
-    NSString *mid_common = [hm objectAtIndex:4];
-    // Send both pairs off for separate processing.
-    NSMutableArray *diffs_a = [self diff_mainOfOldString:text1_a andNewString:text2_a checkLines:checklines deadline:deadline];
-    NSMutableArray *diffs_b = [self diff_mainOfOldString:text1_b andNewString:text2_b checkLines:checklines deadline:deadline];
-    // Merge the results.
-    diffs = [diffs_a retain];
-    [diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:mid_common]];
-    [diffs addObjectsFromArray:diffs_b];
-    [splitPool drain];
-    return [diffs autorelease];
+    @autoreleasepool {
+      // A half-match was found, sort out the return data.
+      NSString *text1_a = [hm objectAtIndex:0];
+      NSString *text1_b = [hm objectAtIndex:1];
+      NSString *text2_a = [hm objectAtIndex:2];
+      NSString *text2_b = [hm objectAtIndex:3];
+      NSString *mid_common = [hm objectAtIndex:4];
+      // Send both pairs off for separate processing.
+      NSMutableArray *diffs_a = [self diff_mainOfOldString:text1_a andNewString:text2_a checkLines:checklines deadline:deadline];
+      NSMutableArray *diffs_b = [self diff_mainOfOldString:text1_b andNewString:text2_b checkLines:checklines deadline:deadline];
+      // Merge the results.
+      diffs = diffs_a;
+      [diffs addObject:[Diff diffWithOperation:DIFF_EQUAL andText:mid_common]];
+      [diffs addObjectsFromArray:diffs_b];
+    }
+    return diffs;
   }
 
   if (checklines && text1.length > 100 && text2.length > 100) {
     return [self diff_lineModeFromOldString:text1 andNewString:text2 deadline:deadline];
   }
 
-  NSAutoreleasePool *bisectPool = [NSAutoreleasePool new];
-  diffs = [self diff_bisectOfOldString:text1 andNewString:text2 deadline:deadline];
-  [diffs retain];
-  [bisectPool drain];
-
-  return [diffs autorelease];
+  return [self diff_bisectOfOldString:text1 andNewString:text2 deadline:deadline];
 }
 
 /**
@@ -565,12 +551,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   text2 = (NSString *)[a objectAtIndex:1];
   NSMutableArray *linearray = (NSMutableArray *)[a objectAtIndex:2];
 
-  NSAutoreleasePool *recursePool = [NSAutoreleasePool new];
   NSMutableArray *diffs = [self diff_mainOfOldString:text1 andNewString:text2 checkLines:NO deadline:deadline];
-  [diffs retain];
-  [recursePool drain];
-
-  [diffs autorelease];
 
   // Convert the diff back to original text.
   [self diff_chars:diffs toLines:linearray];
@@ -641,8 +622,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 #define freeTextBuffers()  if (text1_buffer != NULL) free(text1_buffer);\
                            if (text2_buffer != NULL) free(text2_buffer);
 
-  CFStringRef text1 = (CFStringRef)_text1;
-  CFStringRef text2 = (CFStringRef)_text2;
+  CFStringRef text1 = (__bridge CFStringRef)_text1;
+  CFStringRef text2 = (__bridge CFStringRef)_text2;
 
   // Cache the text lengths to prevent multiple calls.
   CFIndex text1_length = CFStringGetLength(text1);
@@ -843,21 +824,16 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   [lineArray addObject:@""];
 
   // Allocate 2/3rds of the space for text1, the rest for text2.
-  NSString *chars1 = (NSString *)diff_linesToCharsMungeCFStringCreate((CFStringRef)text1,
-                                                                      (CFMutableArrayRef)lineArray,
-                                                                      (CFMutableDictionaryRef)lineHash,
-                                                                      40000);
-  NSString *chars2 = (NSString *)diff_linesToCharsMungeCFStringCreate((CFStringRef)text2,
-                                                                      (CFMutableArrayRef)lineArray,
-                                                                      (CFMutableDictionaryRef)lineHash,
-                                                                      65535);
+  NSString *chars1 = (__bridge NSString *)diff_linesToCharsMungeCFStringCreate((__bridge CFStringRef)text1,
+                                                                               (__bridge CFMutableArrayRef)lineArray,
+                                                                               (__bridge CFMutableDictionaryRef)lineHash,
+                                                                               40000);
+  NSString *chars2 = (__bridge NSString *)diff_linesToCharsMungeCFStringCreate((__bridge CFStringRef)text2,
+                                                                               (__bridge CFMutableArrayRef)lineArray,
+                                                                               (__bridge CFMutableDictionaryRef)lineHash,
+                                                                               65535);
 
-  NSArray *result = [NSArray arrayWithObjects:chars1, chars2, lineArray, nil];
-
-  [chars1 release];
-  [chars2 release];
-
-  return result;
+  return [NSArray arrayWithObjects:chars1, chars2, lineArray, nil];
 }
 
 /**
@@ -920,7 +896,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         if (count_delete + count_insert > 1) {
           if (count_delete != 0 && count_insert != 0) {
             // Factor out any common prefixes.
-            commonlength = (NSUInteger)diff_commonPrefix((CFStringRef)text_insert, (CFStringRef)text_delete);
+            commonlength = (NSUInteger)diff_commonPrefix((__bridge CFStringRef)text_insert, (__bridge CFStringRef)text_delete);
             if (commonlength != 0) {
               if ((thisPointer - count_delete - count_insert) > 0 &&
                   ((Diff *)[diffs objectAtIndex:(thisPointer - count_delete - count_insert - 1)]).operation
@@ -938,7 +914,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
               text_delete = [text_delete substringFromIndex:commonlength];
             }
             // Factor out any common suffixes.
-            commonlength = (NSUInteger)diff_commonSuffix((CFStringRef)text_insert, (CFStringRef)text_delete);
+            commonlength = (NSUInteger)diff_commonSuffix((__bridge CFStringRef)text_insert, (__bridge CFStringRef)text_delete);
             if (commonlength != 0) {
               thisDiff.text = [[text_insert substringFromIndex:(text_insert.length
                   - commonlength)] stringByAppendingString:thisDiff.text];
@@ -1048,7 +1024,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
       NSString *equality2 = nextDiff.text;
 
       // First, shift the edit as far left as possible.
-      NSUInteger commonOffset = (NSUInteger)diff_commonSuffix((CFStringRef)equality1, (CFStringRef)edit);
+      NSUInteger commonOffset = (NSUInteger)diff_commonSuffix((__bridge CFStringRef)equality1, (__bridge CFStringRef)edit);
 
       if (commonOffset > 0) {
         NSString *commonString = [edit substringFromIndex:(edit.length - commonOffset)];
@@ -1062,15 +1038,15 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
       NSString *bestEquality1 = equality1;
       NSString *bestEdit = edit;
       NSString *bestEquality2 = equality2;
-      CFIndex bestScore = diff_cleanupSemanticScore((CFStringRef)equality1, (CFStringRef)edit) +
-      diff_cleanupSemanticScore((CFStringRef)edit, (CFStringRef)equality2);
+      CFIndex bestScore = diff_cleanupSemanticScore((__bridge CFStringRef)equality1, (__bridge CFStringRef)edit) +
+      diff_cleanupSemanticScore((__bridge CFStringRef)edit, (__bridge CFStringRef)equality2);
       while (edit.length != 0 && equality2.length != 0
            && [edit characterAtIndex:0] == [equality2 characterAtIndex:0]) {
         equality1 = [equality1 stringByAppendingString:[edit substringWithRange:NSMakeRange(0, 1)]];
         edit = [[edit substringFromIndex:1] stringByAppendingString:[equality2 substringWithRange:NSMakeRange(0, 1)]];
         equality2 = [equality2 substringFromIndex:1];
-        CFIndex score = diff_cleanupSemanticScore((CFStringRef)equality1, (CFStringRef)edit) +
-        diff_cleanupSemanticScore((CFStringRef)edit, (CFStringRef)equality2);
+        CFIndex score = diff_cleanupSemanticScore((__bridge CFStringRef)equality1, (__bridge CFStringRef)edit) +
+        diff_cleanupSemanticScore((__bridge CFStringRef)edit, (__bridge CFStringRef)equality2);
         // The >= encourages trailing rather than leading whitespace on edits.
         if (score >= bestScore) {
           bestScore = score;
@@ -1116,7 +1092,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSInteger)diff_cleanupSemanticScoreOfFirstString:(NSString *)one
                                     andSecondString:(NSString *)two;
 {
-  return diff_cleanupSemanticScore((CFStringRef)one, (CFStringRef)two);
+  return diff_cleanupSemanticScore((__bridge CFStringRef)one, (__bridge CFStringRef)two);
 }
 
 /**
@@ -1190,11 +1166,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         // Change second copy to insert.
         // Hash values for objects must not change while in a collection
         indexToChange = equalitiesLastValue + 1;
-        diffToChange = [[diffs objectAtIndex:indexToChange] retain];
+        diffToChange = [diffs objectAtIndex:indexToChange];
         [diffs replaceObjectAtIndex:indexToChange withObject:[NSNull null]];
         diffToChange.operation = DIFF_INSERT;
         [diffs replaceObjectAtIndex:indexToChange withObject:diffToChange];
-        [diffToChange release];
 
         [equalities removeLastObject];   // Throw away the equality we just deleted.
         lastEquality = nil;
@@ -1234,7 +1209,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 {
   NSMutableString *html = [NSMutableString string];
   for (Diff *aDiff in diffs) {
-    NSMutableString *text = [[aDiff.text mutableCopy] autorelease];
+    NSMutableString *text = [aDiff.text mutableCopy];
     [text replaceOccurrencesOfString:@"&" withString:@"&amp;" options:NSLiteralSearch range:NSMakeRange(0, text.length)];
     [text replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSLiteralSearch range:NSMakeRange(0, text.length)];
     [text replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSLiteralSearch range:NSMakeRange(0, text.length)];
@@ -1346,6 +1321,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     // Each token begins with a one character parameter which specifies the
     // operation of this token (delete, insert, equality).
     NSString *param = [token substringFromIndex:1];
+    NSString *text = NULL;
     switch ([token characterAtIndex:0]) {
       case '+':
         param = [param diff_stringByReplacingPercentEscapesForEncodeUriCompatibility];
@@ -1381,7 +1357,6 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           }
           return nil;
         }
-        NSString *text;
         @try {
           text = [text1 substringWithRange:NSMakeRange(thisPointer, (NSUInteger)n)];
           thisPointer += (NSUInteger)n;
@@ -1557,11 +1532,10 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         // Change second copy to insert.
         // Hash values for objects must not change while in a collection.
         indexToChange = equalitiesLastValue + 1;
-        diffToChange = [[diffs objectAtIndex:indexToChange] retain];
+        diffToChange = [diffs objectAtIndex:indexToChange];
         [diffs replaceObjectAtIndex:indexToChange withObject:[NSNull null]];
         diffToChange.operation = DIFF_INSERT;
         [diffs replaceObjectAtIndex:indexToChange withObject:diffToChange];
-        [diffToChange release];
 
         // Throw away the equality we just deleted.
         [equalities removeLastObject];
@@ -1600,8 +1574,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     if (prevDiff.operation == DIFF_DELETE && thisDiff.operation == DIFF_INSERT) {
       NSString *deletion = [prevDiff.text copy];
       NSString *insertion = [thisDiff.text copy];
-      NSUInteger overlap_length1 = (NSUInteger)diff_commonOverlap((CFStringRef)deletion, (CFStringRef)insertion);
-      NSUInteger overlap_length2 = (NSUInteger)diff_commonOverlap((CFStringRef)insertion, (CFStringRef)deletion);
+      NSUInteger overlap_length1 = (NSUInteger)diff_commonOverlap((__bridge CFStringRef)deletion, (__bridge CFStringRef)insertion);
+      NSUInteger overlap_length2 = (NSUInteger)diff_commonOverlap((__bridge CFStringRef)insertion, (__bridge CFStringRef)deletion);
       if (overlap_length1 >= overlap_length2) {
         if (overlap_length1 >= deletion.length / 2.0 ||
             overlap_length1 >= insertion.length / 2.0) {
@@ -1629,8 +1603,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           thisPointer++;
         }
       }
-      [deletion release];
-      [insertion release];
+
       thisPointer++;
     }
     thisPointer++;
@@ -1843,7 +1816,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSMutableDictionary *)match_alphabet:(NSString *)pattern;
 {
   NSMutableDictionary *s = [NSMutableDictionary dictionary];
-  CFStringRef str = (CFStringRef)pattern;
+  CFStringRef str = (__bridge CFStringRef)pattern;
   CFStringInlineBuffer inlineBuffer;
   CFIndex length;
   CFIndex cnt;
@@ -1856,8 +1829,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   for (cnt = 0; cnt < length; cnt++) {
     ch = CFStringGetCharacterFromInlineBuffer(&inlineBuffer, cnt);
     c = diff_CFStringCreateFromUnichar(ch);
-    if (![s diff_containsObjectForKey:(NSString *)c]) {
-      [s diff_setUnsignedIntegerValue:0 forKey:(NSString *)c];
+    if (![s diff_containsObjectForKey:(__bridge NSString *)c]) {
+      [s diff_setUnsignedIntegerValue:0 forKey:(__bridge NSString *)c];
     }
     CFRelease(c);
   }
@@ -1866,8 +1839,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   for (cnt = 0; cnt < length; cnt++) {
     ch = CFStringGetCharacterFromInlineBuffer(&inlineBuffer, cnt);
     c = diff_CFStringCreateFromUnichar(ch);
-    NSUInteger value = [s diff_unsignedIntegerForKey:(NSString *)c] | (1 << (pattern.length - i - 1));
-    [s diff_setUnsignedIntegerValue:value forKey:(NSString *)c];
+    NSUInteger value = [s diff_unsignedIntegerForKey:(__bridge NSString *)c] | (1 << (pattern.length - i - 1));
+    [s diff_setUnsignedIntegerValue:value forKey:(__bridge NSString *)c];
     i++;
     CFRelease(c);
   }
@@ -2009,13 +1982,13 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   if (diffs.count == 0) {
     return patches;   // Get rid of the nil case.
   }
-  Patch *patch = [[Patch new] autorelease];
+  Patch *patch = [Patch new];
   NSUInteger char_count1 = 0;  // Number of characters into the text1 NSString.
   NSUInteger char_count2 = 0;  // Number of characters into the text2 NSString.
   // Start with text1 (prepatch_text) and apply the diffs until we arrive at
   // text2 (postpatch_text). We recreate the patches one by one to determine
   // context info.
-  NSString *prepatch_text = [text1 retain];
+  NSString *prepatch_text = text1;
   NSMutableString *postpatch_text = [text1 mutableCopy];
   for (Diff *aDiff in diffs) {
     if (patch.diffs.count == 0 && aDiff.operation != DIFF_EQUAL) {
@@ -2049,12 +2022,11 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           if (patch.diffs.count != 0) {
             [self patch_addContextToPatch:patch sourceText:prepatch_text];
             [patches addObject:patch];
-            patch = [[Patch new] autorelease];
+            patch = [Patch new];
             // Unlike Unidiff, our patch lists have a rolling context.
             // https://github.com/google/diff-match-patch/wiki/Unidiff
             // Update prepatch text & pos to reflect the application of the
             // just completed patch.
-            [prepatch_text release];
             prepatch_text = [postpatch_text copy];
             char_count1 = char_count2;
           }
@@ -2075,9 +2047,6 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     [self patch_addContextToPatch:patch sourceText:prepatch_text];
     [patches addObject:patch];
   }
-
-  [prepatch_text release];
-  [postpatch_text release];
 
   return patches;
 }
@@ -2111,7 +2080,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // Deep copy the patches so that no changes are made to originals.
   NSMutableArray *patches = [self patch_deepCopy:sourcePatches];
 
-  NSMutableString *textMutable = [[text mutableCopy] autorelease];
+  NSMutableString *textMutable = [text mutableCopy];
 
   NSString *nullPadding = [self patch_addPadding:patches];
   [textMutable insertString:nullPadding atIndex:0];
@@ -2215,7 +2184,6 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // Strip the padding off.
   text = [textMutable substringWithRange:NSMakeRange(nullPadding.length,
       textMutable.length - 2 * nullPadding.length)];
-  [patches release];
   return [NSArray arrayWithObjects:text, resultsArray, nil];
 }
 
@@ -2294,7 +2262,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     if (((Patch *)[patches objectAtIndex:x]).length1 <= patch_size) {
       continue;
     }
-    Patch *bigpatch = [[patches objectAtIndex:x] retain];
+    Patch *bigpatch = [patches objectAtIndex:x];
     // Remove the big old patch.
     splice(patches, x--, 1, nil);
     NSUInteger start1 = bigpatch.start1;
@@ -2302,7 +2270,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
     NSString *precontext = @"";
     while (bigpatch.diffs.count != 0) {
       // Create one of several smaller patches.
-      Patch *patch = [[Patch new] autorelease];
+      Patch *patch = [Patch new];
       BOOL empty = YES;
       patch.start1 = start1 - precontext.length;
       patch.start2 = start2 - precontext.length;
@@ -2381,9 +2349,6 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         splice(patches, ++x, 0, [NSMutableArray arrayWithObject:patch]);
       }
     }
-
-    [bigpatch release];
-
   }
 }
 
@@ -2432,7 +2397,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   while (textPointer < text.count) {
     NSString *thisLine = [text objectAtIndex:textPointer];
     NSScanner *theScanner = [NSScanner scannerWithString:thisLine];
-    patch = [[Patch new] autorelease];
+    patch = [Patch new];
 
     scanSuccess = ([theScanner scanString:patchHeaderStart intoString:NULL]
         && [theScanner scanInteger:&scannedValue]);
