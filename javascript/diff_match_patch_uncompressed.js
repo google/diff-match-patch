@@ -495,7 +495,7 @@ diff_match_patch.prototype.diff_linesToChars_ = function(text1, text2) {
       }
       var line = text.substring(lineStart, lineEnd + 1);
 
-      if (lineHash.hasOwnProperty ? lineHash.hasOwnProperty(line) :
+      if (lineHash.hasOwnProperty ? Object.prototype.hasOwnProperty.call(lineHash, line) :
           (lineHash[line] !== undefined)) {
         chars += String.fromCharCode(lineHash[line]);
       } else {
