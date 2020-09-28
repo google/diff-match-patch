@@ -874,17 +874,17 @@ diff_match_patch.prototype.diff_cleanupSemantic = function(diffs) {
  */
 diff_match_patch.prototype.diff_cleanupSemanticLossless = function(diffs) {
   /**
-   * Given two strings, compute a score representing whether the internal
+   * Given a string and a boundary, compute a score representing whether the
    * boundary falls on logical boundaries.
    * Scores range from 6 (best) to 0 (worst).
    * Closure, but does not reference any external variables.
-   * @param {string} one First string.
-   * @param {string} two Second string.
+   * @param {string} buffer String containing the boundary and surrounding text.
+   * @param {number} index Index of the boundary.
    * @return {number} The score.
    * @private
    */
-  function diff_cleanupSemanticScore_(one, two) {
-    if (!one || !two) {
+  function diff_cleanupSemanticScore_(buffer, index) {
+    if (index === 0 || index === buffer.length) {
       // Edges are the best.
       return 6;
     }
@@ -894,8 +894,8 @@ diff_match_patch.prototype.diff_cleanupSemanticLossless = function(diffs) {
     // 'whitespace'.  Since this function's purpose is largely cosmetic,
     // the choice has been made to use each language's native features
     // rather than force total conformity.
-    var char1 = one.charAt(one.length - 1);
-    var char2 = two.charAt(0);
+    var char1 = buffer.charAt(index - 1);
+    var char2 = buffer.charAt(index);
     var nonAlphaNumeric1 = char1.match(diff_match_patch.nonAlphaNumericRegex_);
     var nonAlphaNumeric2 = char2.match(diff_match_patch.nonAlphaNumericRegex_);
     var whitespace1 = nonAlphaNumeric1 &&
@@ -907,9 +907,11 @@ diff_match_patch.prototype.diff_cleanupSemanticLossless = function(diffs) {
     var lineBreak2 = whitespace2 &&
         char2.match(diff_match_patch.linebreakRegex_);
     var blankLine1 = lineBreak1 &&
-        one.match(diff_match_patch.blanklineEndRegex_);
+        buffer.substring(index - diff_match_patch.blanklineEndRegexMaxLength_, index)
+          .match(diff_match_patch.blanklineEndRegex_);
     var blankLine2 = lineBreak2 &&
-        two.match(diff_match_patch.blanklineStartRegex_);
+        buffer.substring(index, index + diff_match_patch.blanklineStartRegexMaxLength_)
+          .match(diff_match_patch.blanklineStartRegex_);
 
     if (blankLine1 || blankLine2) {
       // Five points for blank lines.
@@ -939,48 +941,45 @@ diff_match_patch.prototype.diff_cleanupSemanticLossless = function(diffs) {
       var equality1 = diffs[pointer - 1][1];
       var edit = diffs[pointer][1];
       var equality2 = diffs[pointer + 1][1];
+      var buffer = equality1 + edit + equality2;
 
       // First, shift the edit as far left as possible.
-      var commonOffset = this.diff_commonSuffix(equality1, edit);
-      if (commonOffset) {
-        var commonString = edit.substring(edit.length - commonOffset);
-        equality1 = equality1.substring(0, equality1.length - commonOffset);
-        edit = commonString + edit.substring(0, edit.length - commonOffset);
-        equality2 = commonString + equality2;
-      }
+      var offsetLeft = this.diff_commonSuffix(equality1, edit);
+      var offsetRight = this.diff_commonPrefix(edit, equality2);
+      var originalEditStart = equality1.length;
+      var editStart = originalEditStart - offsetLeft;
+      var maxEditStart = originalEditStart + offsetRight;
+      var editEnd = editStart + edit.length;
 
       // Second, step character by character right, looking for the best fit.
-      var bestEquality1 = equality1;
-      var bestEdit = edit;
-      var bestEquality2 = equality2;
-      var bestScore = diff_cleanupSemanticScore_(equality1, edit) +
-          diff_cleanupSemanticScore_(edit, equality2);
-      while (edit.charAt(0) === equality2.charAt(0)) {
-        equality1 += edit.charAt(0);
-        edit = edit.substring(1) + equality2.charAt(0);
-        equality2 = equality2.substring(1);
-        var score = diff_cleanupSemanticScore_(equality1, edit) +
-            diff_cleanupSemanticScore_(edit, equality2);
+      var bestEditStart = editStart;
+      var bestEditEnd = editEnd;
+      var bestScore = diff_cleanupSemanticScore_(buffer, editStart) +
+          diff_cleanupSemanticScore_(buffer, editEnd);
+      while (editStart < maxEditStart) {
+        editStart += 1;
+        editEnd += 1;
+        var score = diff_cleanupSemanticScore_(buffer, editStart) +
+          diff_cleanupSemanticScore_(buffer, editEnd);
         // The >= encourages trailing rather than leading whitespace on edits.
         if (score >= bestScore) {
           bestScore = score;
-          bestEquality1 = equality1;
-          bestEdit = edit;
-          bestEquality2 = equality2;
+          bestEditStart = editStart;
+          bestEditEnd = editEnd;
         }
       }
 
-      if (diffs[pointer - 1][1] != bestEquality1) {
+      if (bestEditStart != originalEditStart) {
         // We have an improvement, save it back to the diff.
-        if (bestEquality1) {
-          diffs[pointer - 1][1] = bestEquality1;
+        if (bestEditStart > 0) {
+          diffs[pointer - 1][1] = buffer.substring(0, bestEditStart);
         } else {
           diffs.splice(pointer - 1, 1);
           pointer--;
         }
-        diffs[pointer][1] = bestEdit;
-        if (bestEquality2) {
-          diffs[pointer + 1][1] = bestEquality2;
+        diffs[pointer][1] = buffer.substring(bestEditStart, bestEditEnd);
+        if (bestEditEnd < buffer.length) {
+          diffs[pointer + 1][1] = buffer.substring(bestEditEnd);
         } else {
           diffs.splice(pointer + 1, 1);
           pointer--;
@@ -997,6 +996,10 @@ diff_match_patch.whitespaceRegex_ = /\s/;
 diff_match_patch.linebreakRegex_ = /[\r\n]/;
 diff_match_patch.blanklineEndRegex_ = /\n\r?\n$/;
 diff_match_patch.blanklineStartRegex_ = /^\r?\n\r?\n/;
+
+// Maximum length of a match for blank line regexes
+diff_match_patch.blanklineEndRegexMaxLength_ = 3;
+diff_match_patch.blanklineStartRegexMaxLength_ = 4;
 
 /**
  * Reduce the number of edits by eliminating operationally trivial equalities.
