@@ -2,8 +2,8 @@
         name: Security Semgrep
         on:
           pull_request: {} # Run a partial Semgrep analysis on all pull requests
-          schedule: # Run a full analysis just once a week (kind of expensive)
-            - cron:  '17 2 * * 3'
+          # schedule: # Disable running a full analysis, for large repos it is too expensive.
+          #  - cron:  '17 2 * * 3'
           workflow_dispatch: # Allow for manual run of Semgrep as well
         jobs:
           semgrep:
