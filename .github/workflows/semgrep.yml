@@ -15,5 +15,4 @@
                 - uses: returntocorp/semgrep-action@v1
                   with:
                     publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}  # For publishing to semgrep.dev
-                    auditOn: push # Don't block on new issues in pull requests for now
           
