@@ -833,25 +833,20 @@ export class diff_match_patch {
       throw "hm is undefined";
     }
 
-    if (hm[0] && hm[1] && hm[2] && hm[3] && hm[4]) {
-      var text1_a, text1_b, text2_a, text2_b;
-      if (text1.length > text2.length) {
-        text1_a = hm[0];
-        text1_b = hm[1];
-        text2_a = hm[2];
-        text2_b = hm[3];
-      } else {
-        text2_a = hm[0];
-        text2_b = hm[1];
-        text1_a = hm[2];
-        text1_b = hm[3];
-      }
-      var mid_common = hm[4];
-      return [text1_a, text1_b, text2_a, text2_b, mid_common];
+    var text1_a, text1_b, text2_a, text2_b;
+    if (text1.length > text2.length) {
+      text1_a = hm[0];
+      text1_b = hm[1];
+      text2_a = hm[2];
+      text2_b = hm[3];
+    } else {
+      text2_a = hm[0];
+      text2_b = hm[1];
+      text1_a = hm[2];
+      text1_b = hm[3];
     }
-    else {
-      throw "One or more of hm[0] to hm2[4] are undefined";
-    }
+    var mid_common = hm[4];
+    return [text1_a?text1_a:'', text1_b?text1_b:'', text2_a?text2_a:'', text2_b?text2_b:'', mid_common?mid_common:''];
   }
 
   /**
