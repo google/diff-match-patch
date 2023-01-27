@@ -91,7 +91,7 @@ class DiffMatchPatch {
    *     internally for recursive calls.  Users should set DiffTimeout instead.
    * Returns a List of Diff objects.
    */
-  List<Diff> diff_main(String? text1, String? text2, [bool checklines = true, DateTime? deadline]) {
+  List<Diff> diff_main(String? text1, String? text2, [bool? checklines, DateTime? deadline]) {
     // Set a deadline by which time the diff must be complete.
     if (deadline == null) {
       deadline = new DateTime.now();
