@@ -23,17 +23,15 @@ part of DiffMatchPatch;
  */
 class Patch {
   List<Diff> diffs;
-  int start1;
-  int start2;
+  int start1 = 0;
+  int start2 = 0;
   int length1 = 0;
   int length2 = 0;
 
   /**
    * Constructor.  Initializes with an empty list of diffs.
    */
-  Patch() {
-    this.diffs = <Diff>[];
-  }
+  Patch({this.diffs = const <Diff>[]});
 
   /**
    * Emulate GNU diff's format.
