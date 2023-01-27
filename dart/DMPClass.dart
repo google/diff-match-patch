@@ -298,12 +298,8 @@ class DiffMatchPatch {
     final max_d = (text1_length + text2_length + 1) ~/ 2;
     final v_offset = max_d;
     final v_length = 2 * max_d;
-    final v1 = new List<int>.filled(v_length, 0);
-    final v2 = new List<int>.filled(v_length, 0);
-    for (int x = 0; x < v_length; x++) {
-      v1[x] = -1;
-      v2[x] = -1;
-    }
+    final v1 = new List<int>.filled(v_length, -1);
+    final v2 = new List<int>.filled(v_length, -1);
     v1[v_offset + 1] = 0;
     v2[v_offset + 1] = 0;
     final delta = text1_length - text2_length;
