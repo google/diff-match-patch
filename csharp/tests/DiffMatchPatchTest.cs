@@ -1095,6 +1095,20 @@ public class diff_match_patchTest : diff_match_patch {
     assertEquals("patch_apply: Edge partial match.", "x123\tTrue", resultStr);
   }
 
+  public void diff_DiffNullTextTest() {
+    var operations = Enum.GetValues<Operation>();
+    foreach (var operation in operations) {
+      try {
+        var diff = new Diff(operation, null);
+        assertFail($"diff_DiffNullTextTest: operation {operation} with null text.");
+      } catch (NullReferenceException) {
+        // Exception expected.
+      } catch {
+        assertFail($"diff_DiffNullTextTest: operation {operation} with null text throwed an invalid exception.");
+      }
+    }
+  }
+
   private string[] diff_rebuildtexts(List<Diff> diffs) {
     string[] text = { "", "" };
     foreach (Diff myDiff in diffs) {
@@ -1224,6 +1238,8 @@ public class diff_match_patchTest : diff_match_patch {
     dmp.patch_splitMaxTest();
     dmp.patch_addPaddingTest();
     dmp.patch_applyTest();
+
+    dmp.diff_DiffNullTextTest();
 
     Console.WriteLine("All tests passed.");
   }

@@ -69,6 +69,9 @@ namespace DiffMatchPatch {
     public Diff(Operation operation, string text) {
       // Construct a diff with the specified operation and text.
       this.operation = operation;
+      if (text == null) {
+        throw new NullReferenceException("text must contain a value.");
+      }
       this.text = text;
     }
 
