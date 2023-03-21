@@ -77,7 +77,7 @@ namespace DiffMatchPatch {
      * @return text version.
      */
     public override string ToString() {
-      string prettyText = this.text.Replace('\n', '\u00b6');
+      string? prettyText = this.text?.Replace('\n', '\u00b6');
       return "Diff(" + this.operation + ",\"" + prettyText + "\")";
     }
 
@@ -113,7 +113,7 @@ namespace DiffMatchPatch {
     }
 
     public override int GetHashCode() {
-      return text.GetHashCode() ^ operation.GetHashCode();
+      return (text?.GetHashCode() ?? 0) ^ operation.GetHashCode();
     }
   }
 
