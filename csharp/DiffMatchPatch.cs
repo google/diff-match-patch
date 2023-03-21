@@ -69,6 +69,9 @@ namespace DiffMatchPatch {
     public Diff(Operation operation, string text) {
       // Construct a diff with the specified operation and text.
       this.operation = operation;
+      if (text == null) {
+        throw new NullReferenceException("text must contain a value.");
+      }
       this.text = text;
     }
 
@@ -77,7 +80,7 @@ namespace DiffMatchPatch {
      * @return text version.
      */
     public override string ToString() {
-      string? prettyText = this.text?.Replace('\n', '\u00b6');
+      string prettyText = this.text.Replace('\n', '\u00b6');
       return "Diff(" + this.operation + ",\"" + prettyText + "\")";
     }
 
@@ -113,7 +116,7 @@ namespace DiffMatchPatch {
     }
 
     public override int GetHashCode() {
-      return (text?.GetHashCode() ?? 0) ^ operation.GetHashCode();
+      return text.GetHashCode() ^ operation.GetHashCode();
     }
   }
 
