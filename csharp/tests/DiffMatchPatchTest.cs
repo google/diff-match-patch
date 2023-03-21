@@ -1095,23 +1095,18 @@ public class diff_match_patchTest : diff_match_patch {
     assertEquals("patch_apply: Edge partial match.", "x123\tTrue", resultStr);
   }
 
-  public void diff_DefaultDiffHashCodeTest() {
+  public void diff_DiffNullTextTest() {
     var operations = Enum.GetValues<Operation>();
     foreach (var operation in operations) {
-      var diff = new Diff(operation, null);
-      var actualHashCode = diff.GetHashCode();
-      var expectedHashCode = 0 ^ operation.GetHashCode();
-      assertEquals($"diff_DefaultDiffHashCodeTest: {operation} case.", expectedHashCode, actualHashCode);
-    }
-  }
-
-  public void diff_DefaultDiffToStringTest() {
-    var operations = Enum.GetValues<Operation>();
-    foreach (var operation in operations) {
-      var diff = new Diff(operation, null);
-      var actualString = diff.ToString();
-      var expectedString = $"Diff({operation},\"\")";
-      assertEquals($"diff_DefaultDiffToStringTest: {operation} case.", expectedString, actualString);
+      try {
+        var diff = new Diff(operation, null);
+        assertFail("diff_fromDelta: Too long.");
+        assertFail($"diff_DefaultDiffHashCodeTest: operation {operation} with null text.");
+      } catch (NullReferenceException) {
+        // Exception expected.
+      } catch {
+        assertFail($"diff_DefaultDiffHashCodeTest: operation {operation} with null text thrown an invalid exception.");
+      }
     }
   }
 
@@ -1245,8 +1240,7 @@ public class diff_match_patchTest : diff_match_patch {
     dmp.patch_addPaddingTest();
     dmp.patch_applyTest();
 
-    dmp.diff_DefaultDiffHashCodeTest();
-    dmp.diff_DefaultDiffToStringTest();
+    dmp.diff_DiffNullTextTest();
 
     Console.WriteLine("All tests passed.");
   }
