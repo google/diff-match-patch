@@ -1100,12 +1100,11 @@ public class diff_match_patchTest : diff_match_patch {
     foreach (var operation in operations) {
       try {
         var diff = new Diff(operation, null);
-        assertFail("diff_fromDelta: Too long.");
-        assertFail($"diff_DefaultDiffHashCodeTest: operation {operation} with null text.");
+        assertFail($"diff_DiffNullTextTest: operation {operation} with null text.");
       } catch (NullReferenceException) {
         // Exception expected.
       } catch {
-        assertFail($"diff_DefaultDiffHashCodeTest: operation {operation} with null text thrown an invalid exception.");
+        assertFail($"diff_DiffNullTextTest: operation {operation} with null text throwed an invalid exception.");
       }
     }
   }
