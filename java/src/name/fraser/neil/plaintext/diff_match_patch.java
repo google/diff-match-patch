@@ -163,11 +163,9 @@ public class diff_match_patch {
 
     // Check for equality (speedup).
     LinkedList<Diff> diffs;
-    if (text1.equals(text2)) {
+    if (text1.equals(text2) && text1.length() != 0) {
       diffs = new LinkedList<Diff>();
-      if (text1.length() != 0) {
-        diffs.add(new Diff(Operation.EQUAL, text1));
-      }
+      diffs.add(new Diff(Operation.EQUAL, text1));
       return diffs;
     }
 
