@@ -579,7 +579,7 @@ TDiffVector diff_match_patch::diff_bisectSplit( const std::wstring &text1, const
     return diffs;
 }
 
-TVariantVector diff_match_patch::diff_linesToChars( const std::wstring &text1, const std::wstring &text2 )
+diff_match_patch::TVariantVector diff_match_patch::diff_linesToChars( const std::wstring &text1, const std::wstring &text2 )
 {
     TStringVector lineArray;
     std::unordered_map< std::wstring, std::size_t > lineHash;
@@ -734,7 +734,7 @@ std::size_t diff_match_patch::diff_commonOverlap( const std::wstring &text1, con
     }
 }
 
-TStringVector diff_match_patch::diff_halfMatch( const std::wstring &text1, const std::wstring &text2 )
+diff_match_patch::TStringVector diff_match_patch::diff_halfMatch( const std::wstring &text1, const std::wstring &text2 )
 {
     if ( Diff_Timeout <= 0 )
     {
@@ -783,7 +783,7 @@ TStringVector diff_match_patch::diff_halfMatch( const std::wstring &text1, const
     }
 }
 
-TStringVector diff_match_patch::diff_halfMatchI( const std::wstring &longtext, const std::wstring &shorttext, std::size_t i )
+diff_match_patch::TStringVector diff_match_patch::diff_halfMatchI( const std::wstring &longtext, const std::wstring &shorttext, std::size_t i )
 {
     // Start with a 1/4 length substring at position i as a seed.
     const std::wstring seed = safeMid( longtext, i, longtext.length() / 4 );
@@ -1643,7 +1643,7 @@ double diff_match_patch::match_bitapScore( int64_t e, int64_t x, int64_t loc, co
     return accuracy + ( proximity / static_cast< float >( Match_Distance ) );
 }
 
-TCharPosMap diff_match_patch::match_alphabet( const std::wstring &pattern )
+diff_match_patch::TCharPosMap diff_match_patch::match_alphabet( const std::wstring &pattern )
 {
     TCharPosMap s;
     std::size_t i;
@@ -2415,6 +2415,12 @@ wchar_t toHexUpper( wchar_t value )
     return L"0123456789ABCDEF"[ value & 0xF ];
 }
 
+std::wstring to_wstring( const std::string &string )
+{
+    std::wstring_convert< std::codecvt_utf8< wchar_t > > utf8_conv;
+    return utf8_conv.from_bytes( string );
+}
+
 std::wstring diff_match_patch::toPercentEncoding( wchar_t c, const std::wstring &exclude, const std::wstring &include )
 {
     std::wstring retVal;
@@ -2511,7 +2517,7 @@ bool diff_match_patch::endsWith( const std::wstring &string, const std::wstring 
     return string.compare( string.length() - suffix.length(), suffix.length(), suffix ) == 0;
 }
 
-TStringVector diff_match_patch::splitString( const std::wstring &string, const std::wstring &separator, bool skipEmptyParts )
+diff_match_patch::TStringVector diff_match_patch::splitString( const std::wstring &string, const std::wstring &separator, bool skipEmptyParts )
 {
     if ( separator.empty() )
     {

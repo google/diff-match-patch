@@ -47,8 +47,8 @@
 
  #include "diff_match_patch.h"
  int main(int argc, char **argv) {
-   auto str1 = std::wstring("First string in diff");
-   auto str2 = std::wstring("Second string in diff");
+   auto str1 = std::string("First string in diff");
+   auto str2 = std::string("Second string in diff");
 
    diff_match_patch dmp;
    auto strPatch = dmp.patch_toText(dmp.patch_make(str1, str2));
@@ -60,11 +60,6 @@
  }
 
 */
-
-using TStringVector = std::vector< std::wstring >;
-using TVariant = std::variant< std::wstring, TStringVector >;
-using TVariantVector = std::vector< TVariant >;
-using TCharPosMap = std::map< wchar_t, std::size_t >;
 
 /**-
 * The data structure representing a diff is a Linked list of Diff objects:
@@ -78,6 +73,8 @@ enum Operation
     INSERT,
     EQUAL
 };
+
+std::wstring to_wstring( const std::string &string );
 
 /**
 * Class representing one diff operation.
@@ -97,6 +94,14 @@ public:
    */
     Diff( Operation _operation, const std::wstring &_text );
     Diff( Operation _operation, const wchar_t *_text );
+    Diff( Operation _operation, const std::string &_text ) :
+        Diff( _operation, to_wstring( _text ) )
+    {
+    }
+    Diff( Operation _operation, const char *_text ) :
+        Diff( _operation, std::string( _text ) )
+    {
+    }
     Diff();
     inline bool isNull() const;
     std::wstring toString() const;
@@ -164,7 +169,7 @@ public:
     // Chunk size for context length.
     short Patch_Margin{ 4 };
 
-    short Match_MaxBits{ 32 }; // unit tests are based on 32 bits
+    short Match_MaxBits{ 32 };   // unit tests are based on 32 bits
 
 private:
     // Define some regex patterns for matching boundaries.
@@ -172,6 +177,11 @@ private:
     static std::wregex BLANKLINESTART;
 
 public:
+    using TStringVector = std::vector< std::wstring >;
+    using TVariant = std::variant< std::wstring, TStringVector >;
+    using TVariantVector = std::vector< TVariant >;
+    using TCharPosMap = std::map< wchar_t, std::size_t >;
+
     diff_match_patch();
 
     //  DIFF FUNCTIONS
@@ -186,6 +196,7 @@ public:
    * @return Linked List of Diff objects.
    */
     TDiffVector diff_main( const std::wstring &text1, const std::wstring &text2 );
+    TDiffVector diff_main( const std::string &text1, const std::string &text2 ) { return diff_main( ::to_wstring( text1 ), ::to_wstring( text2 ) ); }
 
     /**
    * Find the differences between two texts.
@@ -197,6 +208,7 @@ public:
    * @return Linked List of Diff objects.
    */
     TDiffVector diff_main( const std::wstring &text1, const std::wstring &text2, bool checklines );
+    TDiffVector diff_main( const std::string &text1, const std::string &text2, bool checklines ) { return diff_main( ::to_wstring( text1 ), ::to_wstring( text2 ), checklines ); }
 
     /**
    * Find the differences between two texts.  Simplifies the problem by
@@ -212,6 +224,7 @@ public:
    */
 private:
     TDiffVector diff_main( const std::wstring &text1, const std::wstring &text2, bool checklines, clock_t deadline );
+    TDiffVector diff_main( const std::string &text1, const std::string &text2, bool checklines, clock_t deadline ) { return diff_main( ::to_wstring( text1 ), ::to_wstring( text2 ), checklines, deadline ); }
 
     /**
    * Find the differences between two texts.  Assumes that the texts do not
@@ -226,6 +239,7 @@ private:
    */
 private:
     TDiffVector diff_compute( const std::wstring &text1, const std::wstring &text2, bool checklines, clock_t deadline );
+    TDiffVector diff_compute( const std::string &text1, const std::string &text2, bool checklines, clock_t deadline ) { return diff_compute( ::to_wstring( text1 ), ::to_wstring( text2 ), checklines, deadline ); }
 
     /**
    * Do a quick line-level diff on both strings, then rediff the parts for
@@ -238,6 +252,7 @@ private:
    */
 private:
     TDiffVector diff_lineMode( std::wstring text1, std::wstring text2, clock_t deadline );
+    TDiffVector diff_lineMode( std::string text1, std::string text2, clock_t deadline ) { return diff_lineMode( ::to_wstring( text1 ), ::to_wstring( text2 ), deadline ); }
 
     /**
    * Find the 'middle snake' of a diff, split the problem in two
@@ -249,6 +264,7 @@ private:
    */
 protected:
     TDiffVector diff_bisect( const std::wstring &text1, const std::wstring &text2, clock_t deadline );
+    TDiffVector diff_bisect( const std::string &text1, const std::string &text2, clock_t deadline ) { return diff_bisect( ::to_wstring( text1 ), ::to_wstring( text2 ), deadline ); }
 
     /**
    * Given the location of the 'middle snake', split the diff in two parts
@@ -262,6 +278,7 @@ protected:
    */
 private:
     TDiffVector diff_bisectSplit( const std::wstring &text1, const std::wstring &text2, std::size_t x, std::size_t y, clock_t deadline );
+    TDiffVector diff_bisectSplit( const std::string &text1, const std::string &text2, std::size_t x, std::size_t y, clock_t deadline ) { return diff_bisectSplit( ::to_wstring( text1 ), ::to_wstring( text2 ), x, y, deadline ); }
 
     /**
    * Split two texts into a list of strings.  Reduce the texts to a string of
@@ -274,6 +291,7 @@ private:
    */
 protected:
     std::vector< TVariant > diff_linesToChars( const std::wstring &text1, const std::wstring &text2 );   // return elems 0 and 1 are std::wstring, elem 2 is TStringVector
+    std::vector< TVariant > diff_linesToChars( const std::string &text1, const std::string &text2 ) { return diff_linesToChars( ::to_wstring( text1 ), ::to_wstring( text2 ) ); }
 
     /**
    * Split a text into a list of strings.  Reduce the texts to a string of
@@ -303,6 +321,7 @@ private:
    */
 public:
     std::size_t diff_commonPrefix( const std::wstring &text1, const std::wstring &text2 );
+    std::size_t diff_commonPrefix( const std::string &text1, const std::string &text2 ) { return diff_commonPrefix( ::to_wstring( text1 ), ::to_wstring( text2 ) ); }
 
     /**
    * Determine the common suffix of two strings.
@@ -312,6 +331,7 @@ public:
    */
 public:
     std::size_t diff_commonSuffix( const std::wstring &text1, const std::wstring &text2 );
+    std::size_t diff_commonSuffix( const std::string &text1, const std::string &text2 ) { return diff_commonSuffix( ::to_wstring( text1 ), ::to_wstring( text2 ) ); }
 
     /**
    * Determine if the suffix of one string is the prefix of another.
@@ -322,6 +342,7 @@ public:
    */
 protected:
     std::size_t diff_commonOverlap( const std::wstring &text1, const std::wstring &text2 );
+    std::size_t diff_commonOverlap( const std::string &text1, const std::string &text2 ) { return diff_commonOverlap( ::to_wstring( text1 ), ::to_wstring( text2 ) ); }
 
     /**
    * Do the two texts share a substring which is at least half the length of
@@ -335,6 +356,7 @@ protected:
    */
 protected:
     TStringVector diff_halfMatch( const std::wstring &text1, const std::wstring &text2 );
+    TStringVector diff_halfMatch( const std::string &text1, const std::string &text2 ) { return diff_halfMatch( ::to_wstring( text1 ), ::to_wstring( text2 ) ); }
 
     /**
    * Does a substring of shorttext exist within longtext such that the
@@ -348,6 +370,7 @@ protected:
    */
 private:
     TStringVector diff_halfMatchI( const std::wstring &longtext, const std::wstring &shorttext, std::size_t i );
+    TStringVector diff_halfMatchI( const std::string &longtext, const std::string &shorttext, std::size_t i ) { return diff_halfMatchI( ::to_wstring( longtext ), ::to_wstring( shorttext ), i ); }
 
     /**
    * Reduce the number of edits by eliminating semantically trivial equalities.
@@ -375,6 +398,7 @@ public:
    */
 private:
     int64_t diff_cleanupSemanticScore( const std::wstring &one, const std::wstring &two );
+    int64_t diff_cleanupSemanticScore( const std::string &one, const std::string &two ) { return diff_cleanupSemanticScore( ::to_wstring( one ), ::to_wstring( two ) ); }
 
     /**
    * Reduce the number of edits by eliminating operationally trivial equalities.
@@ -456,6 +480,7 @@ public:
    */
 public:
     TDiffVector diff_fromDelta( const std::wstring &text1, const std::wstring &delta );
+    TDiffVector diff_fromDelta( const std::string &text1, const std::string &delta ) { return diff_fromDelta( ::to_wstring( text1 ), ::to_wstring( delta ) ); }
 
     //  MATCH FUNCTIONS
 
@@ -469,6 +494,7 @@ public:
    */
 public:
     std::size_t match_main( const std::wstring &text, const std::wstring &pattern, std::size_t loc );
+    std::size_t match_main( const std::string &text, const std::string &pattern, std::size_t loc ) { return match_main( ::to_wstring( text ), ::to_wstring( pattern ), loc ); }
 
     /**
    * Locate the best instance of 'pattern' in 'text' near 'loc' using the
@@ -480,6 +506,7 @@ public:
    */
 protected:
     std::size_t match_bitap( const std::wstring &text, const std::wstring &pattern, std::size_t loc );
+    std::size_t match_bitap( const std::string &text, const std::string &pattern, std::size_t loc ) { return match_bitap( ::to_wstring( text ), ::to_wstring( pattern ), loc ); }
 
     /**
    * Compute and return the score for a match with e errors and x location.
@@ -499,6 +526,7 @@ private:
    */
 protected:
     TCharPosMap match_alphabet( const std::wstring &pattern );
+    TCharPosMap match_alphabet( const std::string &pattern ) { return match_alphabet( ::to_wstring( pattern ) ); }
 
     //  PATCH FUNCTIONS
 
@@ -510,6 +538,7 @@ protected:
    */
 protected:
     void patch_addContext( Patch &patch, const std::wstring &text );
+    void patch_addContext( Patch &patch, const std::string &text ) { return patch_addContext( patch, ::to_wstring( text ) ); }
 
     /**
    * Compute a list of patches to turn text1 into text2.
@@ -520,6 +549,7 @@ protected:
    */
 public:
     TPatchVector patch_make( const std::wstring &text1, const std::wstring &text2 );
+    TPatchVector patch_make( const std::string &text1, const std::string &text2 ) { return patch_make( ::to_wstring( text1 ), ::to_wstring( text2 ) ); }
 
     /**
    * Compute a list of patches to turn text1 into text2.
@@ -541,6 +571,7 @@ public:
    */
 public:
     TPatchVector patch_make( const std::wstring &text1, const std::wstring &text2, const TDiffVector &diffs );
+    TPatchVector patch_make( const std::string &text1, const std::string &text2, const TDiffVector &diffs ) { return patch_make( ::to_wstring( text1 ), ::to_wstring( text2 ), diffs ); }
 
     /**
    * Compute a list of patches to turn text1 into text2.
@@ -551,6 +582,7 @@ public:
    */
 public:
     TPatchVector patch_make( const std::wstring &text1, const TDiffVector &diffs );
+    TPatchVector patch_make( const std::string &text1, const TDiffVector &diffs ) { return patch_make( ::to_wstring( text1 ), diffs ); }
 
     /**
    * Given an array of patches, return another array that is identical.
@@ -570,6 +602,7 @@ public:
    */
 public:
     std::pair< std::wstring, std::vector< bool > > patch_apply( TPatchVector patches, std::wstring text );
+    std::pair< std::wstring, std::vector< bool > > patch_apply( TPatchVector patches, std::string text ) { return patch_apply( patches, ::to_wstring( text ) ); }
 
     /**
    * Add some padding on text start and end so that edges can match something.
@@ -606,6 +639,7 @@ public:
    */
 public:
     TPatchVector patch_fromText( const std::wstring &textline );
+    TPatchVector patch_fromText( const std::string &textline ) { return patch_fromText( ::to_wstring( textline ) ); }
 
     /**
    * A safer version of std::wstring.mid(pos).  This one returns "" instead of
