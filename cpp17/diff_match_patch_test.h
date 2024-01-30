@@ -19,9 +19,21 @@
 #ifndef DIFF_MATCH_PATCH_TEST_H
 #define DIFF_MATCH_PATCH_TEST_H
 
-#include <functional>
+#ifdef USE_GTEST
+    #include "gtest/gtest.h"
+    #define assertEquals( msg, GOLDEN, COMPUTED ) EXPECT_EQ( GOLDEN, COMPUTED ) << msg
+    #define assertEmpty( msg, COMPUTED )          EXPECT_TRUE( COMPUTED.empty() ) << msg
+    #define assertTrue( msg, COMPUTED )           EXPECT_TRUE( COMPUTED ) << msg
+    #define assertFalse( msg, COMPUTED )          EXPECT_FALSE( COMPUTED ) << msg
+    #define PUBLIC_TESTING : public testing::Test
+    #define assertThrow( msg, STATEMENT, EXCEPTION_TYPE ) EXPECT_THROW( STATEMENT, EXCEPTION_TYPE ) << msg
+#else
+    #include <functional>
+    #define PUBLIC_TESTING
+    #define TEST_F( className, funcName ) void diff_match_patch_test::funcName()
+#endif
 
-class diff_match_patch_test
+class diff_match_patch_test PUBLIC_TESTING
 {
 public:
     using TStringVector = diff_match_patch::TStringVector;
@@ -30,8 +42,10 @@ public:
     using TVariantVector = diff_match_patch::TVariantVector;
 
     diff_match_patch_test();
-    void run_all_tests();
-    void runTest( std::function< void() > test );
+
+#ifndef USE_GTEST
+public:
+    int run_all_tests();
 
     //  DIFF TEST FUNCTIONS
     void testDiffCommonPrefix();
@@ -68,9 +82,9 @@ public:
     void testPatchApply();
 
 private:
+    bool runTest( std::function< void() > test );
     std::size_t numPassedTests{ 0 };
     std::size_t numFailedTests{ 0 };
-    diff_match_patch dmp;
 
     // Define equality.
     template< typename T >
@@ -86,7 +100,8 @@ private:
                 failed = t1 != t2;
             }
         }
-        else
+
+        if ( failed )
         {
             // Build human readable description of both lists.
             auto lhsString = NUtils::to_wstring( lhs, true );
@@ -101,8 +116,6 @@ private:
     void assertEquals( const std::string &strCase, std::size_t n1, std::size_t n2 );
     void assertEquals( const std::string &strCase, const std::wstring &s1, const std::wstring &s2 );
     void assertEquals( const std::string &strCase, const std::string &s1, const std::string &s2 );
-    void assertEquals( const std::string &strCase, const std::wstring &s1, const std::string &s2 );
-    void assertEquals( const std::string &strCase, const std::string &s1, const std::wstring &s2 );
     void assertEquals( const std::string &strCase, const Diff &d1, const Diff &d2 );
     void assertEquals( const std::string &strCase, const TVariant &var1, const TVariant &var2 );
     void assertEquals( const std::string &strCase, const TCharPosMap &m1, const TCharPosMap &m2 );
@@ -113,6 +126,39 @@ private:
 
     void reportFailure( const std::string &strCase, const std::wstring &expected, const std::wstring &actual );
     void reportPassed( const std::string &strCase );
+
+    #define assertThrow( msg, COMMAND, EXCEPTION_TYPE ) \
+    { \
+        bool exceptionTriggered = false; \
+        try \
+        { \
+            COMMAND;\
+            assertFalse( msg, true ); \
+        } \
+        catch ( const EXCEPTION_TYPE &ex ) \
+        { \
+            exceptionTriggered = true; \
+        } \
+        assertTrue( std::string( msg ) + std::string( " - Exception triggered" ), exceptionTriggered ); \
+    } 
+
+#endif
+public:
+    bool equals( const TVariant &var1, const TVariant &var2 );
+    
+    template< typename T >
+    bool equals( const T &lhs, const T &rhs )
+    {
+        bool equal = ( lhs.size() == rhs.size() );
+        for ( auto ii = 0ULL; equal && ( ii < lhs.size() ); ++ii )
+        {
+            auto &&t1 = lhs[ ii ];
+            auto &&t2 = rhs[ ii ];
+            equal = t1 == t2;
+        }
+        return equal;
+    }
+    diff_match_patch dmp;
 
     // Construct the two texts which made up the diff originally.
     TStringVector diff_rebuildtexts( const TDiffVector &diffs );

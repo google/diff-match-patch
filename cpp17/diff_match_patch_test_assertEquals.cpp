@@ -21,7 +21,7 @@
 #include "diff_match_patch_test.h"
 
 #include <iostream>
-
+#ifndef USE_GTEST
 void diff_match_patch_test::reportFailure( const std::string &strCase, const std::wstring &expected, const std::wstring &actual )
 {
     std::cout << "FAILED : " + strCase + "\n";
@@ -56,16 +56,6 @@ void diff_match_patch_test::assertEquals( const std::string &strCase, const std:
 void diff_match_patch_test::assertEquals( const std::string &strCase, const std::string &s1, const std::string &s2 )
 {
     return assertEquals( strCase, NUtils::to_wstring( s1 ), NUtils::to_wstring( s2 ) );
-}
-
-void diff_match_patch_test::assertEquals( const std::string &strCase, const std::string &s1, const std::wstring &s2 )
-{
-    return assertEquals( strCase, NUtils::to_wstring( s1 ), s2 );
-}
-
-void diff_match_patch_test::assertEquals( const std::string &strCase, const std::wstring &s1, const std::string &s2 )
-{
-    return assertEquals( strCase, s1, NUtils::to_wstring( s2 ) );
 }
 
 void diff_match_patch_test::assertEquals( const std::string &strCase, const Diff &d1, const Diff &d2 )
@@ -136,6 +126,15 @@ void diff_match_patch_test::assertFalse( const std::string &strCase, bool value 
     reportPassed( strCase );
 }
 
+void diff_match_patch_test::assertEmpty( const std::string &strCase, const TStringVector &list )
+{
+    if ( !list.empty() )
+    {
+        throw strCase;
+    }
+}
+#endif
+
 // Construct the two texts which made up the diff originally.
 diff_match_patch_test::TStringVector diff_match_patch_test::diff_rebuildtexts( const TDiffVector &diffs )
 {
@@ -152,12 +151,4 @@ diff_match_patch_test::TStringVector diff_match_patch_test::diff_rebuildtexts( c
         }
     }
     return text;
-}
-
-void diff_match_patch_test::assertEmpty( const std::string &strCase, const TStringVector &list )
-{
-    if ( !list.empty() )
-    {
-        throw strCase;
-    }
 }

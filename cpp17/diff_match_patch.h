@@ -27,6 +27,9 @@
 #include <map>
 #include <unordered_map>
 #include <cstdint>
+#ifdef USE_GTEST
+    #include "gtest/gtest.h"
+#endif
 
 /*
  * Functions for diff, match and patch.
@@ -138,7 +141,16 @@ using TPatchVector = std::vector< Patch >;
 class diff_match_patch
 {
     friend class diff_match_patch_test;
-
+#ifdef USE_GTEST
+    FRIEND_TEST( diff_match_patch_test, testDiffCommonOverlap );
+    FRIEND_TEST( diff_match_patch_test, testDiffHalfmatch );
+    FRIEND_TEST( diff_match_patch_test, testDiffLinesToChars );
+    FRIEND_TEST( diff_match_patch_test, testDiffCharsToLines );
+    FRIEND_TEST( diff_match_patch_test, testDiffBisect );
+    FRIEND_TEST( diff_match_patch_test, testMatchAlphabet );
+    FRIEND_TEST( diff_match_patch_test, testMatchBitap );
+    FRIEND_TEST( diff_match_patch_test, testPatchAddContext );
+#endif
 public:
     // Defaults.
     // Set these on your diff_match_patch instance to override the defaults.
