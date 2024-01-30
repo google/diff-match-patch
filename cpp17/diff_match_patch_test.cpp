@@ -947,3 +947,22 @@ TEST_F( diff_match_patch_test, testPatchApply )
     resultStr = results.first + L"\t" + NUtils::to_wstring( boolArray[ 0 ] );
     assertEquals( "patch_apply: Edge partial match.", L"x123\ttrue", resultStr );
 }
+
+TEST_F( diff_match_patch_test, fromGitHubExamples )
+{
+    auto lhs = L"I am the very model of a modern Major-General, I've information vegetable, animal, and mineral, I know the kings of England, and I quote the fights historical, From Marathon to Waterloo, in order categorical.";
+    auto rhs = L"I am the very model of a cartoon individual, My animation's comical, unusual, and whimsical, I'm quite adept at funny gags, comedic theory I have read, From wicked puns and stupid jokes to anvils that drop on your head.";
+    auto diffs = dmp.diff_main( lhs, rhs );
+    dmp.diff_cleanupSemantic( diffs );
+    auto html = dmp.diff_prettyHtml( diffs );
+    auto delta = dmp.diff_toDelta( diffs );
+    auto htmlGolden = LR"(<span>I am the very model of a </span><del style="background:#ffe6e6;">modern Major-General, I've information vegetable, animal, and mineral, I know the kings of England, and I quote the fights historical, From Marathon to Waterloo, in order categorical</del><ins style="background:#e6ffe6;">cartoon individual, My animation's comical, unusual, and whimsical, I'm quite adept at funny gags, comedic theory I have read, From wicked puns and stupid jokes to anvils that drop on your head</ins><span>.</span>)";
+    assertEquals( "gitHubDemos", htmlGolden, html );
+    auto deltaGolden = L"=25\t-182\t+cartoon individual, My animation's comical, unusual, and whimsical, I'm quite adept at funny gags, comedic theory I have read, From wicked puns and stupid jokes to anvils that drop on your head\t=1";
+    assertEquals( "gitHubDemos", deltaGolden, delta );
+
+    auto patches = dmp.patch_make( lhs, rhs );
+    auto patch = dmp.patch_toText( patches );
+    auto patchGolden = L"@@ -22,187 +22,198 @@\n f a \n-modern Major-General, I've information vegetable, animal, and mineral, I know the kings of England, and I quote the fights historical, From Marathon to Waterloo, in order categorical\n+cartoon individual, My animation's comical, unusual, and whimsical, I'm quite adept at funny gags, comedic theory I have read, From wicked puns and stupid jokes to anvils that drop on your head\n .\n";
+    assertEquals( "gitHubDemos", patchGolden, patch );
+}
