@@ -29,6 +29,14 @@
 
 #include "diff_match_patch_utils.h"
 
+#ifdef WIN32
+std::size_t kZERO{0ULL};
+std::size_t kONE{1ULL};
+#else
+unsigned long kZERO{0UL};
+unsigned long kONE{1UL};
+#endif
+
 //////////////////////////
 //
 // Diff Class
@@ -1439,7 +1447,7 @@ std::size_t diff_match_patch::match_main(const std::wstring &text,
   // Check for null inputs not needed since null can't be passed via
   // std::wstring
 
-  loc = std::max(0UL, std::min(loc, text.length()));
+  loc = std::max(kZERO, std::min(loc, text.length()));
   if (text == pattern) {
     // Shortcut (potentially not guaranteed by the algorithm)
     return 0;
@@ -1512,7 +1520,7 @@ std::size_t diff_match_patch::match_bitap(const std::wstring &text,
     }
     // Use the result from this iteration as the maximum for the next.
     bin_max = bin_mid;
-    auto start = std::max(1UL, (loc > bin_mid) ? (loc - bin_mid + 1) : 0UL);
+    auto start = std::max(kONE, (loc > bin_mid) ? (loc - bin_mid + 1) : kZERO);
     auto finish = std::min(loc + bin_mid, text.length()) + pattern.length();
 
     rd = std::vector<int64_t>(finish + 2, 0);
@@ -1548,7 +1556,7 @@ std::size_t diff_match_patch::match_bitap(const std::wstring &text,
           if (best_loc > loc) {
             // When passing loc, don't exceed our current distance from loc.
             start =
-                std::max(1UL, (2 * loc > best_loc) ? 2 * loc - best_loc : 1);
+                std::max(kONE, (2 * loc > best_loc) ? 2 * loc - best_loc : 1);
           } else {
             // Already passed loc, downhill from here on in.
             break;
@@ -1623,10 +1631,10 @@ void diff_match_patch::patch_addContext(Patch &patch,
     padding += Patch_Margin;
     pattern = safeMid(
         text,
-        std::max(0UL,
+        std::max(kZERO,
                  ((patch.start2 > padding) ? patch.start2 - padding : 0UL)),
         std::min(text.length(), patch.start2 + patch.length1 + padding) -
-            std::max(0UL,
+            std::max(kZERO,
                      (patch.start2 > padding) ? patch.start2 - padding : 0));
   }
   // Add one chunk for good luck.
@@ -1635,10 +1643,10 @@ void diff_match_patch::patch_addContext(Patch &patch,
   // Add the prefix.
   std::wstring prefix = safeMid(
       text,
-      std::max(0UL,
+      std::max(kZERO,
                ((patch.start2 > padding) ? patch.start2 - padding : 0UL)),
       patch.start2 -
-          std::max(0UL,
+          std::max(kZERO,
                    ((patch.start2 > padding) ? patch.start2 - padding : 0UL)));
   if (!prefix.empty()) {
     patch.diffs.emplace(patch.diffs.begin(), EQUAL, prefix);
@@ -2042,9 +2050,9 @@ void diff_match_patch::patch_splitMax(TPatchVector &patches) {
       // Compute the head context for the next patch.
       precontext = diff_text2(patch.diffs);
       precontext = precontext.substr(
-          std::max(0UL, (precontext.length() > Patch_Margin)
-                             ? (precontext.length() - Patch_Margin)
-                             : 0));
+          std::max(kZERO, (precontext.length() > Patch_Margin)
+                              ? (precontext.length() - Patch_Margin)
+                              : 0));
 
       std::wstring postcontext;
       // Append the end context for this patch.
