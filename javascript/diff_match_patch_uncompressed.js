@@ -1206,6 +1206,166 @@ diff_match_patch.prototype.diff_cleanupMerge = function(diffs) {
   }
 };
 
+/**
+ * Rearrange diff boundaries that split Unicode surrogate pairs.
+ * 
+ * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
+ */
+diff_match_patch.prototype.diff_cleanupSplitSurrogates = function(diffs) {
+  var lastEnd;
+  for (var x = 0; x < diffs.length; x++) {
+    var thisDiff = diffs[x];
+    var thisTop  = thisDiff[1][0];
+    var thisEnd  = thisDiff[1][thisDiff[1].length - 1];
+
+    if (0 === thisDiff[1].length) {
+      diffs.splice(x--, 1);
+      continue;
+    }
+
+    if (thisEnd && this.isHighSurrogate(thisEnd)) {
+      lastEnd = thisEnd;
+      thisDiff[1] = thisDiff[1].slice(0, -1);
+    }
+
+    if (lastEnd && thisTop && this.isHighSurrogate(lastEnd) && this.isLowSurrogate(thisTop)) {
+      thisDiff[1] = lastEnd + thisDiff[1];
+    }
+
+    if (0 === thisDiff[1].length) {
+      diffs.splice(x--, 1);
+      continue;
+    }
+  }
+
+  return diffs;
+};
+
+diff_match_patch.prototype.isHighSurrogate = function(c) {
+  var v = c.charCodeAt(0);
+  return v >= 0xD800 && v <= 0xDBFF;
+};
+
+diff_match_patch.prototype.isLowSurrogate = function(c) {
+  var v = c.charCodeAt(0);
+  return v >= 0xDC00 && v <= 0xDFFF;
+};
+
+diff_match_patch.prototype.digit16 = function(c) {
+  switch (c) {
+    case '0': return 0;
+    case '1': return 1;
+    case '2': return 2;
+    case '3': return 3;
+    case '4': return 4;
+    case '5': return 5;
+    case '6': return 6;
+    case '7': return 7;
+    case '8': return 8;
+    case '9': return 9;
+    case 'A': case 'a': return 10;
+    case 'B': case 'b': return 11;
+    case 'C': case 'c': return 12;
+    case 'D': case 'd': return 13;
+    case 'E': case 'e': return 14;
+    case 'F': case 'f': return 15;
+    default: throw new Error('Invalid hex-code');
+  }
+};
+
+/**
+ * Decode URI-encoded string but allow for encoded surrogate halves
+ * 
+ * diff_match_patch needs this relaxation of the requirements because
+ * not all libraries and versions produce valid URI strings in toDelta
+ * and we don't want to crash this code when the input is valid input
+ * but at the same time invalid utf-8
+ * 
+ * @example: decodeURI( 'abcd%3A %F0%9F%85%B0' ) = 'abcd: \ud83c\udd70'
+ * @example: decodeURI( 'abcd%3A %ED%A0%BC' ) = 'abcd: \ud83c'
+ * 
+ * @cite: @mathiasbynens utf8.js at https://github.com/mathiasbynens/utf8.js
+ * 
+ * @param {String} text input string encoded by encodeURI() or equivalent
+ * @return {String}
+ */
+diff_match_patch.prototype.decodeURI = function(text) {
+  try {
+    return decodeURI(text);
+  } catch ( e ) {
+    var i = 0;
+    var decoded = '';
+
+    while (i < text.length) {
+      if ( text[i] !== '%' ) {
+        decoded += text[i++];
+        continue;
+      }
+
+      // start a percent-sequence
+      var byte1 = (this.digit16(text[i + 1]) << 4) + this.digit16(text[i + 2]);
+      if ((byte1 & 0x80) === 0) {
+        decoded += String.fromCharCode(byte1);
+        i += 3;
+        continue;
+      }
+
+      if ('%' !== text[i + 3]) {
+        throw new URIError('URI malformed');
+      }
+
+      var byte2 = (this.digit16(text[i + 4]) << 4) + this.digit16(text[i + 5]);
+      if ((byte2 & 0xC0) !== 0x80) {
+        throw new URIError('URI malformed');
+      }
+      byte2 = byte2 & 0x3F;
+      if ((byte1 & 0xE0) === 0xC0) {
+        decoded += String.fromCharCode(((byte1 & 0x1F) << 6) | byte2);
+        i += 6;
+        continue;
+      }
+
+      if ('%' !== text[i + 6]) {
+        throw new URIError('URI malformed');
+      }
+
+      var byte3 = (this.digit16(text[i + 7]) << 4) + this.digit16(text[i + 8]);
+      if ((byte3 & 0xC0) !== 0x80) {
+        throw new URIError('URI malformed');
+      }
+      byte3 = byte3 & 0x3F;
+      if ((byte1 & 0xF0) === 0xE0) {
+        // unpaired surrogate are fine here
+        decoded += String.fromCharCode(((byte1 & 0x0F) << 12) | (byte2 << 6) | byte3);
+        i += 9;
+        continue;
+      }
+
+      if ('%' !== text[i + 9]) {
+        throw new URIError('URI malformed');
+      }
+
+      var byte4 = (this.digit16(text[i + 10]) << 4) + this.digit16(text[i + 11]);
+      if ((byte4 & 0xC0) !== 0x80) {
+        throw new URIError('URI malformed');
+      }
+      byte4 = byte4 & 0x3F;
+      if ((byte1 & 0xF8) === 0xF0) {
+        var codePoint = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0C) | (byte3 << 0x06) | byte4;
+        if (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {
+          decoded += String.fromCharCode((codePoint & 0xFFFF) >>> 10 & 0x3FF | 0xD800);
+          decoded += String.fromCharCode(0xDC00 | (codePoint & 0xFFFF) & 0x3FF);
+          i += 12;
+          continue;
+        }
+      }
+
+      throw new URIError('URI malformed');
+    }
+
+    return decoded;
+  }
+};
 
 /**
  * loc is a location in text1, compute and return the equivalent location in
@@ -1249,6 +1409,7 @@ diff_match_patch.prototype.diff_xIndex = function(diffs, loc) {
  * @return {string} HTML representation.
  */
 diff_match_patch.prototype.diff_prettyHtml = function(diffs) {
+  diffs = this.diff_cleanupSplitSurrogates(diffs);
   var html = [];
   var pattern_amp = /&/g;
   var pattern_lt = /</g;
@@ -1349,6 +1510,7 @@ diff_match_patch.prototype.diff_levenshtein = function(diffs) {
  * @return {string} Delta text.
  */
 diff_match_patch.prototype.diff_toDelta = function(diffs) {
+  diffs = this.diff_cleanupSplitSurrogates(diffs);
   var text = [];
   for (var x = 0; x < diffs.length; x++) {
     switch (diffs[x][0]) {
@@ -1388,7 +1550,7 @@ diff_match_patch.prototype.diff_fromDelta = function(text1, delta) {
       case '+':
         try {
           diffs[diffsLength++] =
-              new diff_match_patch.Diff(DIFF_INSERT, decodeURI(param));
+              new diff_match_patch.Diff(DIFF_INSERT, this.decodeURI(param));
         } catch (ex) {
           // Malformed URI sequence.
           throw new Error('Illegal escape in diff_fromDelta: ' + param);
@@ -1627,11 +1789,23 @@ diff_match_patch.prototype.patch_addContext_ = function(patch, text) {
   padding += this.Patch_Margin;
 
   // Add the prefix.
+  if (
+    patch.start2 - padding > 0 &&
+    diff_match_patch.prototype.isLowSurrogate(text[patch.start2 - padding])
+  ) {
+    padding++;
+  }
   var prefix = text.substring(patch.start2 - padding, patch.start2);
   if (prefix) {
     patch.diffs.unshift(new diff_match_patch.Diff(DIFF_EQUAL, prefix));
   }
   // Add the suffix.
+  if (
+    patch.start2 + patch.length1 + padding < text.length &&
+    diff_match_patch.prototype.isHighSurrogate(text[patch.start2 + patch.length1 + padding])
+  ) {
+    padding++;
+  }
   var suffix = text.substring(patch.start2 + patch.length1,
                               patch.start2 + patch.length1 + padding);
   if (suffix) {
@@ -1705,6 +1879,7 @@ diff_match_patch.prototype.patch_make = function(a, opt_b, opt_c) {
   if (diffs.length === 0) {
     return [];  // Get rid of the null case.
   }
+  diffs = this.diff_cleanupSplitSurrogates(diffs);
   var patches = [];
   var patch = new diff_match_patch.patch_obj();
   var patchDiffLength = 0;  // Keeping our own length var is faster in JS.
@@ -2202,6 +2377,7 @@ diff_match_patch.patch_obj.prototype.toString = function() {
   var text = ['@@ -' + coords1 + ' +' + coords2 + ' @@\n'];
   var op;
   // Escape the body of the patch with %xx notation.
+  diff_match_patch.prototype.diff_cleanupSplitSurrogates(this.diffs);
   for (var x = 0; x < this.diffs.length; x++) {
     switch (this.diffs[x][0]) {
       case DIFF_INSERT:

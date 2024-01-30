@@ -424,6 +424,42 @@ public class diff_match_patch_test {
 
     assertEquals("diff_fromDelta: Unicode.", diffs, dmp.diff_fromDelta(text1, delta));
 
+    diffs = diffList(new Diff(EQUAL, "\ud83d\ude4b\ud83d"), new Diff(INSERT, "\ude4c\ud83d"), new Diff(EQUAL, "\ude4b"));
+    delta = dmp.diff_toDelta(diffs);
+    assertEquals("diff_toDelta: Surrogate Pairs.", "=2\t+%F0%9F%99%8C\t=2", delta);
+
+    assertEquals(
+      "diff_toDelta: insert surrogate pair between similar high surrogates",
+      dmp.diff_toDelta(diffList(new Diff(EQUAL, "\ud83c\udd70"), new Diff(INSERT, "\ud83c\udd70"), new Diff(EQUAL, "\ud83c\udd71"))),
+      dmp.diff_toDelta(diffList(new Diff(EQUAL, "\ud83c\udd70\ud83c"), new Diff(INSERT, "\udd70\ud83c"), new Diff(EQUAL, "\udd71")))
+    );
+
+    assertEquals(
+      "diff_toDelta: swap surrogate pairs delete/insert",
+      dmp.diff_toDelta(diffList(new Diff(DELETE, "\ud83c\udd70"), new Diff(INSERT, "\ud83c\udd71"))),
+      dmp.diff_toDelta(diffList(new Diff(EQUAL, "\ud83c"), new Diff(DELETE, "\udd70"), new Diff(INSERT, "\udd71")))
+    );
+
+    assertEquals(
+      "diff_toDelta: swap surrogate pairs insert/delete",
+      dmp.diff_toDelta(diffList(new Diff(INSERT, "\ud83c\udd70"), new Diff(DELETE, "\ud83c\udd71"))),
+      dmp.diff_toDelta(diffList(new Diff(EQUAL, "\ud83c"), new Diff(INSERT, "\udd70"), new Diff(DELETE, "\udd71")))
+    );
+
+    assertEquals(
+      "diff_toDelta: empty diff groups",
+      dmp.diff_toDelta(diffList(new Diff(EQUAL, "abcdef"), new Diff(DELETE, ""), new Diff(INSERT, "ghijk"))),
+      dmp.diff_toDelta(diffList(new Diff(EQUAL, "abcdef"), new Diff(INSERT, "ghijk")))
+    );
+
+    // Different versions of the library may have created deltas with
+    // half of a surrogate pair encoded as if it were valid UTF-8
+    assertEquals(
+      "diff_toDelta: surrogate half encoded as UTF8",
+      dmp.diff_toDelta(dmp.diff_fromDelta("\ud83c\udd70", "-2\t+%F0%9F%85%B1")),
+      dmp.diff_toDelta(dmp.diff_fromDelta("\ud83c\udd70", "=1\t-1\t+%ED%B5%B1"))
+    );
+
     // Verify pool of unchanged characters.
     diffs = diffList(new Diff(INSERT, "A-Z a-z 0-9 - _ . ! ~ * ' ( ) ; / ? : @ & = + $ , # "));
     String text2 = dmp.diff_text2(diffs);

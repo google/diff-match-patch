@@ -752,6 +752,68 @@
 
   XCTAssertEqualObjects(diffs, [dmp diff_fromDeltaWithText:text1 andDelta:delta error:NULL], @"diff_fromDelta: Unicode 2.");
 
+  diffs = [dmp diff_mainOfOldString:@"☺️🖖🏿" andNewString:@"☺️😃🖖🏿"];
+  delta = [dmp diff_toDelta:diffs];
+
+  XCTAssertEqualObjects(delta, @"=2\t+%F0%9F%98%83\t=4", @"Delta should match the expected string");
+
+  diffs = [dmp diff_mainOfOldString:@"☺️🖖🏿" andNewString:@"☺️😃🖖🏿"];
+  NSArray *patches = [dmp patch_makeFromDiffs:diffs];
+  NSArray *patchResult = [dmp patch_apply:patches toString:@"☺️🖖🏿"];
+
+  expectedString = [patchResult firstObject];
+  XCTAssertEqualObjects(@"☺️😃🖖🏿", expectedString, @"Output String should match the Edited one!");
+
+  // Unicode - splitting surrogates
+
+  // Inserting similar surrogate pair at beginning
+  diffs = [NSMutableArray arrayWithObjects:
+           [Diff diffWithOperation:DIFF_INSERT andText:@"🅱"],
+           [Diff diffWithOperation:DIFF_EQUAL andText:@"🅰🅱"],
+           nil];
+  XCTAssertEqualObjects( [dmp diff_toDelta:diffs], [dmp diff_toDelta:[dmp diff_mainOfOldString:@"🅰🅱" andNewString:@"🅱🅰🅱"]]);
+
+  // Inserting similar surrogate pair in the middle
+  diffs = [NSMutableArray arrayWithObjects:
+           [Diff diffWithOperation:DIFF_EQUAL andText:@"🅰"],
+           [Diff diffWithOperation:DIFF_INSERT andText:@"🅰"],
+           [Diff diffWithOperation:DIFF_EQUAL andText:@"🅱"],
+           nil];
+  XCTAssertEqualObjects( [dmp diff_toDelta:diffs], [dmp diff_toDelta:[dmp diff_mainOfOldString:@"🅰🅱" andNewString:@"🅰🅰🅱"]]);
+
+  // Deleting similar surrogate pair at the beginning
+  diffs = [NSMutableArray arrayWithObjects:
+           [Diff diffWithOperation:DIFF_DELETE andText:@"🅱"],
+           [Diff diffWithOperation:DIFF_EQUAL andText:@"🅰🅱"],
+           nil];
+  XCTAssertEqualObjects( [dmp diff_toDelta:diffs], [dmp diff_toDelta:[dmp diff_mainOfOldString:@"🅱🅰🅱" andNewString:@"🅰🅱"]]);
+
+  // Deleting similar surrogate pair in the middle
+  diffs = [NSMutableArray arrayWithObjects:
+           [Diff diffWithOperation:DIFF_EQUAL andText:@"🅰"],
+           [Diff diffWithOperation:DIFF_DELETE andText:@"🅲"],
+           [Diff diffWithOperation:DIFF_EQUAL andText:@"🅱"],
+           nil];
+  XCTAssertEqualObjects( [dmp diff_toDelta:diffs], [dmp diff_toDelta:[dmp diff_mainOfOldString:@"🅰🅲🅱" andNewString:@"🅰🅱"]]);
+
+  // Swapping surrogate pairs
+  diffs = [NSMutableArray arrayWithObjects:
+           [Diff diffWithOperation:DIFF_DELETE andText:@"🅰"],
+           [Diff diffWithOperation:DIFF_INSERT andText:@"🅱"],
+           nil];
+  XCTAssertEqualObjects( [dmp diff_toDelta:diffs], [dmp diff_toDelta:[dmp diff_mainOfOldString:@"🅰" andNewString:@"🅱"]]);
+
+  // Swapping surrogate pairs
+  XCTAssertEqualObjects( [dmp diff_toDelta:([NSMutableArray arrayWithObjects:
+                                            [Diff diffWithOperation:DIFF_DELETE andText:@"🅰"],
+                                            [Diff diffWithOperation:DIFF_INSERT andText:@"🅱"],
+                                             nil])],
+                        [dmp diff_toDelta:([NSMutableArray arrayWithObjects:
+                                            [Diff diffWithOperation:DIFF_EQUAL andText:[NSString stringWithFormat:@"%C", 0xd83c]],
+                                            [Diff diffWithOperation:DIFF_DELETE andText:[NSString stringWithFormat:@"%C", 0xdd70]],
+                                            [Diff diffWithOperation:DIFF_INSERT andText:[NSString stringWithFormat:@"%C", 0xdd71]],
+                                            nil])]);
+
   // Verify pool of unchanged characters.
   diffs = [NSMutableArray arrayWithObject:
        [Diff diffWithOperation:DIFF_INSERT andText:@"A-Z a-z 0-9 - _ . ! ~ * ' ( ) ; / ? : @ & = + $ , # "]];
@@ -780,6 +842,11 @@
   // Convert delta string into a diff.
   expectedResult = [dmp diff_fromDeltaWithText:@"" andDelta:delta error:NULL];
   XCTAssertEqualObjects(diffs, expectedResult, @"diff_fromDelta: 160kb string. Convert delta string into a diff.");
+
+  // Different versions of the library may have created deltas with
+  // half of a surrogate pair encoded as if it were valid UTF-8
+  XCTAssertEqualObjects([dmp diff_toDelta:([dmp diff_fromDeltaWithText:@"🅰" andDelta:@"-2\t+%F0%9F%85%B1" error:NULL])],
+                        [dmp diff_toDelta:([dmp diff_fromDeltaWithText:@"🅰" andDelta:@"=1\t-1\t+%ED%B5%B1" error:NULL])]);
 
   [dmp release];
 }

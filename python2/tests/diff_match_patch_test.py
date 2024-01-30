@@ -441,6 +441,86 @@ class DiffTest(DiffMatchPatchTest):
     # Convert delta string into a diff.
     self.assertEquals(diffs, self.dmp.diff_fromDelta(text1, delta))
 
+    diffs = [(self.dmp.DIFF_EQUAL, u"\ud83d\ude4b\ud83d"), (self.dmp.DIFF_INSERT, u"\ude4c\ud83d"), (self.dmp.DIFF_EQUAL, u"\ude4b")]
+    delta = self.dmp.diff_toDelta(diffs)
+    self.assertEquals("=2\t+%F0%9F%99%8C\t=2", delta)
+
+    # Unicode: split surrogates
+    # Inserting similar surrogate pair at beginning
+    self.assertEquals(
+      self.dmp.diff_toDelta([
+        (self.dmp.DIFF_INSERT, u'\U0001F171'),
+        (self.dmp.DIFF_EQUAL, u'\U0001F170\U0001F171')
+      ]),
+      self.dmp.diff_toDelta(self.dmp.diff_main(
+        u'\U0001F170\U0001F171',
+        u'\U0001F171\U0001F170\U0001F171'
+      ))
+    )
+
+    # Inserting similar surrogate pair in the middle
+    self.assertEquals(
+      self.dmp.diff_toDelta([
+        (self.dmp.DIFF_EQUAL, u'\U0001F170'),
+        (self.dmp.DIFF_INSERT, u'\U0001F172'),
+        (self.dmp.DIFF_EQUAL, u'\U0001F171')
+      ]),
+      self.dmp.diff_toDelta(self.dmp.diff_main(
+        u'\U0001F170\U0001F171',
+        u'\U0001F170\U0001F172\U0001F171'
+      ))
+    )
+
+    # Deleting similar surogate pair at the beginning
+    self.assertEquals(
+      self.dmp.diff_toDelta([
+        (self.dmp.DIFF_DELETE, u'\U0001F171'),
+        (self.dmp.DIFF_EQUAL, u'\U0001F170\U0001F171')
+      ]),
+      self.dmp.diff_toDelta(self.dmp.diff_main(
+        u'\U0001F171\U0001F170\U0001F171',
+        u'\U0001F170\U0001F171'
+      ))
+    )
+
+    # Deleting similar surogate pair in the middle
+    self.assertEquals(
+      self.dmp.diff_toDelta([
+        (self.dmp.DIFF_EQUAL, u'\U0001F170'),
+        (self.dmp.DIFF_DELETE, u'\U0001F172'),
+        (self.dmp.DIFF_EQUAL, u'\U0001F171')
+      ]),
+      self.dmp.diff_toDelta(self.dmp.diff_main(
+        u'\U0001F170\U0001F172\U0001F171',
+        u'\U0001F170\U0001F171'
+      ))
+    )
+
+    # Swap surrogate pair
+    self.assertEquals(
+      self.dmp.diff_toDelta([
+        (self.dmp.DIFF_DELETE, u'\U0001F170'),
+        (self.dmp.DIFF_INSERT, u'\U0001F171')
+      ]),
+      self.dmp.diff_toDelta(self.dmp.diff_main(
+        u'\U0001F170',
+        u'\U0001F171'
+      ))
+    )
+
+    # Swap surrogate pair, force the invalid diff groups
+    self.assertEquals(
+      self.dmp.diff_toDelta([
+        (self.dmp.DIFF_INSERT, u'\U0001F170'),
+        (self.dmp.DIFF_DELETE, u'\U0001F171')
+      ]),
+      self.dmp.diff_toDelta([
+        (self.dmp.DIFF_EQUAL, u'\ud83c'),
+        (self.dmp.DIFF_INSERT, u'\udd70'),
+        (self.dmp.DIFF_DELETE, u'\udd71')
+      ])
+    )
+
     # Verify pool of unchanged characters.
     diffs = [(self.dmp.DIFF_INSERT, "A-Z a-z 0-9 - _ . ! ~ * ' ( ) ; / ? : @ & = + $ , # ")]
     text2 = self.dmp.diff_text2(diffs)
