@@ -19,6 +19,7 @@
 package name.fraser.neil.plaintext;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.Character;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
@@ -1294,6 +1295,46 @@ public class diff_match_patch {
   }
 
   /**
+   * Rearrange diff boudnaries that split Unicode surrogate pairs.
+   * @param diffs Linked list of diff objects
+   */
+  public void diff_cleanupSplitSurrogates(List<Diff> diffs) {
+    char lastEnd = 0;
+    boolean isFirst = true;
+    HashSet<Diff> toRemove = new HashSet<Diff>();
+
+    for (Diff aDiff : diffs) {
+      if (aDiff.text.isEmpty()) {
+        toRemove.add(aDiff);
+        continue;
+      }
+
+      char thisTop = aDiff.text.charAt(0);
+      char thisEnd = aDiff.text.charAt(aDiff.text.length() - 1);
+
+      if (Character.isHighSurrogate(thisEnd)) {
+        lastEnd = thisEnd;
+        aDiff.text = aDiff.text.substring(0, aDiff.text.length() - 1);
+      }
+
+      if (!isFirst && Character.isHighSurrogate(lastEnd) && Character.isLowSurrogate(thisTop)) {
+        aDiff.text = lastEnd + aDiff.text;
+      }
+      
+      isFirst = false;
+
+      if ( aDiff.text.isEmpty() ) {
+        toRemove.add(aDiff);
+        continue;
+      }
+    }
+
+    for (Diff aDiff : toRemove) {
+      diffs.remove(aDiff);
+    }
+  }
+
+  /**
    * loc is a location in text1, compute and return the equivalent location in
    * text2.
    * e.g. "The cat" vs "The big cat", 1->1, 5->8
@@ -1429,6 +1470,7 @@ public class diff_match_patch {
    */
   public String diff_toDelta(List<Diff> diffs) {
     StringBuilder text = new StringBuilder();
+    this.diff_cleanupSplitSurrogates(diffs);
     for (Diff aDiff : diffs) {
       switch (aDiff.operation) {
       case INSERT:
@@ -1457,6 +1499,103 @@ public class diff_match_patch {
     return delta;
   }
 
+  private int digit16(char b) throws IllegalArgumentException {
+    switch (b) {
+      case '0': return 0;
+      case '1': return 1;
+      case '2': return 2;
+      case '3': return 3;
+      case '4': return 4;
+      case '5': return 5;
+      case '6': return 6;
+      case '7': return 7;
+      case '8': return 8;
+      case '9': return 9;
+      case 'A': case 'a': return 10;
+      case 'B': case 'b': return 11;
+      case 'C': case 'c': return 12;
+      case 'D': case 'd': return 13;
+      case 'E': case 'e': return 14;
+      case 'F': case 'f': return 15;
+      default:
+        throw new IllegalArgumentException();
+    }
+  }
+
+  private String decodeURI(String text) throws IllegalArgumentException {
+    int i = 0;
+    StringBuilder decoded = new StringBuilder(text.length());
+
+    while (i < text.length()) {
+      if (text.charAt(i) != '%') {
+        decoded.append(text.charAt(i++));
+        continue;
+      }
+
+      // start a percent-sequence
+      int byte1 = (digit16(text.charAt(i + 1)) << 4) + digit16(text.charAt(i + 2));
+      if ((byte1 & 0x80) == 0) {
+        decoded.append(Character.toChars(byte1));
+        i += 3;
+        continue;
+      }
+
+      if ( text.charAt(i + 3) != '%') {
+        throw new IllegalArgumentException();
+      }
+
+      int byte2 = (digit16(text.charAt(i + 4)) << 4) + digit16(text.charAt(i + 5));
+      if ((byte2 & 0xC0) != 0x80) {
+        throw new IllegalArgumentException();
+      }
+      byte2 = byte2 & 0x3F;
+      if ((byte1 & 0xE0) == 0xC0) {
+        decoded.append(Character.toChars(((byte1 & 0x1F) << 6) | byte2));
+        i += 6;
+        continue;
+      }
+
+      if (text.charAt(i + 6) != '%') {
+        throw new IllegalArgumentException();
+      }
+
+      int byte3 = (digit16(text.charAt(i + 7)) << 4) + digit16(text.charAt(i + 8));
+      if ((byte3 & 0xC0) != 0x80) {
+        throw new IllegalArgumentException();
+      }
+      byte3 = byte3 & 0x3F;
+      if ((byte1 & 0xF0) == 0xE0) {
+        // unpaired surrogate are fine here
+        decoded.append(Character.toChars(((byte1 & 0x0F) << 12) | (byte2 << 6) | byte3));
+        i += 9;
+        continue;
+      }
+
+      if (text.charAt(i + 9) != '%') {
+        throw new IllegalArgumentException();
+      }
+
+      int byte4 = (digit16(text.charAt(i + 10)) << 4) + digit16(text.charAt(i + 11));
+      if ((byte4 & 0xC0) != 0x80) {
+        throw new IllegalArgumentException();
+      }
+      byte4 = byte4 & 0x3F;
+      if ((byte1 & 0xF8) == 0xF0) {
+        int codePoint = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0C) | (byte3 << 0x06) | byte4;
+        if (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {
+          decoded.append(Character.toChars((codePoint & 0xFFFF) >>> 10 & 0x3FF | 0xD800));
+          decoded.append(Character.toChars(0xDC00 | (codePoint & 0xFFFF) & 0x3FF));
+          i += 12;
+          continue;
+        }
+      }
+
+      throw new IllegalArgumentException();
+    }
+
+    return decoded.toString();
+  }
+
   /**
    * Given the original text1, and an encoded string which describes the
    * operations required to transform text1 into text2, compute the full diff.
@@ -1483,10 +1622,7 @@ public class diff_match_patch {
         // decode would change all "+" to " "
         param = param.replace("+", "%2B");
         try {
-          param = URLDecoder.decode(param, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          // Not likely on modern system.
-          throw new Error("This system does not support UTF-8.", e);
+          param = this.decodeURI(param);
         } catch (IllegalArgumentException e) {
           // Malformed URI sequence.
           throw new IllegalArgumentException(
@@ -2269,10 +2405,7 @@ public class diff_match_patch {
         line = text.getFirst().substring(1);
         line = line.replace("+", "%2B");  // decode would change all "+" to " "
         try {
-          line = URLDecoder.decode(line, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          // Not likely on modern system.
-          throw new Error("This system does not support UTF-8.", e);
+          line = this.decodeURI(line);
         } catch (IllegalArgumentException e) {
           // Malformed URI sequence.
           throw new IllegalArgumentException(
