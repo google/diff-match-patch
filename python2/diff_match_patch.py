@@ -28,6 +28,7 @@ Applies the patch onto another text, allowing for errors.
 __author__ = 'fraser@google.com (Neil Fraser)'
 
 import re
+import struct
 import sys
 import time
 import urllib
@@ -1135,6 +1136,14 @@ class diff_match_patch:
     levenshtein += max(insertions, deletions)
     return levenshtein
 
+  @classmethod
+  def is_high_surrogate(cls, c):
+    return 0xd800 <= struct.unpack('>H', c)[0] <= 0xdbff
+
+  @classmethod
+  def is_low_surrogate(cls, c):
+    return 0xdc00 <= struct.unpack('>H', c)[0] <= 0xdfff
+
   def diff_toDelta(self, diffs):
     """Crush the diff into an encoded string which describes the operations
     required to transform text1 into text2.
@@ -1148,15 +1157,32 @@ class diff_match_patch:
       Delta text.
     """
     text = []
+    last_end = None
     for (op, data) in diffs:
+      if 0 == len(data):
+        continue
+
+      encoded = data.encode('utf-16be')
+      this_top = encoded[0:2]
+      this_end = encoded[-2:]
+
+      if self.is_high_surrogate(this_end):
+        last_end = this_end
+        encoded = encoded[0:-2]
+
+      if last_end and self.is_high_surrogate(last_end) and self.is_low_surrogate(this_top):
+        encoded = last_end + encoded
+
+      if 0 == len(encoded):
+        continue
+
       if op == self.DIFF_INSERT:
         # High ascii will raise UnicodeDecodeError.  Use Unicode instead.
-        data = data.encode("utf-8")
-        text.append("+" + urllib.quote(data, "!~*'();/?:@&=+$,# "))
+        text.append("+" + urllib.quote(encoded.decode('utf-16be').encode('utf-8'), "!~*'();/?:@&=+$,# "))
       elif op == self.DIFF_DELETE:
-        text.append("-%d" % len(data))
+        text.append("-%d" % (len(encoded) // 2))
       elif op == self.DIFF_EQUAL:
-        text.append("=%d" % len(data))
+        text.append("=%d" % (len(encoded) // 2))
     return "\t".join(text)
 
   def diff_fromDelta(self, text1, delta):
