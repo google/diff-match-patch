@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 
 SET( _PROJECT_NAME diff_match_patch_cpp17 )
@@ -15,8 +17,6 @@ target_include_directories( ${_PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR} )
 target_link_libraries( ${_PROJECT_NAME} )
 
 SET( TEST_NAME "${_PROJECT_NAME}_test" )
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED YES)
 project( ${TEST_NAME} )
 add_executable( ${TEST_NAME} diff_match_patch_test.cpp diff_match_patch_test.h diff_match_patch_test_assertEquals.cpp)
 

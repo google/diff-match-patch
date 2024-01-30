@@ -34,6 +34,8 @@
 #define TEST_F(className, funcName) void diff_match_patch_test::funcName()
 #endif
 
+#include "diff_match_patch_utils.h"
+
 class diff_match_patch_test PUBLIC_TESTING {
  public:
   using TStringVector = diff_match_patch::TStringVector;
@@ -81,6 +83,7 @@ class diff_match_patch_test PUBLIC_TESTING {
   void testPatchAddPadding();
   void testPatchApply();
 
+  void fromGitHubExamples();
  private:
   bool runTest(std::function<void()> test);
   std::size_t numPassedTests{0};

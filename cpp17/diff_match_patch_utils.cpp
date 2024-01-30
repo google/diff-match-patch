@@ -18,14 +18,8 @@
 
 #include "diff_match_patch_utils.h"
 
-// #include <algorithm>
-// #include <limits>
-// #include <ctime>
-// #include <list>
-// #include <cwctype>
-// #include <stack>
-// #include <unordered_map>
 #include <codecvt>
+#include <locale>
 
 namespace NUtils {
 std::wstring safeMid(const std::wstring &str, std::size_t pos) {

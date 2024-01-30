@@ -698,7 +698,8 @@ TEST_F(diff_match_patch_test, testDiffBisect) {
 
   // Timeout.
   diffs = {Diff(DELETE, "cat"), Diff(INSERT, "map")};
-  assertEquals("diff_bisect: Timeout.", diffs, dmp.diff_bisect(a, b, 0));
+  results = dmp.diff_bisect(a, b, 0);
+  assertEquals("diff_bisect: Timeout.", diffs, results);
 }
 
 TEST_F(diff_match_patch_test, testDiffMain) {
