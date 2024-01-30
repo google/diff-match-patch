@@ -88,7 +88,6 @@ namespace NUtils
 
         static_assert( sizeof( wchar_t ) <= 4, "wchar_t is greater that 32 bit" );
 
-        auto sz = sizeof( wchar_t );
         std::wstring_convert< std::codecvt_utf8< wchar_t > > utf8_conv;
         for ( auto &&c : input )
         {
@@ -121,7 +120,7 @@ namespace NUtils
     {
         if ( input.empty() )
             return {};
-        std::wstring retVal;
+        std::string retVal;
         retVal.reserve( input.length() );
         for ( auto ii = 0ULL; ii < input.length(); ++ii )
         {
@@ -132,14 +131,21 @@ namespace NUtils
                 auto b = input[ ++ii ];
                 a = getValue( a );
                 b = getValue( b );
-                retVal += wchar_t( ( a << 4 ) | b );
+                a = a << 4;
+                auto value = a | b;
+                retVal += std::string( 1, value );
             }
+            else if ( c == '+' )
+                retVal += ' ';
             else
             {
                 retVal += c;
             }
         }
-        return retVal;
+        std::wstring_convert< std::codecvt_utf8< wchar_t > > utf8_conv;
+        auto asBytes = utf8_conv.from_bytes( retVal );
+
+        return asBytes;
     }
 
     bool endsWith( const std::wstring &string, const std::wstring &suffix )

@@ -661,7 +661,7 @@ std::wstring diff_match_patch::diff_linesToCharsMunge( const std::wstring &text,
     // text.split('\n') would would temporarily double our memory footprint.
     // Modifying text would create many large strings to garbage collect.
     bool firstTime = true;
-    while ( ( firstTime && ( lineEnd == -1 ) ) || lineEnd < ( text.length() - 1 ) )
+    while ( ( firstTime && ( lineEnd == -1 ) && !text.empty() ) || lineEnd < ( text.length() - 1 ) )
     {
         firstTime = false;
         lineEnd = text.find( '\n', lineStart );
@@ -674,13 +674,13 @@ std::wstring diff_match_patch::diff_linesToCharsMunge( const std::wstring &text,
         auto pos = lineHash.find( line );
         if ( pos != lineHash.end() )
         {
-            chars += static_cast< char >( ( *pos ).second );
+            chars += static_cast< wchar_t >( ( *pos ).second );
         }
         else
         {
             lineArray.emplace_back( line );
             lineHash[ line ] = lineArray.size() - 1;
-            chars += static_cast< char >( lineArray.size() - 1 );
+            chars += static_cast< wchar_t >( lineArray.size() - 1 );
         }
 
         lineStart = lineEnd + 1;
@@ -934,7 +934,7 @@ void diff_match_patch::diff_cleanupSemantic( TDiffVector &diffs )
             if ( !lastEquality.empty() && ( lastEquality.length() <= std::max( length_insertions1, length_deletions1 ) ) && ( lastEquality.length() <= std::max( length_insertions2, length_deletions2 ) ) )
             {
                 // Duplicate record.
-                diffs[ equalities.top() ] = Diff( DELETE, lastEquality );
+                diffs.insert( diffs.begin() + equalities.top(), Diff( DELETE, lastEquality ) );
                 // Change second copy to insert.
                 diffs[ equalities.top() + 1 ].operation = INSERT;
                 // Throw away the equality we just deleted.
