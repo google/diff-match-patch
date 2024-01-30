@@ -20,15 +20,15 @@
 #ifndef DIFF_MATCH_PATCH_H
 #define DIFF_MATCH_PATCH_H
 
-#include <string>
-#include <vector>
-#include <regex>
-#include <variant>
-#include <map>
-#include <unordered_map>
 #include <cstdint>
+#include <map>
+#include <regex>
+#include <string>
+#include <unordered_map>
+#include <variant>
+#include <vector>
 #ifdef USE_GTEST
-    #include "gtest/gtest.h"
+#include "gtest/gtest.h"
 #endif
 
 /*
@@ -39,7 +39,8 @@
  * @author fraser@google.com (Neil Fraser)
  *
  * Qt/C++ port by mikeslemmer@gmail.com (Mike Slemmer):
- * Qt->C++17 with native STL use only, port by scott@towel42.com (Scott Aron Bloom)
+ * Qt->C++17 with native STL use only, port by scott@towel42.com (Scott Aron
+ Bloom)
  *   C++17 was intentionally chosen for variant support
  *
  * Code known to compile with C++17
@@ -65,132 +66,124 @@
 */
 
 /**-
-* The data structure representing a diff is a Linked list of Diff objects:
-* {Diff(Operation.DELETE, "Hello"), Diff(Operation.INSERT, "Goodbye"),
-*  Diff(Operation.EQUAL, " world.")}
-* which means: delete "Hello", add "Goodbye" and keep " world."
-*/
-enum Operation
-{
-    DELETE,
-    INSERT,
-    EQUAL
-};
+ * The data structure representing a diff is a Linked list of Diff objects:
+ * {Diff(Operation.DELETE, "Hello"), Diff(Operation.INSERT, "Goodbye"),
+ *  Diff(Operation.EQUAL, " world.")}
+ * which means: delete "Hello", add "Goodbye" and keep " world."
+ */
+enum Operation { DELETE, INSERT, EQUAL };
 
 /**
-* Class representing one diff operation.
-*/
-class Diff
-{
-public:
-    Operation operation{ DELETE };
-    // One of: INSERT, DELETE or EQUAL.
-    std::wstring text;
-    // The text associated with this diff operation.
+ * Class representing one diff operation.
+ */
+class Diff {
+ public:
+  Operation operation{DELETE};
+  // One of: INSERT, DELETE or EQUAL.
+  std::wstring text;
+  // The text associated with this diff operation.
 
-    /**
+  /**
    * Constructor.  Initializes the diff with the provided values.
    * @param operation One of INSERT, DELETE or EQUAL.
    * @param text The text being applied.
    */
-    Diff( Operation _operation, const std::wstring &_text );
-    Diff( Operation _operation, const wchar_t *_text );
-    Diff( Operation _operation, const std::string &_text );
-    Diff( Operation _operation, const char *_text );
-    Diff();
-    inline bool isNull() const;
-    std::wstring toString() const;
-    bool operator==( const Diff &d ) const;
-    bool operator!=( const Diff &d ) const;
+  Diff(Operation _operation, const std::wstring &_text);
+  Diff(Operation _operation, const wchar_t *_text);
+  Diff(Operation _operation, const std::string &_text);
+  Diff(Operation _operation, const char *_text);
+  Diff();
+  inline bool isNull() const;
+  std::wstring toString() const;
+  bool operator==(const Diff &d) const;
+  bool operator!=(const Diff &d) const;
 
-    static std::wstring strOperation( Operation op );
+  static std::wstring strOperation(Operation op);
 };
-using TDiffVector = std::vector< Diff >;
+using TDiffVector = std::vector<Diff>;
 
 /**
-* Class representing one patch operation.
-*/
-class Patch
-{
-public:
-    TDiffVector diffs;
-    std::size_t length1{ 0 };
-    std::size_t length2{ 0 };
-    std::size_t start1{ 0 };
-    std::size_t start2{ 0 };
+ * Class representing one patch operation.
+ */
+class Patch {
+ public:
+  TDiffVector diffs;
+  std::size_t length1{0};
+  std::size_t length2{0};
+  std::size_t start1{0};
+  std::size_t start2{0};
 
-    /**
+  /**
    * Constructor.  Initializes with an empty list of diffs.
    */
-    Patch();
-    Patch( std::wstring &text );   // modifies text, and removes the text used
-    bool isNull() const;
-    std::wstring toString() const;
+  Patch();
+  Patch(std::wstring &text);  // modifies text, and removes the text used
+  bool isNull() const;
+  std::wstring toString() const;
 
-private:
-    std::wstring getPatchHeader() const;
-    std::wstring getCoordinateString( std::size_t start, std::size_t length ) const;
+ private:
+  std::wstring getPatchHeader() const;
+  std::wstring getCoordinateString(std::size_t start, std::size_t length) const;
 };
-using TPatchVector = std::vector< Patch >;
+using TPatchVector = std::vector<Patch>;
 
 /**
  * Class containing the diff, match and patch methods.
  * Also contains the behaviour settings.
  */
 
-class diff_match_patch
-{
-    friend class diff_match_patch_test;
+class diff_match_patch {
+  friend class diff_match_patch_test;
 #ifdef USE_GTEST
-    FRIEND_TEST( diff_match_patch_test, testDiffCommonOverlap );
-    FRIEND_TEST( diff_match_patch_test, testDiffHalfmatch );
-    FRIEND_TEST( diff_match_patch_test, testDiffLinesToChars );
-    FRIEND_TEST( diff_match_patch_test, testDiffCharsToLines );
-    FRIEND_TEST( diff_match_patch_test, testDiffBisect );
-    FRIEND_TEST( diff_match_patch_test, testMatchAlphabet );
-    FRIEND_TEST( diff_match_patch_test, testMatchBitap );
-    FRIEND_TEST( diff_match_patch_test, testPatchAddContext );
+  FRIEND_TEST(diff_match_patch_test, testDiffCommonOverlap);
+  FRIEND_TEST(diff_match_patch_test, testDiffHalfmatch);
+  FRIEND_TEST(diff_match_patch_test, testDiffLinesToChars);
+  FRIEND_TEST(diff_match_patch_test, testDiffCharsToLines);
+  FRIEND_TEST(diff_match_patch_test, testDiffBisect);
+  FRIEND_TEST(diff_match_patch_test, testMatchAlphabet);
+  FRIEND_TEST(diff_match_patch_test, testMatchBitap);
+  FRIEND_TEST(diff_match_patch_test, testPatchAddContext);
 #endif
-public:
-    // Defaults.
-    // Set these on your diff_match_patch instance to override the defaults.
+ public:
+  // Defaults.
+  // Set these on your diff_match_patch instance to override the defaults.
 
-    // Number of seconds to map a diff before giving up (0 for infinity).
-    float Diff_Timeout{ 1.0f };
-    // Cost of an empty edit operation in terms of edit characters.
-    short Diff_EditCost{ 4 };
-    // At what point is no match declared (0.0 = perfection, 1.0 = very loose).
-    float Match_Threshold{ 0.5f };
-    // How far to search for a match (0 = exact location, 1000+ = broad match).
-    // A match this many characters away from the expected location will add
-    // 1.0 to the score (0.0 is a perfect match).
-    int64_t Match_Distance{ 1000 };
-    // When deleting a large block of text (over ~64 characters), how close does
-    // the contents have to match the expected contents. (0.0 = perfection,
-    // 1.0 = very loose).  Note that Match_Threshold controls how closely the
-    // end points of a delete need to match.
-    float Patch_DeleteThreshold{ 0.5f };
-    // Chunk size for context length.
-    short Patch_Margin{ 4 };
+  // Number of seconds to map a diff before giving up (0 for infinity).
+  float Diff_Timeout{1.0f};
+  // Cost of an empty edit operation in terms of edit characters.
+  short Diff_EditCost{4};
+  // At what point is no match declared (0.0 = perfection, 1.0 = very loose).
+  float Match_Threshold{0.5f};
+  // How far to search for a match (0 = exact location, 1000+ = broad match).
+  // A match this many characters away from the expected location will add
+  // 1.0 to the score (0.0 is a perfect match).
+  int64_t Match_Distance{1000};
+  // When deleting a large block of text (over ~64 characters), how close does
+  // the contents have to match the expected contents. (0.0 = perfection,
+  // 1.0 = very loose).  Note that Match_Threshold controls how closely the
+  // end points of a delete need to match.
+  float Patch_DeleteThreshold{0.5f};
+  // Chunk size for context length.
+  short Patch_Margin{4};
 
-    short Match_MaxBits{ 32 };   // unit tests are based on 32 bits
+  short Match_MaxBits{32};  // unit tests are based on 32 bits
 
-private:
-    // Define some regex patterns for matching boundaries.
-    static std::wregex BLANKLINEEND;
-    static std::wregex BLANKLINESTART;
+ private:
+  // Define some regex patterns for matching boundaries.
+  static std::wregex BLANKLINEEND;
+  static std::wregex BLANKLINESTART;
 
-public:
-    using TStringVector = std::vector< std::wstring >;
-    using TVariant = std::variant< std::wstring, TStringVector >;
-    using TVariantVector = std::vector< TVariant >;
-    using TCharPosMap = std::map< wchar_t, std::size_t >;
+ public:
+  using TStringVector = std::vector<std::wstring>;
+  using TVariant = std::variant<std::wstring, TStringVector>;
+  using TVariantVector = std::vector<TVariant>;
+  using TCharPosMap = std::map<wchar_t, std::size_t>;
 
-    diff_match_patch();
+  diff_match_patch();
 
-    //  DIFF FUNCTIONS
+  //  DIFF FUNCTIONS
 
-    /**
+  /**
    * Find the differences between two texts.
    * Run a faster slightly less optimal diff.
    * This method allows the 'checklines' of diff_main() to be optional.
@@ -199,10 +192,10 @@ public:
    * @param text2 New string to be diffed.
    * @return Linked List of Diff objects.
    */
-    TDiffVector diff_main( const std::wstring &text1, const std::wstring &text2 );
-    TDiffVector diff_main( const std::string &text1, const std::string &text2 );
+  TDiffVector diff_main(const std::wstring &text1, const std::wstring &text2);
+  TDiffVector diff_main(const std::string &text1, const std::string &text2);
 
-    /**
+  /**
    * Find the differences between two texts.
    * @param text1 Old string to be diffed.
    * @param text2 New string to be diffed.
@@ -211,10 +204,12 @@ public:
    *     If true, then run a faster slightly less optimal diff.
    * @return Linked List of Diff objects.
    */
-    TDiffVector diff_main( const std::wstring &text1, const std::wstring &text2, bool checklines );
-    TDiffVector diff_main( const std::string &text1, const std::string &text2, bool checklines );
+  TDiffVector diff_main(const std::wstring &text1, const std::wstring &text2,
+                        bool checklines);
+  TDiffVector diff_main(const std::string &text1, const std::string &text2,
+                        bool checklines);
 
-    /**
+  /**
    * Find the differences between two texts.  Simplifies the problem by
    * stripping any common prefix or suffix off the texts before diffing.
    * @param text1 Old string to be diffed.
@@ -226,11 +221,13 @@ public:
    *     internally for recursive calls.  Users should set DiffTimeout instead.
    * @return Linked List of Diff objects.
    */
-private:
-    TDiffVector diff_main( const std::wstring &text1, const std::wstring &text2, bool checklines, clock_t deadline );
-    TDiffVector diff_main( const std::string &text1, const std::string &text2, bool checklines, clock_t deadline );
+ private:
+  TDiffVector diff_main(const std::wstring &text1, const std::wstring &text2,
+                        bool checklines, clock_t deadline);
+  TDiffVector diff_main(const std::string &text1, const std::string &text2,
+                        bool checklines, clock_t deadline);
 
-    /**
+  /**
    * Find the differences between two texts.  Assumes that the texts do not
    * have any common prefix or suffix.
    * @param text1 Old string to be diffed.
@@ -241,11 +238,13 @@ private:
    * @param deadline Time when the diff should be complete by.
    * @return Linked List of Diff objects.
    */
-private:
-    TDiffVector diff_compute( const std::wstring &text1, const std::wstring &text2, bool checklines, clock_t deadline );
-    TDiffVector diff_compute( const std::string &text1, const std::string &text2, bool checklines, clock_t deadline );
+ private:
+  TDiffVector diff_compute(const std::wstring &text1, const std::wstring &text2,
+                           bool checklines, clock_t deadline);
+  TDiffVector diff_compute(const std::string &text1, const std::string &text2,
+                           bool checklines, clock_t deadline);
 
-    /**
+  /**
    * Do a quick line-level diff on both strings, then rediff the parts for
    * greater accuracy.
    * This speedup can produce non-minimal diffs.
@@ -254,11 +253,13 @@ private:
    * @param deadline Time when the diff should be complete by.
    * @return Linked List of Diff objects.
    */
-private:
-    TDiffVector diff_lineMode( std::wstring text1, std::wstring text2, clock_t deadline );
-    TDiffVector diff_lineMode( std::string text1, std::string text2, clock_t deadline );
+ private:
+  TDiffVector diff_lineMode(std::wstring text1, std::wstring text2,
+                            clock_t deadline);
+  TDiffVector diff_lineMode(std::string text1, std::string text2,
+                            clock_t deadline);
 
-    /**
+  /**
    * Find the 'middle snake' of a diff, split the problem in two
    * and return the recursively constructed diff.
    * See Myers 1986 paper: An O(ND) Difference Algorithm and Its Variations.
@@ -266,11 +267,13 @@ private:
    * @param text2 New string to be diffed.
    * @return Linked List of Diff objects.
    */
-protected:
-    TDiffVector diff_bisect( const std::wstring &text1, const std::wstring &text2, clock_t deadline );
-    TDiffVector diff_bisect( const std::string &text1, const std::string &text2, clock_t deadline );
+ protected:
+  TDiffVector diff_bisect(const std::wstring &text1, const std::wstring &text2,
+                          clock_t deadline);
+  TDiffVector diff_bisect(const std::string &text1, const std::string &text2,
+                          clock_t deadline);
 
-    /**
+  /**
    * Given the location of the 'middle snake', split the diff in two parts
    * and recurse.
    * @param text1 Old string to be diffed.
@@ -280,11 +283,15 @@ protected:
    * @param deadline Time at which to bail if not yet complete.
    * @return LinkedList of Diff objects.
    */
-private:
-    TDiffVector diff_bisectSplit( const std::wstring &text1, const std::wstring &text2, std::size_t x, std::size_t y, clock_t deadline );
-    TDiffVector diff_bisectSplit( const std::string &text1, const std::string &text2, std::size_t x, std::size_t y, clock_t deadline );
+ private:
+  TDiffVector diff_bisectSplit(const std::wstring &text1,
+                               const std::wstring &text2, std::size_t x,
+                               std::size_t y, clock_t deadline);
+  TDiffVector diff_bisectSplit(const std::string &text1,
+                               const std::string &text2, std::size_t x,
+                               std::size_t y, clock_t deadline);
 
-    /**
+  /**
    * Split two texts into a list of strings.  Reduce the texts to a string of
    * hashes where each Unicode character represents one line.
    * @param text1 First string.
@@ -293,11 +300,15 @@ private:
    *     encoded text2 and the List of unique strings.  The zeroth element
    *     of the List of unique strings is intentionally blank.
    */
-protected:
-    std::vector< TVariant > diff_linesToChars( const std::wstring &text1, const std::wstring &text2 );   // return elems 0 and 1 are std::wstring, elem 2 is TStringVector
-    std::vector< TVariant > diff_linesToChars( const std::string &text1, const std::string &text2 );
+ protected:
+  std::vector<TVariant> diff_linesToChars(
+      const std::wstring &text1,
+      const std::wstring &text2);  // return elems 0 and 1 are std::wstring,
+                                   // elem 2 is TStringVector
+  std::vector<TVariant> diff_linesToChars(const std::string &text1,
+                                          const std::string &text2);
 
-    /**
+  /**
    * Split a text into a list of strings.  Reduce the texts to a string of
    * hashes where each Unicode character represents one line.
    * @param text String to encode.
@@ -305,50 +316,58 @@ protected:
    * @param lineHash Map of strings to indices.
    * @return Encoded string.
    */
-private:
-    std::wstring diff_linesToCharsMunge( const std::wstring &text, TStringVector &lineArray, std::unordered_map< std::wstring, std::size_t > &lineHash );
+ private:
+  std::wstring diff_linesToCharsMunge(
+      const std::wstring &text, TStringVector &lineArray,
+      std::unordered_map<std::wstring, std::size_t> &lineHash);
 
-    /**
+  /**
    * Rehydrate the text in a diff from a string of line hashes to real lines of
    * text.
    * @param diffs LinkedList of Diff objects.
    * @param lineArray List of unique strings.
    */
-private:
-    void diff_charsToLines( TDiffVector &diffs, const TStringVector &lineArray );
+ private:
+  void diff_charsToLines(TDiffVector &diffs, const TStringVector &lineArray);
 
-    /**
+  /**
    * Determine the common prefix of two strings.
    * @param text1 First string.
    * @param text2 Second string.
    * @return The number of characters common to the start of each string.
    */
-public:
-    std::size_t diff_commonPrefix( const std::wstring &text1, const std::wstring &text2 );
-    std::size_t diff_commonPrefix( const std::string &text1, const std::string &text2 );
+ public:
+  std::size_t diff_commonPrefix(const std::wstring &text1,
+                                const std::wstring &text2);
+  std::size_t diff_commonPrefix(const std::string &text1,
+                                const std::string &text2);
 
-    /**
+  /**
    * Determine the common suffix of two strings.
    * @param text1 First string.
    * @param text2 Second string.
    * @return The number of characters common to the end of each string.
    */
-public:
-    std::size_t diff_commonSuffix( const std::wstring &text1, const std::wstring &text2 );
-    std::size_t diff_commonSuffix( const std::string &text1, const std::string &text2 );
+ public:
+  std::size_t diff_commonSuffix(const std::wstring &text1,
+                                const std::wstring &text2);
+  std::size_t diff_commonSuffix(const std::string &text1,
+                                const std::string &text2);
 
-    /**
+  /**
    * Determine if the suffix of one string is the prefix of another.
    * @param text1 First string.
    * @param text2 Second string.
    * @return The number of characters common to the end of the first
    *     string and the start of the second string.
    */
-protected:
-    std::size_t diff_commonOverlap( const std::wstring &text1, const std::wstring &text2 );
-    std::size_t diff_commonOverlap( const std::string &text1, const std::string &text2 );
+ protected:
+  std::size_t diff_commonOverlap(const std::wstring &text1,
+                                 const std::wstring &text2);
+  std::size_t diff_commonOverlap(const std::string &text1,
+                                 const std::string &text2);
 
-    /**
+  /**
    * Do the two texts share a substring which is at least half the length of
    * the longer text?
    * This speedup can produce non-minimal diffs.
@@ -358,11 +377,13 @@ protected:
    *     suffix of text1, the prefix of text2, the suffix of text2 and the
    *     common middle.  Or null if there was no match.
    */
-protected:
-    TStringVector diff_halfMatch( const std::wstring &text1, const std::wstring &text2 );
-    TStringVector diff_halfMatch( const std::string &text1, const std::string &text2 );
+ protected:
+  TStringVector diff_halfMatch(const std::wstring &text1,
+                               const std::wstring &text2);
+  TStringVector diff_halfMatch(const std::string &text1,
+                               const std::string &text2);
 
-    /**
+  /**
    * Does a substring of shorttext exist within longtext such that the
    * substring is at least half the length of longtext?
    * @param longtext Longer string.
@@ -372,27 +393,29 @@ protected:
    *     suffix of longtext, the prefix of shorttext, the suffix of shorttext
    *     and the common middle.  Or null if there was no match.
    */
-private:
-    TStringVector diff_halfMatchI( const std::wstring &longtext, const std::wstring &shorttext, std::size_t i );
-    TStringVector diff_halfMatchI( const std::string &longtext, const std::string &shorttext, std::size_t i );
+ private:
+  TStringVector diff_halfMatchI(const std::wstring &longtext,
+                                const std::wstring &shorttext, std::size_t i);
+  TStringVector diff_halfMatchI(const std::string &longtext,
+                                const std::string &shorttext, std::size_t i);
 
-    /**
+  /**
    * Reduce the number of edits by eliminating semantically trivial equalities.
    * @param diffs LinkedList of Diff objects.
    */
-public:
-    void diff_cleanupSemantic( TDiffVector &diffs );
+ public:
+  void diff_cleanupSemantic(TDiffVector &diffs);
 
-    /**
+  /**
    * Look for single edits surrounded on both sides by equalities
    * which can be shifted sideways to align the edit to a word boundary.
    * e.g: The c<ins>at c</ins>ame. -> The <ins>cat </ins>came.
    * @param diffs LinkedList of Diff objects.
    */
-public:
-    void diff_cleanupSemanticLossless( TDiffVector &diffs );
+ public:
+  void diff_cleanupSemanticLossless(TDiffVector &diffs);
 
-    /**
+  /**
    * Given two strings, compute a score representing whether the internal
    * boundary falls on logical boundaries.
    * Scores range from 6 (best) to 0 (worst).
@@ -400,26 +423,28 @@ public:
    * @param two Second string.
    * @return The score.
    */
-private:
-    int64_t diff_cleanupSemanticScore( const std::wstring &one, const std::wstring &two );
-    int64_t diff_cleanupSemanticScore( const std::string &one, const std::string &two );
+ private:
+  int64_t diff_cleanupSemanticScore(const std::wstring &one,
+                                    const std::wstring &two);
+  int64_t diff_cleanupSemanticScore(const std::string &one,
+                                    const std::string &two);
 
-    /**
+  /**
    * Reduce the number of edits by eliminating operationally trivial equalities.
    * @param diffs LinkedList of Diff objects.
    */
-public:
-    void diff_cleanupEfficiency( TDiffVector &diffs );
+ public:
+  void diff_cleanupEfficiency(TDiffVector &diffs);
 
-    /**
+  /**
    * Reorder and merge like edit sections.  Merge equalities.
    * Any edit section can move as long as it doesn't cross an equality.
    * @param diffs LinkedList of Diff objects.
    */
-public:
-    void diff_cleanupMerge( TDiffVector &diffs );
+ public:
+  void diff_cleanupMerge(TDiffVector &diffs);
 
-    /**
+  /**
    * loc is a location in text1, compute and return the equivalent location in
    * text2.
    * e.g. "The cat" vs "The big cat", 1->1, 5->8
@@ -427,43 +452,43 @@ public:
    * @param loc Location within text1.
    * @return Location within text2.
    */
-public:
-    std::size_t diff_xIndex( const TDiffVector &diffs, std::size_t loc );
+ public:
+  std::size_t diff_xIndex(const TDiffVector &diffs, std::size_t loc);
 
-    /**
+  /**
    * Convert a Diff list into a pretty HTML report.
    * @param diffs LinkedList of Diff objects.
    * @return HTML representation.
    */
-public:
-    std::wstring diff_prettyHtml( const TDiffVector &diffs );
+ public:
+  std::wstring diff_prettyHtml(const TDiffVector &diffs);
 
-    /**
+  /**
    * Compute and return the source text (all equalities and deletions).
    * @param diffs LinkedList of Diff objects.
    * @return Source text.
    */
-public:
-    std::wstring diff_text1( const TDiffVector &diffs );
+ public:
+  std::wstring diff_text1(const TDiffVector &diffs);
 
-    /**
+  /**
    * Compute and return the destination text (all equalities and insertions).
    * @param diffs LinkedList of Diff objects.
    * @return Destination text.
    */
-public:
-    std::wstring diff_text2( const TDiffVector &diffs );
+ public:
+  std::wstring diff_text2(const TDiffVector &diffs);
 
-    /**
+  /**
    * Compute the Levenshtein distance; the number of inserted, deleted or
    * substituted characters.
    * @param diffs LinkedList of Diff objects.
    * @return Number of changes.
    */
-public:
-    std::size_t diff_levenshtein( const TDiffVector &diffs );
+ public:
+  std::size_t diff_levenshtein(const TDiffVector &diffs);
 
-    /**
+  /**
    * Crush the diff into an encoded string which describes the operations
    * required to transform text1 into text2.
    * E.g. =3\t-2\t+ing  -> Keep 3 chars, delete 2 chars, insert 'ing'.
@@ -471,10 +496,10 @@ public:
    * @param diffs Array of diff tuples.
    * @return Delta text.
    */
-public:
-    std::wstring diff_toDelta( const TDiffVector &diffs );
+ public:
+  std::wstring diff_toDelta(const TDiffVector &diffs);
 
-    /**
+  /**
    * Given the original text1, and an encoded string which describes the
    * operations required to transform text1 into text2, compute the full diff.
    * @param text1 Source string for the diff.
@@ -482,13 +507,15 @@ public:
    * @return Array of diff tuples or null if invalid.
    * @throws std::wstring If invalid input.
    */
-public:
-    TDiffVector diff_fromDelta( const std::wstring &text1, const std::wstring &delta );
-    TDiffVector diff_fromDelta( const std::string &text1, const std::string &delta );
+ public:
+  TDiffVector diff_fromDelta(const std::wstring &text1,
+                             const std::wstring &delta);
+  TDiffVector diff_fromDelta(const std::string &text1,
+                             const std::string &delta);
 
-    //  MATCH FUNCTIONS
+  //  MATCH FUNCTIONS
 
-    /**
+  /**
    * Locate the best instance of 'pattern' in 'text' near 'loc'.
    * Returns -1 if no match found.
    * @param text The text to search.
@@ -496,11 +523,13 @@ public:
    * @param loc The location to search around.
    * @return Best match index or -1.
    */
-public:
-    std::size_t match_main( const std::wstring &text, const std::wstring &pattern, std::size_t loc );
-    std::size_t match_main( const std::string &text, const std::string &pattern, std::size_t loc );
+ public:
+  std::size_t match_main(const std::wstring &text, const std::wstring &pattern,
+                         std::size_t loc);
+  std::size_t match_main(const std::string &text, const std::string &pattern,
+                         std::size_t loc);
 
-    /**
+  /**
    * Locate the best instance of 'pattern' in 'text' near 'loc' using the
    * Bitap algorithm.  Returns -1 if no match found.
    * @param text The text to search.
@@ -508,11 +537,13 @@ public:
    * @param loc The location to search around.
    * @return Best match index or -1.
    */
-protected:
-    std::size_t match_bitap( const std::wstring &text, const std::wstring &pattern, std::size_t loc );
-    std::size_t match_bitap( const std::string &text, const std::string &pattern, std::size_t loc );
+ protected:
+  std::size_t match_bitap(const std::wstring &text, const std::wstring &pattern,
+                          std::size_t loc);
+  std::size_t match_bitap(const std::string &text, const std::string &pattern,
+                          std::size_t loc);
 
-    /**
+  /**
    * Compute and return the score for a match with e errors and x location.
    * @param e Number of errors in match.
    * @param x Location of match.
@@ -520,83 +551,87 @@ protected:
    * @param pattern Pattern being sought.
    * @return Overall score for match (0.0 = good, 1.0 = bad).
    */
-private:
-    double match_bitapScore( int64_t e, int64_t x, int64_t loc, const std::wstring &pattern );
+ private:
+  double match_bitapScore(int64_t e, int64_t x, int64_t loc,
+                          const std::wstring &pattern);
 
-    /**
+  /**
    * Initialise the alphabet for the Bitap algorithm.
    * @param pattern The text to encode.
    * @return Hash of character locations.
    */
-protected:
-    TCharPosMap match_alphabet( const std::wstring &pattern );
-    TCharPosMap match_alphabet( const std::string &pattern );
+ protected:
+  TCharPosMap match_alphabet(const std::wstring &pattern);
+  TCharPosMap match_alphabet(const std::string &pattern);
 
-    //  PATCH FUNCTIONS
+  //  PATCH FUNCTIONS
 
-    /**
+  /**
    * Increase the context until it is unique,
    * but don't let the pattern expand beyond Match_MaxBits.
    * @param patch The patch to grow.
    * @param text Source text.
    */
-protected:
-    void patch_addContext( Patch &patch, const std::wstring &text );
-    void patch_addContext( Patch &patch, const std::string &text );
+ protected:
+  void patch_addContext(Patch &patch, const std::wstring &text);
+  void patch_addContext(Patch &patch, const std::string &text);
 
-    /**
+  /**
    * Compute a list of patches to turn text1 into text2.
    * A set of diffs will be computed.
    * @param text1 Old text.
    * @param text2 New text.
    * @return LinkedList of Patch objects.
    */
-public:
-    TPatchVector patch_make( const std::wstring &text1, const std::wstring &text2 );
-    TPatchVector patch_make( const std::string &text1, const std::string &text2 );
+ public:
+  TPatchVector patch_make(const std::wstring &text1, const std::wstring &text2);
+  TPatchVector patch_make(const std::string &text1, const std::string &text2);
 
-    /**
+  /**
    * Compute a list of patches to turn text1 into text2.
    * text1 will be derived from the provided diffs.
    * @param diffs Array of diff tuples for text1 to text2.
    * @return LinkedList of Patch objects.
    */
-public:
-    TPatchVector patch_make( const TDiffVector &diffs );
+ public:
+  TPatchVector patch_make(const TDiffVector &diffs);
 
-    /**
+  /**
    * Compute a list of patches to turn text1 into text2.
    * text2 is ignored, diffs are the delta between text1 and text2.
    * @param text1 Old text.
    * @param text2 Ignored.
    * @param diffs Array of diff tuples for text1 to text2.
    * @return LinkedList of Patch objects.
-   * @deprecated Prefer patch_make(const std::wstring &text1, const std::list< Diff > &diffs).
+   * @deprecated Prefer patch_make(const std::wstring &text1, const std::list<
+   * Diff > &diffs).
    */
-public:
-    TPatchVector patch_make( const std::wstring &text1, const std::wstring &text2, const TDiffVector &diffs );
-    TPatchVector patch_make( const std::string &text1, const std::string &text2, const TDiffVector &diffs );
+ public:
+  TPatchVector patch_make(const std::wstring &text1, const std::wstring &text2,
+                          const TDiffVector &diffs);
+  TPatchVector patch_make(const std::string &text1, const std::string &text2,
+                          const TDiffVector &diffs);
 
-    /**
+  /**
    * Compute a list of patches to turn text1 into text2.
    * text2 is not provided, diffs are the delta between text1 and text2.
    * @param text1 Old text.
    * @param diffs Array of diff tuples for text1 to text2.
    * @return LinkedList of Patch objects.
    */
-public:
-    TPatchVector patch_make( const std::wstring &text1, const TDiffVector &diffs );
-    TPatchVector patch_make( const std::string &text1, const TDiffVector &diffs );
+ public:
+  TPatchVector patch_make(const std::wstring &text1, const TDiffVector &diffs);
+  TPatchVector patch_make(const std::string &text1, const TDiffVector &diffs);
 
-    /**
+  /**
    * Given an array of patches, return another array that is identical.
    * @param patches Array of patch objects.
    * @return Array of patch objects.
    */
-public:
-    TPatchVector patch_deepCopy( const TPatchVector &patches );
+ public:
+  TPatchVector patch_deepCopy(const TPatchVector &patches);
 
-    /**
+  /**
    * Merge a set of patches onto the text.  Return a patched text, as well
    * as an array of true/false values indicating which patches were applied.
    * @param patches Array of patch objects.
@@ -604,73 +639,76 @@ public:
    * @return Two element Object array, containing the new text and an array of
    *      boolean values.
    */
-public:
-    std::pair< std::wstring, std::vector< bool > > patch_apply( TPatchVector patches, std::wstring text );
-    std::pair< std::wstring, std::vector< bool > > patch_apply( TPatchVector patches, std::string text );
+ public:
+  std::pair<std::wstring, std::vector<bool> > patch_apply(TPatchVector patches,
+                                                          std::wstring text);
+  std::pair<std::wstring, std::vector<bool> > patch_apply(TPatchVector patches,
+                                                          std::string text);
 
-    /**
+  /**
    * Add some padding on text start and end so that edges can match something.
    * Intended to be called only from within patch_apply.
    * @param patches Array of patch objects.
    * @return The padding string added to each side.
    */
-public:
-    std::wstring patch_addPadding( TPatchVector &patches );
+ public:
+  std::wstring patch_addPadding(TPatchVector &patches);
 
-    /**
+  /**
    * Look through the patches and break up any which are longer than the
    * maximum limit of the match algorithm.
    * Intended to be called only from within patch_apply.
    * @param patches LinkedList of Patch objects.
    */
-public:
-    void patch_splitMax( TPatchVector &patches );
+ public:
+  void patch_splitMax(TPatchVector &patches);
 
-    /**
+  /**
    * Take a list of patches and return a textual representation.
    * @param patches List of Patch objects.
    * @return Text representation of patches.
    */
-public:
-    std::wstring patch_toText( const TPatchVector &patches );
+ public:
+  std::wstring patch_toText(const TPatchVector &patches);
 
-    /**
+  /**
    * Parse a textual representation of patches and return a List of Patch
    * objects.
    * @param textline Text representation of patches.
    * @return List of Patch objects.
    * @throws std::wstring If invalid input.
    */
-public:
-    TPatchVector patch_fromText( const std::wstring &textline );
-    TPatchVector patch_fromText( const std::string &textline );
+ public:
+  TPatchVector patch_fromText(const std::wstring &textline);
+  TPatchVector patch_fromText(const std::string &textline);
 
-    /**
+  /**
    * A safer version of std::wstring.mid(pos).  This one returns "" instead of
    * null when the postion equals the string length.
    * @param str String to take a substring from.
    * @param pos Position to start the substring from.
    * @return Substring.
    */
-private:
-    static std::wstring safeMid( const std::wstring &str, std::size_t pos );
+ private:
+  static std::wstring safeMid(const std::wstring &str, std::size_t pos);
 
-    /**
-   * A safer version of std::wstring.mid(pos, len).  This one returns "" instead of
-   * null when the postion equals the string length.
+  /**
+   * A safer version of std::wstring.mid(pos, len).  This one returns "" instead
+   * of null when the postion equals the string length.
    * @param str String to take a substring from.
    * @param pos Position to start the substring from.
    * @param len Length of substring.
    * @return Substring.
    */
-private:
-    static std::wstring safeMid( const std::wstring &str, std::size_t pos, std::size_t len );
+ private:
+  static std::wstring safeMid(const std::wstring &str, std::size_t pos,
+                              std::size_t len);
 };
 
-namespace NUtils
-{
-    std::wstring to_wstring( const diff_match_patch::TVariant &variant, bool doubleQuoteEmpty = false );
-    std::wstring to_wstring( const Diff &diff, bool doubleQuoteEmpty = false );
-    std::wstring to_wstring( const Patch &patch, bool doubleQuoteEmpty = false );
-}
-#endif   // DIFF_MATCH_PATCH_H
+namespace NUtils {
+std::wstring to_wstring(const diff_match_patch::TVariant &variant,
+                        bool doubleQuoteEmpty = false);
+std::wstring to_wstring(const Diff &diff, bool doubleQuoteEmpty = false);
+std::wstring to_wstring(const Patch &patch, bool doubleQuoteEmpty = false);
+}  // namespace NUtils
+#endif  // DIFF_MATCH_PATCH_H
