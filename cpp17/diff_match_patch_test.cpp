@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-// Code known to compile and run with Qt 4.3 through Qt 4.7.
 #include "diff_match_patch.h"
+#include "diff_match_patch_utils.h"
 #include "diff_match_patch_test.h"
 
 #include <iostream>
@@ -173,8 +173,8 @@ void diff_match_patch_test::testDiffLinesToChars()
     // Convert lines down to characters.
     TStringVector tmpVector = TStringVector( { L"", L"alpha\n", L"beta\n" } );
     TVariantVector tmpVarList;
-    tmpVarList.emplace_back( to_wstring( { 1, 2, 1 } ) );   //(("\u0001\u0002\u0001"));
-    tmpVarList.emplace_back( to_wstring( { 2, 1, 2 } ) );   // (("\u0002\u0001\u0002"));
+    tmpVarList.emplace_back( NUtils::to_wstring( { 1, 2, 1 } ) );   //(("\u0001\u0002\u0001"));
+    tmpVarList.emplace_back( NUtils::to_wstring( { 2, 1, 2 } ) );   // (("\u0002\u0001\u0002"));
     tmpVarList.emplace_back( tmpVector );
     assertEquals( "diff_linesToChars:", tmpVarList, dmp.diff_linesToChars( "alpha\nbeta\nalpha\n", "beta\nalpha\nbeta\n" ) );
 
@@ -185,7 +185,7 @@ void diff_match_patch_test::testDiffLinesToChars()
     tmpVector.emplace_back( L"beta\r\n" );
     tmpVector.emplace_back( L"\r\n" );
     tmpVarList.emplace_back( std::wstring() );
-    tmpVarList.emplace_back( to_wstring( { 1, 2, 3, 3 } ) );   // (("\u0001\u0002\u0003\u0003"));
+    tmpVarList.emplace_back( NUtils::to_wstring( { 1, 2, 3, 3 } ) );   // (("\u0001\u0002\u0003\u0003"));
     tmpVarList.emplace_back( tmpVector );
     assertEquals( "diff_linesToChars:", tmpVarList, dmp.diff_linesToChars( "", "alpha\r\nbeta\r\n\r\n\r\n" ) );
 
@@ -194,8 +194,8 @@ void diff_match_patch_test::testDiffLinesToChars()
     tmpVector.emplace_back( L"" );
     tmpVector.emplace_back( L"a" );
     tmpVector.emplace_back( L"b" );
-    tmpVarList.emplace_back( to_wstring( 1 ) );   // (("\u0001"));
-    tmpVarList.emplace_back( to_wstring( 2 ) );   // (("\u0002"));
+    tmpVarList.emplace_back( NUtils::to_wstring( 1 ) );   // (("\u0001"));
+    tmpVarList.emplace_back( NUtils::to_wstring( 2 ) );   // (("\u0002"));
     tmpVarList.emplace_back( tmpVector );
     assertEquals( "diff_linesToChars:", tmpVarList, dmp.diff_linesToChars( "a", "b" ) );
 
@@ -209,7 +209,7 @@ void diff_match_patch_test::testDiffLinesToChars()
     {
         tmpVector.emplace_back( std::to_wstring( x ) + L"\n" );
         lines += std::to_wstring( x ) + L"\n";
-        chars += to_wstring( x );
+        chars += NUtils::to_wstring( x );
     }
     assertEquals( "diff_linesToChars: More than 256 (setup).", n, tmpVector.size() );
     assertEquals( "diff_linesToChars: More than 256 (setup).", n, chars.length() );
@@ -229,8 +229,8 @@ void diff_match_patch_test::testDiffCharsToLines()
 
     // Convert chars up to lines.
     TDiffVector diffs;
-    diffs.emplace_back( EQUAL, to_wstring( { 1, 2, 1 } ) );   // ("\u0001\u0002\u0001");
-    diffs.emplace_back( INSERT, to_wstring( { 2, 1, 2 } ) );   // ("\u0002\u0001\u0002");
+    diffs.emplace_back( EQUAL, NUtils::to_wstring( { 1, 2, 1 } ) );   // ("\u0001\u0002\u0001");
+    diffs.emplace_back( INSERT, NUtils::to_wstring( { 2, 1, 2 } ) );   // ("\u0002\u0001\u0002");
     TStringVector tmpVector;
     tmpVector.emplace_back( L"" );
     tmpVector.emplace_back( L"alpha\n" );
@@ -248,7 +248,7 @@ void diff_match_patch_test::testDiffCharsToLines()
     {
         tmpVector.emplace_back( std::to_wstring( x ) + L"\n" );
         lines += std::to_wstring( x ) + L"\n";
-        chars += to_wstring( x );
+        chars += NUtils::to_wstring( x );
     }
     assertEquals( "diff_linesToChars: More than 256 (setup).", n, tmpVector.size() );
     assertEquals( "diff_linesToChars: More than 256 (setup).", n, chars.length() );
@@ -595,7 +595,7 @@ void diff_match_patch_test::testDiffMain()
     diffs = { Diff( DELETE, "Apple" ), Diff( INSERT, "Banana" ), Diff( EQUAL, "s are a" ), Diff( INSERT, "lso" ), Diff( EQUAL, " fruit." ) };
     assertEquals( "diff_main: Simple case #2.", diffs, dmp.diff_main( "Apples are a fruit.", "Bananas are also fruit.", false ) );
 
-    diffs = { Diff( DELETE, "a" ), Diff( INSERT, L"\u0680" ), Diff( EQUAL, "x" ), Diff( DELETE, "\t" ), Diff( INSERT, to_wstring( kZero ) ) };
+    diffs = { Diff( DELETE, "a" ), Diff( INSERT, L"\u0680" ), Diff( EQUAL, "x" ), Diff( DELETE, "\t" ), Diff( INSERT, NUtils::to_wstring( kZero ) ) };
     assertEquals( "diff_main: Simple case #3.", diffs, dmp.diff_main( L"ax\t", std::wstring( L"\u0680x" ) + kZero, false ) );
 
     diffs = { Diff( DELETE, "1" ), Diff( EQUAL, "a" ), Diff( DELETE, "y" ), Diff( EQUAL, "b" ), Diff( DELETE, "2" ), Diff( INSERT, "xab" ) };
@@ -907,37 +907,37 @@ void diff_match_patch_test::testPatchApply()
 
     results = dmp.patch_apply( patches, "The quick brown fox jumps over the lazy dog." );
     boolArray = results.second;
-    resultStr = results.first + to_wstring( boolArray );
-    
+    resultStr = results.first + NUtils::to_wstring( boolArray );
+
     assertEquals( "patch_apply: Exact match.", "That quick brown fox jumped over a lazy dog.\ttrue\ttrue", resultStr );
 
     results = dmp.patch_apply( patches, "The quick red rabbit jumps over the tired tiger." );
     boolArray = results.second;
-    resultStr = results.first + to_wstring( boolArray );
+    resultStr = results.first + NUtils::to_wstring( boolArray );
     assertEquals( "patch_apply: Partial match.", "That quick red rabbit jumped over a tired tiger.\ttrue\ttrue", resultStr );
 
     results = dmp.patch_apply( patches, "I am the very model of a modern major general." );
     boolArray = results.second;
-    resultStr = results.first + to_wstring( boolArray );
+    resultStr = results.first + NUtils::to_wstring( boolArray );
     assertEquals( "patch_apply: Failed match.", "I am the very model of a modern major general.\tfalse\tfalse", resultStr );
 
     patches = dmp.patch_make( "x1234567890123456789012345678901234567890123456789012345678901234567890y", "xabcy" );
     results = dmp.patch_apply( patches, "x123456789012345678901234567890-----++++++++++-----123456789012345678901234567890y" );
     boolArray = results.second;
-    resultStr = results.first + to_wstring( boolArray );
+    resultStr = results.first + NUtils::to_wstring( boolArray );
     assertEquals( "patch_apply: Big delete, small change.", "xabcy\ttrue\ttrue", resultStr );
 
     patches = dmp.patch_make( "x1234567890123456789012345678901234567890123456789012345678901234567890y", "xabcy" );
     results = dmp.patch_apply( patches, "x12345678901234567890---------------++++++++++---------------12345678901234567890y" );
     boolArray = results.second;
-    resultStr = results.first + to_wstring( boolArray );
+    resultStr = results.first + NUtils::to_wstring( boolArray );
     assertEquals( "patch_apply: Big delete, large change 1.", "xabc12345678901234567890---------------++++++++++---------------12345678901234567890y\tfalse\ttrue", resultStr );
 
     dmp.Patch_DeleteThreshold = 0.6f;
     patches = dmp.patch_make( "x1234567890123456789012345678901234567890123456789012345678901234567890y", "xabcy" );
     results = dmp.patch_apply( patches, "x12345678901234567890---------------++++++++++---------------12345678901234567890y" );
     boolArray = results.second;
-    resultStr = results.first + to_wstring( boolArray );
+    resultStr = results.first + NUtils::to_wstring( boolArray );
     assertEquals( "patch_apply: Big delete, large change 2.", "xabcy\ttrue\ttrue", resultStr );
     dmp.Patch_DeleteThreshold = 0.5f;
 
@@ -946,7 +946,7 @@ void diff_match_patch_test::testPatchApply()
     patches = dmp.patch_make( "abcdefghijklmnopqrstuvwxyz--------------------1234567890", "abcXXXXXXXXXXdefghijklmnopqrstuvwxyz--------------------1234567YYYYYYYYYY890" );
     results = dmp.patch_apply( patches, "ABCDEFGHIJKLMNOPQRSTUVWXYZ--------------------1234567890" );
     boolArray = results.second;
-    resultStr = results.first + to_wstring( boolArray );
+    resultStr = results.first + NUtils::to_wstring( boolArray );
     assertEquals( "patch_apply: Compensate for failed patch.", "ABCDEFGHIJKLMNOPQRSTUVWXYZ--------------------1234567YYYYYYYYYY890\tfalse\ttrue", resultStr );
     dmp.Match_Threshold = 0.5f;
     dmp.Match_Distance = 1000;
@@ -964,145 +964,20 @@ void diff_match_patch_test::testPatchApply()
     patches = dmp.patch_make( "", "test" );
     results = dmp.patch_apply( patches, "" );
     boolArray = results.second;
-    resultStr = results.first + L"\t" + to_wstring( boolArray[ 0 ], false );
+    resultStr = results.first + L"\t" + NUtils::to_wstring( boolArray[ 0 ], false );
     assertEquals( "patch_apply: Edge exact match.", "test\ttrue", resultStr );
 
     patches = dmp.patch_make( "XY", "XtestY" );
     results = dmp.patch_apply( patches, "XY" );
     boolArray = results.second;
-    resultStr = results.first + L"\t" + to_wstring( boolArray[ 0 ], false );
+    resultStr = results.first + L"\t" + NUtils::to_wstring( boolArray[ 0 ], false );
     assertEquals( "patch_apply: Near edge exact match.", "XtestY\ttrue", resultStr );
 
     patches = dmp.patch_make( "y", "y123" );
     results = dmp.patch_apply( patches, "x" );
     boolArray = results.second;
-    resultStr = results.first + L"\t" + to_wstring( boolArray[ 0 ] );
+    resultStr = results.first + L"\t" + NUtils::to_wstring( boolArray[ 0 ] );
     assertEquals( "patch_apply: Edge partial match.", "x123\ttrue", resultStr );
-}
-
-void diff_match_patch_test::reportFailure( const std::string &strCase, const std::wstring &expected, const std::wstring &actual )
-{
-    std::cout << "FAILED : " + strCase + "\n";
-    std::wcerr << "    Expected: " << expected << "\n      Actual: " << actual << "\n";
-    numFailedTests++;
-    //throw strCase;
-}
-
-void diff_match_patch_test::reportPassed( const std::string &strCase )
-{
-    std::cout << "PASSED: " + strCase + "\n";
-}
-
-void diff_match_patch_test::assertEquals( const std::string &strCase, std::size_t n1, std::size_t n2 )
-{
-    if ( n1 != n2 )
-    {
-        reportFailure( strCase, std::to_wstring( n1 ), std::to_wstring( n2 ) );
-    }
-    reportPassed( strCase );
-}
-
-void diff_match_patch_test::assertEquals( const std::string &strCase, const std::wstring &s1, const std::wstring &s2 )
-{
-    if ( s1 != s2 )
-    {
-        reportFailure( strCase, s1, s2 );
-    }
-    reportPassed( strCase );
-}
-
-void diff_match_patch_test::assertEquals( const std::string &strCase, const Diff &d1, const Diff &d2 )
-{
-    if ( d1 != d2 )
-    {
-        reportFailure( strCase, d1.toString(), d2.toString() );
-    }
-    reportPassed( strCase );
-}
-
-void diff_match_patch_test::assertEquals( const std::string &strCase, const TVariant &var1, const TVariant &var2 )
-{
-    if ( var1 != var2 )
-    {
-        reportFailure( strCase, to_wstring( var1 ), to_wstring( var2 ) );
-    }
-    reportPassed( strCase );
-}
-
-void diff_match_patch_test::assertEquals( const std::string &strCase, const TCharPosMap &m1, const TCharPosMap &m2 )
-{
-    for ( auto &&ii : m1 )
-    {
-        auto rhs = m2.find( ii.first );
-        if ( rhs == m2.end() )
-        {
-            reportFailure( strCase, L"(" + to_wstring( ii.first ) + L"," + std::to_wstring( ii.second ) + L")", L"<NOT FOUND>" );
-        }
-    }
-
-    for ( auto &&ii : m2 )
-    {
-        auto rhs = m1.find( ii.first );
-        if ( rhs == m1.end() )
-        {
-            reportFailure( strCase, L"(" + to_wstring( ii.first ) + L"," + std::to_wstring( ii.second ) + L")", L"<NOT FOUND>" );
-        }
-    }
-
-    reportPassed( strCase );
-}
-
-void diff_match_patch_test::assertEquals( const std::string &strCase, bool lhs, bool rhs )
-{
-    if ( lhs != rhs )
-    {
-        reportFailure( strCase, to_wstring( lhs, false ), to_wstring( rhs, false ) );
-    }
-    reportPassed( strCase );
-}
-
-void diff_match_patch_test::assertTrue( const std::string &strCase, bool value )
-{
-    if ( !value )
-    {
-        reportFailure( strCase, to_wstring( true, false ), to_wstring( false, false ) );
-    }
-    reportPassed( strCase );
-}
-
-void diff_match_patch_test::assertFalse( const std::string &strCase, bool value )
-{
-    if ( value )
-    {
-        reportFailure( strCase, to_wstring( false, false ), to_wstring( true, false ) );
-    }
-    reportPassed( strCase );
-}
-
-// Construct the two texts which made up the diff originally.
-diff_match_patch_test::TStringVector diff_match_patch_test::diff_rebuildtexts( const TDiffVector &diffs )
-{
-    TStringVector text( 2, std::wstring() );
-    for ( auto &&myDiff : diffs )
-    {
-        if ( myDiff.operation != INSERT )
-        {
-            text[ 0 ] += myDiff.text;
-        }
-        if ( myDiff.operation != DELETE )
-        {
-            text[ 1 ] += myDiff.text;
-        }
-    }
-    return text;
-}
-
-void diff_match_patch_test::assertEmpty( const std::string &strCase, const TStringVector &list )
-{
-    if ( !list.empty() )
-    {
-        throw strCase;
-    }
 }
 
 /*

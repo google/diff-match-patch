@@ -17,6 +17,7 @@
  */
 
 #include "diff_match_patch.h"
+#include "diff_match_patch_utils.h"
 
 #include <algorithm>
 #include <limits>
@@ -51,6 +52,16 @@ Diff::Diff()
 
 Diff::Diff( Operation _operation, const wchar_t *_text ) :
     Diff( _operation, ( _text ? std::wstring( _text ) : std::wstring( L"" ) ) )
+{
+}
+
+Diff::Diff( Operation _operation, const std::string &_text ) :
+    Diff( _operation, NUtils::to_wstring( _text ) )
+{
+}
+
+Diff::Diff( Operation _operation, const char *_text ) :
+    Diff( _operation, std::string( _text ) )
 {
 }
 
@@ -116,7 +127,7 @@ Patch::Patch( std::wstring &text )
     {
         throw std::wstring( L"Invalid patch string: " + text );
     }
-    start1 = diff_match_patch::toInt( matches[ 1 ].str() );
+    start1 = NUtils::toInt( matches[ 1 ].str() );
     if ( !matches[ 2 ].length() )
     {
         start1--;
@@ -129,10 +140,10 @@ Patch::Patch( std::wstring &text )
     else
     {
         start1--;
-        length1 = diff_match_patch::toInt( matches[ 2 ].str() );
+        length1 = NUtils::toInt( matches[ 2 ].str() );
     }
 
-    start2 = diff_match_patch::toInt( matches[ 3 ].str() );
+    start2 = NUtils::toInt( matches[ 3 ].str() );
     if ( !matches[ 4 ].length() )
     {
         start2--;
@@ -145,7 +156,7 @@ Patch::Patch( std::wstring &text )
     else
     {
         start2--;
-        length2 = diff_match_patch::toInt( matches[ 4 ].str() );
+        length2 = NUtils::toInt( matches[ 4 ].str() );
     }
     text.erase( text.begin() );
 }
@@ -183,7 +194,7 @@ std::wstring Patch::toString() const
                 text += L" ";
                 break;
         }
-        text += std::wstring( diff_match_patch::toPercentEncoding( aDiff.text, L" !~*'();/?:@&=+$,#" ) ) + std::wstring( L"\n" );
+        text += NUtils::toPercentEncoding( aDiff.text, L" !~*'();/?:@&=+$,#" ) + std::wstring( L"\n" );
     }
 
     return text;
@@ -301,6 +312,21 @@ TDiffVector diff_match_patch::diff_main( const std::wstring &text1, const std::w
     return diffs;
 }
 
+TDiffVector diff_match_patch::diff_main( const std::string &text1, const std::string &text2 )
+{
+    return diff_main( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ) );
+}
+
+TDiffVector diff_match_patch::diff_main( const std::string &text1, const std::string &text2, bool checklines )
+{
+    return diff_main( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ), checklines );
+}
+
+TDiffVector diff_match_patch::diff_main( const std::string &text1, const std::string &text2, bool checklines, clock_t deadline )
+{
+    return diff_main( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ), checklines, deadline );
+}
+
 TDiffVector diff_match_patch::diff_compute( const std::wstring &text1, const std::wstring &text2, bool checklines, clock_t deadline )
 {
     TDiffVector diffs;
@@ -371,6 +397,11 @@ TDiffVector diff_match_patch::diff_compute( const std::wstring &text1, const std
     return diff_bisect( text1, text2, deadline );
 }
 
+TDiffVector diff_match_patch::diff_compute( const std::string &text1, const std::string &text2, bool checklines, clock_t deadline )
+{
+    return diff_compute( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ), checklines, deadline );
+}
+
 TDiffVector diff_match_patch::diff_lineMode( std::wstring text1, std::wstring text2, clock_t deadline )
 {
     // Scan the text on a line-by-line basis first.
@@ -431,6 +462,11 @@ TDiffVector diff_match_patch::diff_lineMode( std::wstring text1, std::wstring te
     diffs.pop_back();   // Remove the dummy entry at the end.
 
     return diffs;
+}
+
+TDiffVector diff_match_patch::diff_lineMode( std::string text1, std::string text2, clock_t deadline )
+{
+    return diff_lineMode( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ), deadline );
 }
 
 // using int64_t rather thant size_t due to the backward walking nature of the algorithm
@@ -564,6 +600,11 @@ TDiffVector diff_match_patch::diff_bisect( const std::wstring &text1, const std:
     return diffs;
 }
 
+TDiffVector diff_match_patch::diff_bisect( const std::string &text1, const std::string &text2, clock_t deadline )
+{
+    return diff_bisect( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ), deadline );
+}
+
 TDiffVector diff_match_patch::diff_bisectSplit( const std::wstring &text1, const std::wstring &text2, std::size_t x, std::size_t y, clock_t deadline )
 {
     auto text1a = text1.substr( 0, x );
@@ -577,6 +618,11 @@ TDiffVector diff_match_patch::diff_bisectSplit( const std::wstring &text1, const
 
     diffs.insert( diffs.end(), diffsb.begin(), diffsb.end() );
     return diffs;
+}
+
+TDiffVector diff_match_patch::diff_bisectSplit( const std::string &text1, const std::string &text2, std::size_t x, std::size_t y, clock_t deadline )
+{
+    return diff_bisectSplit( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ), x, y, deadline );
 }
 
 diff_match_patch::TVariantVector diff_match_patch::diff_linesToChars( const std::wstring &text1, const std::wstring &text2 )
@@ -598,6 +644,11 @@ diff_match_patch::TVariantVector diff_match_patch::diff_linesToChars( const std:
     listRet.emplace_back( chars2 );
     listRet.emplace_back( lineArray );
     return listRet;
+}
+
+std::vector< diff_match_patch::diff_match_patch::TVariant > diff_match_patch::diff_linesToChars( const std::string &text1, const std::string &text2 )
+{
+    return diff_linesToChars( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ) );
 }
 
 std::wstring diff_match_patch::diff_linesToCharsMunge( const std::wstring &text, TStringVector &lineArray, std::unordered_map< std::wstring, std::size_t > &lineHash )
@@ -665,6 +716,11 @@ std::size_t diff_match_patch::diff_commonPrefix( const std::wstring &text1, cons
     return n;
 }
 
+std::size_t diff_match_patch::diff_commonPrefix( const std::string &text1, const std::string &text2 )
+{
+    return diff_commonPrefix( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ) );
+}
+
 std::size_t diff_match_patch::diff_commonSuffix( const std::wstring &text1, const std::wstring &text2 )
 {
     // Performance analysis: http://neil.fraser.name/news/2007/10/09/
@@ -679,6 +735,11 @@ std::size_t diff_match_patch::diff_commonSuffix( const std::wstring &text1, cons
         }
     }
     return n;
+}
+
+std::size_t diff_match_patch::diff_commonSuffix( const std::string &text1, const std::string &text2 )
+{
+    return diff_commonSuffix( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ) );
 }
 
 std::size_t diff_match_patch::diff_commonOverlap( const std::wstring &text1, const std::wstring &text2 )
@@ -734,6 +795,11 @@ std::size_t diff_match_patch::diff_commonOverlap( const std::wstring &text1, con
     }
 }
 
+std::size_t diff_match_patch::diff_commonOverlap( const std::string &text1, const std::string &text2 )
+{
+    return diff_commonOverlap( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ) );
+}
+
 diff_match_patch::TStringVector diff_match_patch::diff_halfMatch( const std::wstring &text1, const std::wstring &text2 )
 {
     if ( Diff_Timeout <= 0 )
@@ -783,6 +849,11 @@ diff_match_patch::TStringVector diff_match_patch::diff_halfMatch( const std::wst
     }
 }
 
+diff_match_patch::TStringVector diff_match_patch::diff_halfMatch( const std::string &text1, const std::string &text2 )
+{
+    return diff_halfMatch( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ) );
+}
+
 diff_match_patch::TStringVector diff_match_patch::diff_halfMatchI( const std::wstring &longtext, const std::wstring &shorttext, std::size_t i )
 {
     // Start with a 1/4 length substring at position i as a seed.
@@ -813,6 +884,11 @@ diff_match_patch::TStringVector diff_match_patch::diff_halfMatchI( const std::ws
     {
         return {};
     }
+}
+
+diff_match_patch::TStringVector diff_match_patch::diff_halfMatchI( const std::string &longtext, const std::string &shorttext, std::size_t i )
+{
+    return diff_halfMatchI( NUtils::to_wstring( longtext ), NUtils::to_wstring( shorttext ), i );
 }
 
 void diff_match_patch::diff_cleanupSemantic( TDiffVector &diffs )
@@ -1059,6 +1135,11 @@ int64_t diff_match_patch::diff_cleanupSemanticScore( const std::wstring &one, co
     return 0;
 }
 
+int64_t diff_match_patch::diff_cleanupSemanticScore( const std::string &one, const std::string &two )
+{
+    return diff_cleanupSemanticScore( NUtils::to_wstring( one ), NUtils::to_wstring( two ) );
+}
+
 // Define some regex patterns for matching boundaries.
 std::wregex diff_match_patch::BLANKLINEEND = std::wregex( LR"(\n\r?\n$)" );
 std::wregex diff_match_patch::BLANKLINESTART = std::wregex( LR"(^\r?\n\r?\n)" );
@@ -1209,15 +1290,15 @@ void diff_match_patch::diff_cleanupMerge( TDiffVector &diffs )
                     }
                     // Delete the offending records and add the merged ones.
                     pointer -= count_delete + count_insert;
-                    Splice( diffs, pointer, count_delete + count_insert );
+                    NUtils::Splice( diffs, pointer, count_delete + count_insert );
                     if ( !text_delete.empty() )
                     {
-                        Splice( diffs, pointer, 0, { Diff( DELETE, text_delete ) } );
+                        NUtils::Splice( diffs, pointer, 0, { Diff( DELETE, text_delete ) } );
                         pointer++;
                     }
                     if ( !text_insert.empty() )
                     {
-                        Splice( diffs, pointer, 0, { Diff( INSERT, text_insert ) } );
+                        NUtils::Splice( diffs, pointer, 0, { Diff( INSERT, text_insert ) } );
                         pointer++;
                     }
                     pointer++;
@@ -1255,12 +1336,12 @@ void diff_match_patch::diff_cleanupMerge( TDiffVector &diffs )
         if ( diffs[ pointer - 1 ].operation == EQUAL && diffs[ pointer + 1 ].operation == EQUAL )
         {
             // This is a single edit surrounded by equalities.
-            if ( endsWith( diffs[ pointer ].text, diffs[ pointer - 1 ].text ) )
+            if ( NUtils::endsWith( diffs[ pointer ].text, diffs[ pointer - 1 ].text ) )
             {
                 // Shift the edit over the previous equality.
                 diffs[ pointer ].text = diffs[ pointer - 1 ].text + diffs[ pointer ].text.substr( 0, diffs[ pointer ].text.length() - diffs[ pointer - 1 ].text.length() );
                 diffs[ pointer + 1 ].text = diffs[ pointer - 1 ].text + diffs[ pointer + 1 ].text;
-                Splice( diffs, pointer - 1, 1 );
+                NUtils::Splice( diffs, pointer - 1, 1 );
                 changes = true;
             }
             else if ( diffs[ pointer ].text.find( diffs[ pointer + 1 ].text ) == 0 )
@@ -1268,7 +1349,7 @@ void diff_match_patch::diff_cleanupMerge( TDiffVector &diffs )
                 // Shift the edit over the next equality.
                 diffs[ pointer - 1 ].text += diffs[ pointer + 1 ].text;
                 diffs[ pointer ].text = diffs[ pointer ].text.substr( diffs[ pointer + 1 ].text.length() ) + diffs[ pointer + 1 ].text;
-                Splice( diffs, pointer + 1, 1 );
+                NUtils::Splice( diffs, pointer + 1, 1 );
                 changes = true;
             }
         }
@@ -1324,10 +1405,10 @@ std::wstring diff_match_patch::diff_prettyHtml( const TDiffVector &diffs )
     for ( auto &&aDiff : diffs )
     {
         text = aDiff.text;
-        replace( text, L"&", L"&amp;" );
-        replace( text, L"<", L"&lt;" );
-        replace( text, L">", L"&gt;" );
-        replace( text, L"\n", L"&para;<br>" );
+        NUtils::replace( text, L"&", L"&amp;" );
+        NUtils::replace( text, L"<", L"&lt;" );
+        NUtils::replace( text, L">", L"&gt;" );
+        NUtils::replace( text, L"\n", L"&para;<br>" );
         switch ( aDiff.operation )
         {
             case INSERT:
@@ -1405,7 +1486,7 @@ std::wstring diff_match_patch::diff_toDelta( const TDiffVector &diffs )
         switch ( aDiff.operation )
         {
             case INSERT:
-                text += L"+" + toPercentEncoding( aDiff.text, L" !~*'();/?:@&=+$,#" ) + L"\t";
+                text += L"+" + NUtils::toPercentEncoding( aDiff.text, L" !~*'();/?:@&=+$,#" ) + L"\t";
                 break;
             case DELETE:
                 text += L"-" + std::to_wstring( aDiff.text.length() ) + L"\t";
@@ -1427,7 +1508,7 @@ TDiffVector diff_match_patch::diff_fromDelta( const std::wstring &text1, const s
 {
     TDiffVector diffs;
     std::size_t pointer = 0;   // Cursor in text1
-    TStringVector tokens = splitString( delta, L"\t", false );
+    auto tokens = NUtils::splitString( delta, L"\t", false );
     for ( auto &&token : tokens )
     {
         if ( token.empty() )
@@ -1441,15 +1522,15 @@ TDiffVector diff_match_patch::diff_fromDelta( const std::wstring &text1, const s
         switch ( token[ 0 ] )
         {
             case '+':
-                replace( param, L"+", L"%2b" );
-                param = fromPercentEncoding( param );
+                NUtils::replace( param, L"+", L"%2b" );
+                param = NUtils::fromPercentEncoding( param );
                 diffs.emplace_back( INSERT, param );
                 break;
             case '-':
                 // Fall through.
             case '=':
                 {
-                    auto n = toInt( param );
+                    auto n = NUtils::toInt( param );
                     if ( n < 0 )
                     {
                         throw std::wstring( L"Negative number in diff_fromDelta: " + param );
@@ -1483,6 +1564,11 @@ TDiffVector diff_match_patch::diff_fromDelta( const std::wstring &text1, const s
     return diffs;
 }
 
+TDiffVector diff_match_patch::diff_fromDelta( const std::string &text1, const std::string &delta )
+{
+    return diff_fromDelta( NUtils::to_wstring( text1 ), NUtils::to_wstring( delta ) );
+}
+
 //  MATCH FUNCTIONS
 
 std::size_t diff_match_patch::match_main( const std::wstring &text, const std::wstring &pattern, std::size_t loc )
@@ -1510,6 +1596,11 @@ std::size_t diff_match_patch::match_main( const std::wstring &text, const std::w
         // Do a fuzzy compare.
         return match_bitap( text, pattern, loc );
     }
+}
+
+std::size_t diff_match_patch::match_main( const std::string &text, const std::string &pattern, std::size_t loc )
+{
+    return match_main( NUtils::to_wstring( text ), NUtils::to_wstring( pattern ), loc );
 }
 
 std::size_t diff_match_patch::match_bitap( const std::wstring &text, const std::wstring &pattern, std::size_t loc )
@@ -1631,6 +1722,11 @@ std::size_t diff_match_patch::match_bitap( const std::wstring &text, const std::
     return best_loc;
 }
 
+std::size_t diff_match_patch::match_bitap( const std::string &text, const std::string &pattern, std::size_t loc )
+{
+    return match_bitap( NUtils::to_wstring( text ), NUtils::to_wstring( pattern ), loc );
+}
+
 double diff_match_patch::match_bitapScore( int64_t e, int64_t x, int64_t loc, const std::wstring &pattern )
 {
     const float accuracy = static_cast< float >( e ) / pattern.length();
@@ -1662,6 +1758,11 @@ diff_match_patch::TCharPosMap diff_match_patch::match_alphabet( const std::wstri
         s[ c ] = prev | ( 1ULL << ( pattern.length() - i - 1 ) );
     }
     return s;
+}
+
+diff_match_patch::TCharPosMap diff_match_patch::match_alphabet( const std::string &pattern )
+{
+    return match_alphabet( NUtils::to_wstring( pattern ) );
 }
 
 //  PATCH FUNCTIONS
@@ -1704,6 +1805,11 @@ void diff_match_patch::patch_addContext( Patch &patch, const std::wstring &text 
     // Extend the lengths.
     patch.length1 += prefix.length() + suffix.length();
     patch.length2 += prefix.length() + suffix.length();
+}
+
+void diff_match_patch::patch_addContext( Patch &patch, const std::string &text )
+{
+    return patch_addContext( patch, NUtils::to_wstring( text ) );
 }
 
 TPatchVector diff_match_patch::patch_make( const std::wstring &text1, const std::wstring &text2 )
@@ -1818,6 +1924,21 @@ TPatchVector diff_match_patch::patch_make( const std::wstring &text1, const TDif
     }
 
     return patches;
+}
+
+TPatchVector diff_match_patch::patch_make( const std::string &text1, const TDiffVector &diffs )
+{
+    return patch_make( NUtils::to_wstring( text1 ), diffs );
+}
+
+TPatchVector diff_match_patch::patch_make( const std::string &text1, const std::string &text2, const TDiffVector &diffs )
+{
+    return patch_make( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ), diffs );
+}
+
+TPatchVector diff_match_patch::patch_make( const std::string &text1, const std::string &text2 )
+{
+    return patch_make( NUtils::to_wstring( text1 ), NUtils::to_wstring( text2 ) );
 }
 
 TPatchVector diff_match_patch::patch_deepCopy( const TPatchVector &patches )
@@ -1955,17 +2076,23 @@ std::pair< std::wstring, std::vector< bool > > diff_match_patch::patch_apply( TP
     text = safeMid( text, nullPadding.length(), text.length() - 2 * nullPadding.length() );
     return { text, results };
 }
+
+std::pair< std::wstring, std::vector< bool > > diff_match_patch::patch_apply( TPatchVector patches, std::string text )
+{
+    return patch_apply( patches, NUtils::to_wstring( text ) );
+}
+
 std::wstring diff_match_patch::patch_addPadding( TPatchVector &patches )
 {
     auto paddingLength = Patch_Margin;
     std::wstring nullPadding;
     for ( char x = 1; x <= paddingLength; x++ )
     {
-        nullPadding += to_wstring( x );
+        nullPadding += NUtils::to_wstring( x );
     }
 
     // Bump all the patches forward.
-    for( auto && aPatch : patches )
+    for ( auto &&aPatch : patches )
     {
         aPatch.start1 += paddingLength;
         aPatch.start2 += paddingLength;
@@ -2018,72 +2145,6 @@ std::wstring diff_match_patch::patch_addPadding( TPatchVector &patches )
     return nullPadding;
 }
 
-#ifdef NO
-std::wstring diff_match_patch::patch_addPadding( TPatchVector &patches )
-{
-    short paddingLength = Patch_Margin;
-    std::wstring nullPadding;
-    for ( short x = 1; x <= paddingLength; x++ )
-    {
-        nullPadding += static_cast< wchar_t >( x );
-    }
-
-    // Bump all the patches forward.
-    auto pointer = patches.begin();
-    while ( pointer != patches.end() )
-    {
-        auto &&aPatch = *pointer;
-        aPatch.start1 += paddingLength;
-        aPatch.start2 += paddingLength;
-    }
-
-    // Add some padding on start of first diff.
-    auto &&firstPatch = patches.front();
-    TDiffVector &firstPatchDiffs = firstPatch.diffs;
-    if ( firstPatchDiffs.empty() || firstPatchDiffs.front().operation != EQUAL )
-    {
-        // Add nullPadding equality.
-        firstPatchDiffs.emplace( firstPatchDiffs.begin(), EQUAL, nullPadding );
-        firstPatch.start1 -= paddingLength;   // Should be 0.
-        firstPatch.start2 -= paddingLength;   // Should be 0.
-        firstPatch.length1 += paddingLength;
-        firstPatch.length2 += paddingLength;
-    }
-    else if ( paddingLength > firstPatchDiffs.front().text.length() )
-    {
-        // Grow first equality.
-        Diff &firstDiff = firstPatchDiffs.front();
-        auto extraLength = paddingLength - firstDiff.text.length();
-        firstDiff.text = safeMid( nullPadding, firstDiff.text.length(), paddingLength - firstDiff.text.length() ) + firstDiff.text;
-        firstPatch.start1 -= extraLength;
-        firstPatch.start2 -= extraLength;
-        firstPatch.length1 += extraLength;
-        firstPatch.length2 += extraLength;
-    }
-
-    // Add some padding on end of last diff.
-    Patch &lastPatch = patches.front();
-    TDiffVector &lastPatchDiffs = lastPatch.diffs;
-    if ( lastPatchDiffs.empty() || lastPatchDiffs.back().operation != EQUAL )
-    {
-        // Add nullPadding equality.
-        lastPatchDiffs.emplace_back( EQUAL, nullPadding );
-        lastPatch.length1 += paddingLength;
-        lastPatch.length2 += paddingLength;
-    }
-    else if ( paddingLength > lastPatchDiffs.back().text.length() )
-    {
-        // Grow last equality.
-        Diff &lastDiff = lastPatchDiffs.back();
-        auto extraLength = paddingLength - lastDiff.text.length();
-        lastDiff.text += nullPadding.substr( 0, extraLength );
-        lastPatch.length1 += extraLength;
-        lastPatch.length2 += extraLength;
-    }
-
-    return nullPadding;
-}
-#endif
 void diff_match_patch::patch_splitMax( TPatchVector &patches )
 {
     auto patch_size = Match_MaxBits;
@@ -2095,7 +2156,7 @@ void diff_match_patch::patch_splitMax( TPatchVector &patches )
         }
         Patch bigpatch = patches[ x ];
         // Remove the big old patch.
-        Splice( patches, x--, 1 );
+        NUtils::Splice( patches, x--, 1 );
         auto start1 = bigpatch.start1;
         auto start2 = bigpatch.start2;
         std::wstring precontext;
@@ -2189,136 +2250,12 @@ void diff_match_patch::patch_splitMax( TPatchVector &patches )
             }
             if ( !empty )
             {
-                Splice( patches, ++x, 0ULL, patch );
+                NUtils::Splice( patches, ++x, 0ULL, patch );
             }
         }
     }
 }
 
-#ifdef NO
-void diff_match_patch::patch_splitMax( TPatchVector &patches )
-{
-    short patch_size = Match_MaxBits;
-    std::wstring precontext, postcontext;
-    Patch patch;
-    std::size_t start1, start2;
-    bool empty;
-    Operation diff_type;
-    std::wstring diff_text;
-    auto pointer = patches.begin();
-    Patch bigpatch;
-
-    if ( pointer != patches.end() )
-    {
-        bigpatch = *pointer;
-    }
-
-    while ( !bigpatch.isNull() )
-    {
-        if ( bigpatch.length1 <= patch_size )
-        {
-            bigpatch = ( ( ++pointer ) != patches.end() ) ? *pointer : Patch();
-            continue;
-        }
-        // Remove the big old patch.
-        pointer = patches.erase( pointer );
-        start1 = bigpatch.start1;
-        start2 = bigpatch.start2;
-        precontext.clear();
-        while ( !bigpatch.diffs.empty() )
-        {
-            // Create one of several smaller patches.
-            patch = Patch();
-            empty = true;
-            patch.start1 = start1 - precontext.length();
-            patch.start2 = start2 - precontext.length();
-            if ( !precontext.empty() )
-            {
-                patch.length1 = patch.length2 = precontext.length();
-                patch.diffs.emplace_back( EQUAL, precontext );
-            }
-            while ( !bigpatch.diffs.empty() && patch.length1 < patch_size - Patch_Margin )
-            {
-                diff_type = bigpatch.diffs.front().operation;
-                diff_text = bigpatch.diffs.front().text;
-                if ( diff_type == INSERT )
-                {
-                    // Insertions are harmless.
-                    patch.length2 += diff_text.length();
-                    start2 += diff_text.length();
-                    patch.diffs.emplace_back( bigpatch.diffs.front() );
-                    bigpatch.diffs.erase( bigpatch.diffs.begin() );
-                    empty = false;
-                }
-                else if ( diff_type == DELETE && patch.diffs.size() == 1 && patch.diffs.front().operation == EQUAL && diff_text.length() > 2 * patch_size )
-                {
-                    // This is a large deletion.  Let it pass in one chunk.
-                    patch.length1 += diff_text.length();
-                    start1 += diff_text.length();
-                    empty = false;
-                    patch.diffs.emplace_back( diff_type, diff_text );
-                    bigpatch.diffs.erase( bigpatch.diffs.begin() );
-                }
-                else
-                {
-                    // Deletion or equality.  Only take as much as we can stomach.
-                    diff_text = diff_text.substr( 0, std::min( diff_text.length(), ( patch_size > ( patch.length1 + Patch_Margin ) ) ? ( patch_size - patch.length1 - Patch_Margin ) : ( -1 * 1ULL ) ) );
-                    patch.length1 += diff_text.length();
-                    start1 += diff_text.length();
-                    if ( diff_type == EQUAL )
-                    {
-                        patch.length2 += diff_text.length();
-                        start2 += diff_text.length();
-                    }
-                    else
-                    {
-                        empty = false;
-                    }
-                    patch.diffs.emplace_back( diff_type, diff_text );
-                    if ( diff_text == bigpatch.diffs.front().text )
-                    {
-                        bigpatch.diffs.erase( bigpatch.diffs.begin() );
-                    }
-                    else
-                    {
-                        bigpatch.diffs.front().text = safeMid( bigpatch.diffs.front().text, diff_text.length() );
-                    }
-                }
-            }
-            // Compute the head context for the next patch.
-            precontext = diff_text2( patch.diffs );
-            precontext = safeMid( precontext, precontext.length() - Patch_Margin );
-            // Append the end context for this patch.
-            if ( diff_text1( bigpatch.diffs ).length() > Patch_Margin )
-            {
-                postcontext = diff_text1( bigpatch.diffs ).substr( 0, Patch_Margin );
-            }
-            else
-            {
-                postcontext = diff_text1( bigpatch.diffs );
-            }
-            if ( !postcontext.empty() )
-            {
-                patch.length1 += postcontext.length();
-                patch.length2 += postcontext.length();
-                if ( !patch.diffs.empty() && patch.diffs.back().operation == EQUAL )
-                {
-                    patch.diffs.back().text += postcontext;
-                }
-                else
-                {
-                    patch.diffs.emplace_back( EQUAL, postcontext );
-                }
-            }
-            if ( !empty )
-            {
-                patches.emplace( pointer, patch );
-            }
-        }
-        bigpatch = ( ( ++pointer ) != patches.end() ) ? *pointer : Patch();
-    }
-}
-#endif
 std::wstring diff_match_patch::patch_toText( const TPatchVector &patches )
 {
     std::wstring text;
@@ -2336,7 +2273,7 @@ TPatchVector diff_match_patch::patch_fromText( const std::wstring &textline )
     {
         return patches;
     }
-    auto text = splitString( textline, L"\n", true );
+    auto text = NUtils::splitString( textline, L"\n", true );
     int textPointer = 0;
     std::wstring line;
     while ( textPointer < text.size() )
@@ -2356,8 +2293,8 @@ TPatchVector diff_match_patch::patch_fromText( const std::wstring &textline )
             auto sign = text[ textPointer ][ 0 ];
 
             line = text[ textPointer ].substr( 1 );
-            replace( line, L"+", L"%2b" );
-            line = fromPercentEncoding( line );
+            NUtils::replace( line, L"+", L"%2b" );
+            line = NUtils::fromPercentEncoding( line );
             if ( sign == '-' )
             {
                 // Deletion.
@@ -2390,6 +2327,11 @@ TPatchVector diff_match_patch::patch_fromText( const std::wstring &textline )
     return patches;
 }
 
+TPatchVector diff_match_patch::patch_fromText( const std::string &textline )
+{
+    return patch_fromText( NUtils::to_wstring( textline ) );
+}
+
 std::wstring diff_match_patch::safeMid( const std::wstring &str, std::size_t pos )
 {
     return safeMid( str, pos, std::string::npos );
@@ -2400,164 +2342,30 @@ std::wstring diff_match_patch::safeMid( const std::wstring &str, std::size_t pos
     return ( pos == str.length() ) ? std::wstring() : str.substr( pos, len );
 }
 
-void diff_match_patch::replace( std::wstring &inString, const std::wstring &from, const std::wstring &to )
-{
-    std::size_t pos = inString.find( from );
-    while ( pos != std::wstring::npos )
-    {
-        inString.replace( pos, from.length(), to );
-        pos = inString.find( from, pos + 1 );
-    }
-}
-
-wchar_t toHexUpper( wchar_t value )
-{
-    return L"0123456789ABCDEF"[ value & 0xF ];
-}
-
-std::wstring to_wstring( const std::string &string )
-{
-    std::wstring_convert< std::codecvt_utf8< wchar_t > > utf8_conv;
-    return utf8_conv.from_bytes( string );
-}
-
-std::wstring diff_match_patch::toPercentEncoding( wchar_t c, const std::wstring &exclude, const std::wstring &include )
+std::wstring NUtils::to_wstring( const diff_match_patch::TVariant &variant, bool doubleQuoteEmpty )
 {
     std::wstring retVal;
+    if ( std::holds_alternative< std::wstring >( variant ) )
+        retVal = std::get< std::wstring >( variant );
 
-    if ( ( ( c >= 0x61 && c <= 0x7A )   // ALPHA
-           || ( c >= 0x41 && c <= 0x5A )   // ALPHA
-           || ( c >= 0x30 && c <= 0x39 )   // DIGIT
-           || c == 0x2D   // -
-           || c == 0x2E   // .
-           || c == 0x5F   // _
-           || c == 0x7E   // ~
-           || ( exclude.find( c ) != std::string::npos ) )
-         && ( include.find( c ) == std::string::npos ) )
-    {
-        retVal = std::wstring( 1, c );
-    }
-    else
-    {
-        retVal = L'%';
-        retVal += toHexUpper( ( c & 0xf0 ) >> 4 );
-        retVal += toHexUpper( c & 0xf );
-    }
+    if ( doubleQuoteEmpty && retVal.empty() )
+        return LR"("")";
+
     return retVal;
 }
 
-std::wstring diff_match_patch::toPercentEncoding( const std::wstring &input, const std::wstring &exclude /*= std::wstring()*/, const std::wstring &include /*= std::wstring() */ )
+std::wstring NUtils::to_wstring( const Patch &patch, bool doubleQuoteEmpty )
 {
-    if ( input.empty() )
-        return {};
-    std::wstring retVal;
-    retVal.reserve( input.length() * 3 );
-
-    static_assert( sizeof( wchar_t ) <= 4, "wchar_t is greater that 32 bit" );
-
-    auto sz = sizeof( wchar_t );
-    std::wstring_convert< std::codecvt_utf8< wchar_t > > utf8_conv;
-    for ( auto &&c : input )
-    {
-        auto currStr = std::wstring( 1, c );
-        auto asBytes = utf8_conv.to_bytes( currStr );
-        for ( auto &&ii : asBytes )
-        {
-            if ( ii )
-                retVal += diff_match_patch::toPercentEncoding( ii, exclude, include );
-        }
-    }
+    auto retVal = patch.toString();
+    if ( doubleQuoteEmpty && retVal.empty() )
+        return LR"("")";
     return retVal;
 }
 
-wchar_t diff_match_patch::getValue( wchar_t ch )
+std::wstring NUtils::to_wstring( const Diff &diff, bool doubleQuoteEmpty )
 {
-    if ( ch >= '0' && ch <= '9' )
-        ch -= '0';
-    else if ( ch >= 'a' && ch <= 'f' )
-        ch = ch - 'a' + 10;
-    else if ( ch >= 'A' && ch <= 'F' )
-        ch = ch - 'A' + 10;
-    else
-        throw std::wstring( L"Invalid Character %" ) + ch;
-
-    return ch;
-}
-
-std::wstring diff_match_patch::fromPercentEncoding( const std::wstring &input )
-{
-    if ( input.empty() )
-        return {};
-    std::wstring retVal;
-    retVal.reserve( input.length() );
-    for ( auto ii = 0ULL; ii < input.length(); ++ii )
-    {
-        auto c = input[ ii ];
-        if ( c == L'%' && ( ii + 2 ) < input.length() )
-        {
-            auto a = input[ ++ii ];
-            auto b = input[ ++ii ];
-            a = getValue( a );
-            b = getValue( b );
-            retVal += wchar_t( ( a << 4 ) | b );
-        }
-        else
-        {
-            retVal += c;
-        }
-    }
-    return retVal;
-}
-
-bool diff_match_patch::endsWith( const std::wstring &string, const std::wstring &suffix )
-{
-    if ( suffix.length() > string.length() )
-        return false;
-
-    return string.compare( string.length() - suffix.length(), suffix.length(), suffix ) == 0;
-}
-
-diff_match_patch::TStringVector diff_match_patch::splitString( const std::wstring &string, const std::wstring &separator, bool skipEmptyParts )
-{
-    if ( separator.empty() )
-    {
-        if ( !skipEmptyParts || !string.empty() )
-            return { string };
-        return {};
-    }
-
-    TStringVector strings;
-    auto prevPos = 0ULL;
-    auto startPos = string.find_first_of( separator );
-    while ( startPos != std::string::npos )
-    {
-        auto start = prevPos ? prevPos + 1 : prevPos;
-        auto len = prevPos ? ( startPos - prevPos - 1 ) : startPos;
-        auto curr = string.substr( start, len );
-        prevPos = startPos;
-        if ( !skipEmptyParts || !curr.empty() )
-            strings.emplace_back( curr );
-        startPos = string.find_first_of( separator, prevPos + 1 );
-    }
-    auto remainder = string.substr( prevPos ? prevPos + 1 : prevPos );
-    if ( !skipEmptyParts || !remainder.empty() )
-        strings.emplace_back( remainder );
-
-    return strings;
-}
-
-int64_t diff_match_patch::toInt( const std::wstring &string )
-{
-    int64_t retVal = 0;
-    try
-    {
-        std::size_t lastPos{};
-        retVal = std::stoul( string, &lastPos );
-        if ( lastPos != string.length() )
-            return 0;
-    }
-    catch ( ... )
-    {
-    }
+    auto retVal = diff.toString();
+    if ( doubleQuoteEmpty && retVal.empty() )
+        return LR"("")";
     return retVal;
 }
