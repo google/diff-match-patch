@@ -36,7 +36,7 @@ void replace(std::wstring &inString, const std::wstring &from,
   std::size_t pos = inString.find(from);
   while (pos != std::wstring::npos) {
     inString.replace(pos, from.length(), to);
-    pos = inString.find(from, pos + 1);
+    pos = inString.find(from, pos + to.length());
   }
 }
 
