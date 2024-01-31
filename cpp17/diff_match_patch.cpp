@@ -1311,6 +1311,33 @@ std::wstring diff_match_patch::diff_prettyHtml(const TDiffVector &diffs) {
   return html;
 }
 
+std::wstring diff_match_patch::diff_prettyConsole(const TDiffVector &diffs) {
+  static std::wstring kRed{L"\033[0;31m"};
+  static std::wstring kGreen{L"\033[0;32m"};
+  static std::wstring kYellow{L"\033[0;33m"};
+  static std::wstring kReset{L"\033[m"};
+  static std::wstring kEOL{NUtils::fromPercentEncoding(L"%C2%B6") + L"\n"};
+
+  std::wstring retVal;
+  std::wstring text;
+  for (auto &&aDiff : diffs) {
+    text = aDiff.text;
+    NUtils::replace(text, L"\n", kEOL);
+    switch (aDiff.operation) {
+      case INSERT:
+        retVal += kGreen + text + kReset;
+        break;
+      case DELETE:
+        retVal += kRed + text + kReset;
+        break;
+      case EQUAL:
+        retVal += text;
+        break;
+    }
+  }
+  return retVal;
+}
+
 std::wstring diff_match_patch::diff_text1(const TDiffVector &diffs) {
   std::wstring text;
   for (auto &&aDiff : diffs) {

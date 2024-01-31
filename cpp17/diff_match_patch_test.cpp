@@ -77,6 +77,7 @@ int diff_match_patch_test::run_all_tests() {
   runTest(std::bind(&diff_match_patch_test::testDiffCleanupSemantic, this));
   runTest(std::bind(&diff_match_patch_test::testDiffCleanupEfficiency, this));
   runTest(std::bind(&diff_match_patch_test::testDiffPrettyHtml, this));
+  runTest(std::bind(&diff_match_patch_test::testDiffPrettyConsole, this));
   runTest(std::bind(&diff_match_patch_test::testDiffText, this));
   runTest(std::bind(&diff_match_patch_test::testDiffDelta, this));
   runTest(std::bind(&diff_match_patch_test::testDiffXIndex, this));
@@ -581,6 +582,23 @@ TEST_F(diff_match_patch_test, testDiffPrettyHtml) {
                L"style=\"background:#ffe6e6;\">&lt;B&gt;b&lt;/B&gt;</del><ins "
                L"style=\"background:#e6ffe6;\">c&amp;d</ins>",
                dmp.diff_prettyHtml(diffs));
+}
+
+TEST_F(diff_match_patch_test, testDiffPrettyConsole) {
+  // Pretty print.
+  static std::wstring kRed{L"\033[0;31m"};
+  static std::wstring kGreen{L"\033[0;32m"};
+  static std::wstring kYellow{L"\033[0;33m"};
+  static std::wstring kReset{L"\033[m"};
+  static std::wstring kEOL{NUtils::fromPercentEncoding(L"%C2%B6") + L"\n"};
+
+  auto diffs = TDiffVector(
+      {Diff(EQUAL, "a\n"), Diff(DELETE, "<B>b</B>"), Diff(INSERT, "c&d")});
+  auto results = dmp.diff_prettyConsole(diffs);
+  assertEquals(
+      "diff_prettyConsole:",
+      L"a" + kEOL + kRed + L"<B>b</B>" + kReset + kGreen + L"c&d" + kReset,
+      results);
 }
 
 TEST_F(diff_match_patch_test, testDiffText) {
@@ -1308,11 +1326,24 @@ TEST_F(diff_match_patch_test, fromGitHubExamples) {
       L"your head.";
   auto diffs = dmp.diff_main(lhs, rhs);
   dmp.diff_cleanupSemantic(diffs);
+  auto console = dmp.diff_prettyConsole(diffs);
   auto html = dmp.diff_prettyHtml(diffs);
   auto delta = dmp.diff_toDelta(diffs);
+
+  auto consoleGolden =
+      L"I am the very model of a \x1B[0;31mmodern Major-General, I've "
+      L"information vegetable, animal, and mineral, I know the kings of "
+      L"England, and I quote the fights historical, From Marathon to Waterloo, "
+      L"in order categorical\x1B[m\x1B[0;32mcartoon individual, My animation's "
+      L"comical, unusual, and whimsical, I'm quite adept at funny gags, "
+      L"comedic theory I have read, From wicked puns and stupid jokes to "
+      L"anvils that drop on your head\x1B[m.";
+  assertEquals("gitHubDemos", consoleGolden, console);
+
   auto htmlGolden =
       LR"(<span>I am the very model of a </span><del style="background:#ffe6e6;">modern Major-General, I've information vegetable, animal, and mineral, I know the kings of England, and I quote the fights historical, From Marathon to Waterloo, in order categorical</del><ins style="background:#e6ffe6;">cartoon individual, My animation's comical, unusual, and whimsical, I'm quite adept at funny gags, comedic theory I have read, From wicked puns and stupid jokes to anvils that drop on your head</ins><span>.</span>)";
   assertEquals("gitHubDemos", htmlGolden, html);
+
   auto deltaGolden =
       L"=25\t-182\t+cartoon individual, My animation's comical, unusual, and "
       L"whimsical, I'm quite adept at funny gags, comedic theory I have read, "

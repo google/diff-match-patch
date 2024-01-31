@@ -464,6 +464,14 @@ class diff_match_patch {
   std::wstring diff_prettyHtml(const TDiffVector &diffs);
 
   /**
+   * Convert a Diff list into a pretty Console report. Red for delete, and green for insert
+   * @param diffs LinkedList of Diff objects.
+   * @return Console representation.
+   */
+ public:
+  std::wstring diff_prettyConsole(const TDiffVector &diffs);
+
+  /**
    * Compute and return the source text (all equalities and deletions).
    * @param diffs LinkedList of Diff objects.
    * @return Source text.

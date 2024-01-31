@@ -61,6 +61,7 @@ class diff_match_patch_test PUBLIC_TESTING {
   void testDiffCleanupSemantic();
   void testDiffCleanupEfficiency();
   void testDiffPrettyHtml();
+  void testDiffPrettyConsole();
   void testDiffText();
   void testDiffDelta();
   void testDiffXIndex();
@@ -84,6 +85,7 @@ class diff_match_patch_test PUBLIC_TESTING {
   void testPatchApply();
 
   void fromGitHubExamples();
+
  private:
   bool runTest(std::function<void()> test);
   std::size_t numPassedTests{0};
