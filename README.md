@@ -1,6 +1,8 @@
 The Diff Match and Patch libraries offer robust algorithms to perform the
 operations required for synchronizing plain text.
 
+> **This library is no longer being maintained.** See dmsnell/diff-match-patch for updates and continued development.
+
 1. Diff:
    * Compare two blocks of plain text and efficiently return a list of differences.
    * [Diff Demo](https://neil.fraser.name/software/diff_match_patch/demos/diff.html)
