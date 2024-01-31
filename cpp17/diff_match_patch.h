@@ -43,7 +43,7 @@
  Bloom)
  *   C++17 was intentionally chosen for variant support
  *
- * Code known to compile with C++17
+ * Code known to compile with C++17 VS2022 and g++ 9.5.0
  *
  * Here is a trivial sample program which works properly when linked with this
  * library:
