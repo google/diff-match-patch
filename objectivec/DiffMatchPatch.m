@@ -189,7 +189,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 {
   Patch *newPatch = [[[self class] allocWithZone:zone] init];
 
-  newPatch.diffs = [[NSMutableArray alloc] initWithArray:self.diffs copyItems:YES];
+  newPatch.diffs = [[[NSMutableArray alloc] initWithArray:self.diffs copyItems:YES] autorelease];
   newPatch.start1 = self.start1;
   newPatch.start2 = self.start2;
   newPatch.length1 = self.length1;
