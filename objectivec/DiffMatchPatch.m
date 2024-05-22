@@ -55,8 +55,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 
 /**
  * Constructor.  Initializes the diff with the provided values.
- * @param operation One of DIFF_INSERT, DIFF_DELETE or DIFF_EQUAL.
- * @param text The text being applied.
+ * @param anOperation One of DIFF_INSERT, DIFF_DELETE or DIFF_EQUAL.
+ * @param aText The text being applied.
  */
 + (id)diffWithOperation:(Operation)anOperation
                 andText:(NSString *)aText;
@@ -202,7 +202,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 /**
  * Emulate GNU diff's format.
  * Header: @@ -382,8 +481,9 @@
- * Indicies are printed as 1-based, not 0-based.
+ * Indices are printed as 1-based, not 0-based.
  * @return The GNU diff NSString.
  */
 - (NSString *)description
@@ -451,7 +451,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * substring is at least half the length of longtext?
  * @param longtext Longer NSString.
  * @param shorttext Shorter NSString.
- * @param i Start index of quarter length substring within longtext.
+ * @param index Start index of quarter length substring within longtext.
  * @return Five element NSArray, containing the prefix of longtext, the
  *     suffix of longtext, the prefix of shorttext, the suffix of shorttext
  *     and the common middle.  Or nil if there was no match.
@@ -627,8 +627,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  * Find the 'middle snake' of a diff, split the problem in two
  * and return the recursively constructed diff.
  * See Myers 1986 paper: An O(ND) Difference Algorithm and Its Variations.
- * @param text1 Old string to be diffed.
- * @param text2 New string to be diffed.
+ * @param _text1 Old string to be diffed.
+ * @param _text2 New string to be diffed.
  * @param deadline Time at which to bail if not yet complete.
  * @return NSMutableArray of Diff objects.
  */
@@ -863,8 +863,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 /**
  * Rehydrate the text in a diff from an NSString of line hashes to real lines
  * of text.
- * @param NSArray of Diff objects.
- * @param NSMutableArray of unique strings.
+ * @param diffs NSArray of Diff objects.
+ * @param lineArray NSMutableArray of unique strings.
  */
 - (void)diff_chars:(NSArray *)diffs toLines:(NSMutableArray *)lineArray;
 {
@@ -872,8 +872,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   NSUInteger lineHash;
   for (Diff *diff in diffs) {
     text = [NSMutableString string];
-    for (NSUInteger y = 0; y < [diff.text length]; y++) {
-      lineHash = (NSUInteger)[diff.text characterAtIndex:y];
+    for (NSUInteger j = 0; j < [diff.text length]; j++) {
+      lineHash = (NSUInteger)[diff.text characterAtIndex:j];
       [text appendString:[lineArray objectAtIndex:lineHash]];
     }
     diff.text = text;
@@ -1137,7 +1137,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // Stack of indices where equalities are found.
   NSMutableArray *equalities = [NSMutableArray array];
   // Always equal to equalities.lastObject.text
-  NSString *lastequality = nil;
+  NSString *lastEquality = nil;
   NSInteger thisPointer = 0;  // Index of current position.
   // Is there an insertion operation before the last equality.
   BOOL pre_ins = NO;
@@ -1158,11 +1158,11 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         [equalities addObject:[NSNumber numberWithInteger:thisPointer]];
         pre_ins = post_ins;
         pre_del = post_del;
-        lastequality = thisDiff.text;
+        lastEquality = thisDiff.text;
       } else {
         // Not a candidate, and can never become one.
         [equalities removeAllObjects];
-        lastequality = nil;
+        lastEquality = nil;
       }
       post_ins = post_del = NO;
     } else {  // An insertion or deletion.
@@ -1179,13 +1179,13 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
        * <ins>A</del>X<ins>C</ins><del>D</del>
        * <ins>A</ins><del>B</del>X<del>C</del>
        */
-      if (lastequality != nil
+      if (lastEquality != nil
           && ((pre_ins && pre_del && post_ins && post_del)
-          || ((lastequality.length < Diff_EditCost / 2)
+          || ((lastEquality.length < Diff_EditCost / 2)
           && ((pre_ins ? 1 : 0) + (pre_del ? 1 : 0) + (post_ins ? 1 : 0)
           + (post_del ? 1 : 0)) == 3))) {
         // Duplicate record.
-        [diffs insertObject:[Diff diffWithOperation:DIFF_DELETE andText:lastequality]
+        [diffs insertObject:[Diff diffWithOperation:DIFF_DELETE andText:lastEquality]
                     atIndex:equalitiesLastValue];
         // Change second copy to insert.
         // Hash values for objects must not change while in a collection
@@ -1197,7 +1197,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         [diffToChange release];
 
         [equalities removeLastObject];   // Throw away the equality we just deleted.
-        lastequality = nil;
+        lastEquality = nil;
         if (pre_ins && pre_del) {
           // No changes made which could affect previous entry, keep going.
           post_ins = post_del = YES;
@@ -1521,7 +1521,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   // Stack of indices where equalities are found.
   NSMutableArray *equalities = [NSMutableArray array];
   // Always equal to equalities.lastObject.text
-  NSString *lastequality = nil;
+  NSString *lastEquality = nil;
   NSUInteger thisPointer = 0;  // Index of current position.
   // Number of characters that changed prior to the equality.
   NSUInteger length_insertions1 = 0;
@@ -1540,7 +1540,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
       length_deletions1 = length_deletions2;
       length_insertions2 = 0;
       length_deletions2 = 0;
-      lastequality = thisDiff.text;
+      lastEquality = thisDiff.text;
     } else {  // an insertion or deletion
       if (thisDiff.operation == DIFF_INSERT) {
         length_insertions2 += thisDiff.text.length;
@@ -1549,11 +1549,11 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
       }
       // Eliminate an equality that is smaller or equal to the edits on both
       // sides of it.
-      if (lastequality != nil
-          && (lastequality.length <= MAX(length_insertions1, length_deletions1))
-          && (lastequality.length <= MAX(length_insertions2, length_deletions2))) {
+      if (lastEquality != nil
+          && (lastEquality.length <= MAX(length_insertions1, length_deletions1))
+          && (lastEquality.length <= MAX(length_insertions2, length_deletions2))) {
         // Duplicate record.
-        [diffs insertObject:[Diff diffWithOperation:DIFF_DELETE andText:lastequality] atIndex:equalitiesLastValue];
+        [diffs insertObject:[Diff diffWithOperation:DIFF_DELETE andText:lastEquality] atIndex:equalitiesLastValue];
         // Change second copy to insert.
         // Hash values for objects must not change while in a collection.
         indexToChange = equalitiesLastValue + 1;
@@ -1576,7 +1576,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
         length_deletions1 = 0;
         length_insertions2 = 0;
         length_deletions2 = 0;
-        lastequality = nil;
+        lastEquality = nil;
         changes = YES;
       }
     }
@@ -1598,8 +1598,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   thisPointer = 1;
   while (thisPointer < diffs.count) {
     if (prevDiff.operation == DIFF_DELETE && thisDiff.operation == DIFF_INSERT) {
-      NSString *deletion = prevDiff.text;
-      NSString *insertion = thisDiff.text;
+      NSString *deletion = [prevDiff.text copy];
+      NSString *insertion = [thisDiff.text copy];
       NSUInteger overlap_length1 = (NSUInteger)diff_commonOverlap((CFStringRef)deletion, (CFStringRef)insertion);
       NSUInteger overlap_length2 = (NSUInteger)diff_commonOverlap((CFStringRef)insertion, (CFStringRef)deletion);
       if (overlap_length1 >= overlap_length2) {
@@ -1629,6 +1629,8 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
           thisPointer++;
         }
       }
+      [deletion release];
+      [insertion release];
       thisPointer++;
     }
     thisPointer++;
@@ -1976,7 +1978,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
  */
 - (NSMutableArray *)patch_makeFromOldString:(NSString *)text1
                                   newString:(NSString *)text2
-                                      diffs:(NSMutableArray *)diffs;
+                                      diffs:(NSMutableArray *)diffs __deprecated;
 {
   // Check for null inputs.
   if (text1 == nil || text2 == nil) {
@@ -2094,7 +2096,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 /**
  * Merge a set of patches onto the text.  Return a patched text, as well
  * as an array of YES/NO values indicating which patches were applied.
- * @param patches NSMutableArray of Patch objects
+ * @param sourcePatches NSMutableArray of Patch objects
  * @param text Old text.
  * @return Two element NSArray, containing the new text and an array of
  *      BOOL values.

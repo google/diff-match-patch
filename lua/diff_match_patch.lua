@@ -231,7 +231,7 @@ function diff_cleanupSemantic(diffs)
   local changes = false
   local equalities = {}  -- Stack of indices where equalities are found.
   local equalitiesLength = 0  -- Keeping our own length var is faster.
-  local lastequality = nil
+  local lastEquality = nil
   -- Always equal to diffs[equalities[equalitiesLength]][2]
   local pointer = 1  -- Index of current position.
   -- Number of characters that changed prior to the equality.
@@ -249,7 +249,7 @@ function diff_cleanupSemantic(diffs)
       length_deletions1 = length_deletions2
       length_insertions2 = 0
       length_deletions2 = 0
-      lastequality = diffs[pointer][2]
+      lastEquality = diffs[pointer][2]
     else  -- An insertion or deletion.
       if diffs[pointer][1] == DIFF_INSERT then
         length_insertions2 = length_insertions2 + #(diffs[pointer][2])
@@ -258,12 +258,12 @@ function diff_cleanupSemantic(diffs)
       end
       -- Eliminate an equality that is smaller or equal to the edits on both
       -- sides of it.
-      if lastequality
-          and (#lastequality <= max(length_insertions1, length_deletions1))
-          and (#lastequality <= max(length_insertions2, length_deletions2)) then
+      if lastEquality
+          and (#lastEquality <= max(length_insertions1, length_deletions1))
+          and (#lastEquality <= max(length_insertions2, length_deletions2)) then
         -- Duplicate record.
         tinsert(diffs, equalities[equalitiesLength],
-         {DIFF_DELETE, lastequality})
+         {DIFF_DELETE, lastEquality})
         -- Change second copy to insert.
         diffs[equalities[equalitiesLength] + 1][1] = DIFF_INSERT
         -- Throw away the equality we just deleted.
@@ -273,7 +273,7 @@ function diff_cleanupSemantic(diffs)
         pointer = (equalitiesLength > 0) and equalities[equalitiesLength] or 0
         length_insertions1, length_deletions1 = 0, 0  -- Reset the counters.
         length_insertions2, length_deletions2 = 0, 0
-        lastequality = nil
+        lastEquality = nil
         changes = true
       end
     end
@@ -342,7 +342,7 @@ function diff_cleanupEfficiency(diffs)
   -- Keeping our own length var is faster.
   local equalitiesLength = 0
   -- Always equal to diffs[equalities[equalitiesLength]][2]
-  local lastequality = nil
+  local lastEquality = nil
   -- Index of current position.
   local pointer = 1
 
@@ -370,11 +370,11 @@ function diff_cleanupEfficiency(diffs)
         equalitiesLength = equalitiesLength + 1
         equalities[equalitiesLength] = pointer
         pre_ins, pre_del = post_ins, post_del
-        lastequality = diffText
+        lastEquality = diffText
       else
         -- Not a candidate, and can never become one.
         equalitiesLength = 0
-        lastequality = nil
+        lastEquality = nil
       end
       post_ins, post_del = 0, 0
     else  -- An insertion or deletion.
@@ -391,22 +391,22 @@ function diff_cleanupEfficiency(diffs)
       * <ins>A</del>X<ins>C</ins><del>D</del>
       * <ins>A</ins><del>B</del>X<del>C</del>
       --]]
-      if lastequality and (
+      if lastEquality and (
           (pre_ins+pre_del+post_ins+post_del == 4)
           or
           (
-            (#lastequality < Diff_EditCost / 2)
+            (#lastEquality < Diff_EditCost / 2)
             and
             (pre_ins+pre_del+post_ins+post_del == 3)
           )) then
         -- Duplicate record.
         tinsert(diffs, equalities[equalitiesLength],
-            {DIFF_DELETE, lastequality})
+            {DIFF_DELETE, lastEquality})
         -- Change second copy to insert.
         diffs[equalities[equalitiesLength] + 1][1] = DIFF_INSERT
         -- Throw away the equality we just deleted.
         equalitiesLength = equalitiesLength - 1
-        lastequality = nil
+        lastEquality = nil
         if (pre_ins == 1) and (pre_del == 1) then
           -- No changes made which could affect previous entry, keep going.
           post_ins, post_del = 1, 1

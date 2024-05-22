@@ -611,6 +611,18 @@ public class diff_match_patchTest : diff_match_patch {
 
     // Convert delta string into a diff.
     assertEquals("diff_fromDelta: Unchanged characters.", diffs, this.diff_fromDelta("", delta));
+
+    // 160 kb string.
+    string a = "abcdefghij";
+    for (int i = 0; i < 14; i++) {
+      a += a;
+    }
+    diffs = new List<Diff> {new Diff(Operation.INSERT, a)};
+    delta = this.diff_toDelta(diffs);
+    assertEquals("diff_toDelta: 160kb string.", "+" + a, delta);
+
+    // Convert delta string into a diff.
+    assertEquals("diff_fromDelta: 160kb string.", diffs, this.diff_fromDelta("", delta));
   }
 
   public void diff_xIndexTest() {

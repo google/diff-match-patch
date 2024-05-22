@@ -36,9 +36,9 @@ class Patch {
   }
 
   /**
-   * Emmulate GNU diff's format.
+   * Emulate GNU diff's format.
    * Header: @@ -382,8 +481,9 @@
-   * Indicies are printed as 1-based, not 0-based.
+   * Indices are printed as 1-based, not 0-based.
    * Returns the GNU diff string.
    */
   String toString() {

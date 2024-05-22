@@ -27,11 +27,11 @@ Applies the patch onto another text, allowing for errors.
 
 __author__ = 'fraser@google.com (Neil Fraser)'
 
-import math
 import re
 import sys
 import time
 import urllib
+
 
 class diff_match_patch:
   """Class containing the diff, match and patch methods.
@@ -451,11 +451,11 @@ class diff_match_patch:
       diffs: Array of diff tuples.
       lineArray: Array of unique strings.
     """
-    for x in xrange(len(diffs)):
+    for i in xrange(len(diffs)):
       text = []
-      for char in diffs[x][1]:
+      for char in diffs[i][1]:
         text.append(lineArray[ord(char)])
-      diffs[x] = (diffs[x][0], "".join(text))
+      diffs[i] = (diffs[i][0], "".join(text))
 
   def diff_commonPrefix(self, text1, text2):
     """Determine the common prefix of two strings.
@@ -649,7 +649,7 @@ class diff_match_patch:
     """
     changes = False
     equalities = []  # Stack of indices where equalities are found.
-    lastequality = None  # Always equal to diffs[equalities[-1]][1]
+    lastEquality = None  # Always equal to diffs[equalities[-1]][1]
     pointer = 0  # Index of current position.
     # Number of chars that changed prior to the equality.
     length_insertions1, length_deletions1 = 0, 0
@@ -660,7 +660,7 @@ class diff_match_patch:
         equalities.append(pointer)
         length_insertions1, length_insertions2 = length_insertions2, 0
         length_deletions1, length_deletions2 = length_deletions2, 0
-        lastequality = diffs[pointer][1]
+        lastEquality = diffs[pointer][1]
       else:  # An insertion or deletion.
         if diffs[pointer][0] == self.DIFF_INSERT:
           length_insertions2 += len(diffs[pointer][1])
@@ -668,11 +668,11 @@ class diff_match_patch:
           length_deletions2 += len(diffs[pointer][1])
         # Eliminate an equality that is smaller or equal to the edits on both
         # sides of it.
-        if (lastequality and (len(lastequality) <=
+        if (lastEquality and (len(lastEquality) <=
             max(length_insertions1, length_deletions1)) and
-            (len(lastequality) <= max(length_insertions2, length_deletions2))):
+            (len(lastEquality) <= max(length_insertions2, length_deletions2))):
           # Duplicate record.
-          diffs.insert(equalities[-1], (self.DIFF_DELETE, lastequality))
+          diffs.insert(equalities[-1], (self.DIFF_DELETE, lastEquality))
           # Change second copy to insert.
           diffs[equalities[-1] + 1] = (self.DIFF_INSERT,
               diffs[equalities[-1] + 1][1])
@@ -688,7 +688,7 @@ class diff_match_patch:
           # Reset the counters.
           length_insertions1, length_deletions1 = 0, 0
           length_insertions2, length_deletions2 = 0, 0
-          lastequality = None
+          lastEquality = None
           changes = True
       pointer += 1
 
@@ -847,8 +847,8 @@ class diff_match_patch:
       pointer += 1
 
   # Define some regex patterns for matching boundaries.
-  BLANKLINEEND = re.compile(r"\n\r?\n$");
-  BLANKLINESTART = re.compile(r"^\r?\n\r?\n");
+  BLANKLINEEND = re.compile(r"\n\r?\n$")
+  BLANKLINESTART = re.compile(r"^\r?\n\r?\n")
 
   def diff_cleanupEfficiency(self, diffs):
     """Reduce the number of edits by eliminating operationally trivial
@@ -859,7 +859,7 @@ class diff_match_patch:
     """
     changes = False
     equalities = []  # Stack of indices where equalities are found.
-    lastequality = None  # Always equal to diffs[equalities[-1]][1]
+    lastEquality = None  # Always equal to diffs[equalities[-1]][1]
     pointer = 0  # Index of current position.
     pre_ins = False  # Is there an insertion operation before the last equality.
     pre_del = False  # Is there a deletion operation before the last equality.
@@ -873,11 +873,11 @@ class diff_match_patch:
           equalities.append(pointer)
           pre_ins = post_ins
           pre_del = post_del
-          lastequality = diffs[pointer][1]
+          lastEquality = diffs[pointer][1]
         else:
           # Not a candidate, and can never become one.
           equalities = []
-          lastequality = None
+          lastEquality = None
 
         post_ins = post_del = False
       else:  # An insertion or deletion.
@@ -893,16 +893,16 @@ class diff_match_patch:
         # <ins>A</del>X<ins>C</ins><del>D</del>
         # <ins>A</ins><del>B</del>X<del>C</del>
 
-        if lastequality and ((pre_ins and pre_del and post_ins and post_del) or
-                             ((len(lastequality) < self.Diff_EditCost / 2) and
+        if lastEquality and ((pre_ins and pre_del and post_ins and post_del) or
+                             ((len(lastEquality) < self.Diff_EditCost / 2) and
                               (pre_ins + pre_del + post_ins + post_del) == 3)):
           # Duplicate record.
-          diffs.insert(equalities[-1], (self.DIFF_DELETE, lastequality))
+          diffs.insert(equalities[-1], (self.DIFF_DELETE, lastEquality))
           # Change second copy to insert.
           diffs[equalities[-1] + 1] = (self.DIFF_INSERT,
               diffs[equalities[-1] + 1][1])
           equalities.pop()  # Throw away the equality we just deleted.
-          lastequality = None
+          lastEquality = None
           if pre_ins and pre_del:
             # No changes made which could affect previous entry, keep going.
             post_ins = post_del = True
@@ -967,14 +967,14 @@ class diff_match_patch:
               text_insert = text_insert[:-commonlength]
               text_delete = text_delete[:-commonlength]
           # Delete the offending records and add the merged ones.
-          new_ops = [];
+          new_ops = []
           if len(text_delete) != 0:
             new_ops.append((self.DIFF_DELETE, text_delete))
           if len(text_insert) != 0:
             new_ops.append((self.DIFF_INSERT, text_insert))
           pointer -= count_delete + count_insert
           diffs[pointer : pointer + count_delete + count_insert] = new_ops
-          pointer += len(new_ops) + 1;
+          pointer += len(new_ops) + 1
         elif pointer != 0 and diffs[pointer - 1][0] == self.DIFF_EQUAL:
           # Merge this equality with the previous one.
           diffs[pointer - 1] = (diffs[pointer - 1][0],
@@ -1885,9 +1885,9 @@ class patch_obj:
     self.length2 = 0
 
   def __str__(self):
-    """Emmulate GNU diff's format.
+    """Emulate GNU diff's format.
     Header: @@ -382,8 +481,9 @@
-    Indicies are printed as 1-based, not 0-based.
+    Indices are printed as 1-based, not 0-based.
 
     Returns:
       The GNU diff string.

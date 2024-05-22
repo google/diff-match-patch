@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-// Can't import DiffMatchPatch library since the private functions would be
-// unavailable.  Instead, import all the source files.
-import 'dart:collection';
-import 'dart:math';
-part '../DMPClass.dart';
-part '../DiffClass.dart';
-part '../PatchClass.dart';
+import '../DiffMatchPatch.dart';
 
 // Expect class disappeared from Dart unexpectedly.  Here's a minimal shim.
 class Expect {
@@ -45,7 +39,7 @@ class Expect {
   static void throws(void f(), String msg) {
     try {
       f();
-    } catch (e, s) {
+    } catch (e) {
       return;
     }
     throw new Exception('Expect.throws($msg) fails');
@@ -72,13 +66,13 @@ class Expect {
   static void mapEquals(Map expected, Map actual, String msg) {
     for (var k in actual.keys) {
       if (!expected.containsKey(k)) {
-        throw new Exception('Expect.mapEquals(unexpected key <$key> found '
+        throw new Exception('Expect.mapEquals(unexpected key <$k> found '
             'expected: <$expected>, actual: <$actual> $msg) fails');
       }
     }
     for (var k in expected.keys) {
       if (!actual.containsKey(k)) {
-        throw new Exception('Expect.mapEquals(key <$key> not found '
+        throw new Exception('Expect.mapEquals(key <$k> not found '
             'expected: <$expected>, actual: <$actual> $msg) fails');
       }
       Expect.equals(actual[k], expected[k], "$msg [Key: $k]");
@@ -126,45 +120,45 @@ void testDiffCommonSuffix() {
 
 void testDiffCommonOverlap() {
   // Detect any suffix/prefix overlap.
-  Expect.equals(0, dmp._diff_commonOverlap('', 'abcd'), 'diff_commonOverlap: Null case.');
+  Expect.equals(0, dmp.test_diff_commonOverlap('', 'abcd'), 'diff_commonOverlap: Null case.');
 
-  Expect.equals(3, dmp._diff_commonOverlap('abc', 'abcd'), 'diff_commonOverlap: Whole case.');
+  Expect.equals(3, dmp.test_diff_commonOverlap('abc', 'abcd'), 'diff_commonOverlap: Whole case.');
 
-  Expect.equals(0, dmp._diff_commonOverlap('123456', 'abcd'), 'diff_commonOverlap: No overlap.');
+  Expect.equals(0, dmp.test_diff_commonOverlap('123456', 'abcd'), 'diff_commonOverlap: No overlap.');
 
-  Expect.equals(3, dmp._diff_commonOverlap('123456xxx', 'xxxabcd'), 'diff_commonOverlap: Overlap.');
+  Expect.equals(3, dmp.test_diff_commonOverlap('123456xxx', 'xxxabcd'), 'diff_commonOverlap: Overlap.');
 
   // Some overly clever languages (C#) may treat ligatures as equal to their
   // component letters.  E.g. U+FB01 == 'fi'
-  Expect.equals(0, dmp._diff_commonOverlap('fi', '\ufb01i'), 'diff_commonOverlap: Unicode.');
+  Expect.equals(0, dmp.test_diff_commonOverlap('fi', '\ufb01i'), 'diff_commonOverlap: Unicode.');
 }
 
 void testDiffHalfmatch() {
   // Detect a halfmatch.
   dmp.Diff_Timeout = 1.0;
-  Expect.isNull(dmp._diff_halfMatch('1234567890', 'abcdef'), 'diff_halfMatch: No match #1.');
+  Expect.isNull(dmp.test_diff_halfMatch('1234567890', 'abcdef'), 'diff_halfMatch: No match #1.');
 
-  Expect.isNull(dmp._diff_halfMatch('12345', '23'), 'diff_halfMatch: No match #2.');
+  Expect.isNull(dmp.test_diff_halfMatch('12345', '23'), 'diff_halfMatch: No match #2.');
 
-  Expect.listEquals(['12', '90', 'a', 'z', '345678'], dmp._diff_halfMatch('1234567890', 'a345678z'), 'diff_halfMatch: Single Match #1.');
+  Expect.listEquals(['12', '90', 'a', 'z', '345678'], dmp.test_diff_halfMatch('1234567890', 'a345678z'), 'diff_halfMatch: Single Match #1.');
 
-  Expect.listEquals(['a', 'z', '12', '90', '345678'], dmp._diff_halfMatch('a345678z', '1234567890'), 'diff_halfMatch: Single Match #2.');
+  Expect.listEquals(['a', 'z', '12', '90', '345678'], dmp.test_diff_halfMatch('a345678z', '1234567890'), 'diff_halfMatch: Single Match #2.');
 
-  Expect.listEquals(['abc', 'z', '1234', '0', '56789'], dmp._diff_halfMatch('abc56789z', '1234567890'), 'diff_halfMatch: Single Match #3.');
+  Expect.listEquals(['abc', 'z', '1234', '0', '56789'], dmp.test_diff_halfMatch('abc56789z', '1234567890'), 'diff_halfMatch: Single Match #3.');
 
-  Expect.listEquals(['a', 'xyz', '1', '7890', '23456'], dmp._diff_halfMatch('a23456xyz', '1234567890'), 'diff_halfMatch: Single Match #4.');
+  Expect.listEquals(['a', 'xyz', '1', '7890', '23456'], dmp.test_diff_halfMatch('a23456xyz', '1234567890'), 'diff_halfMatch: Single Match #4.');
 
-  Expect.listEquals(['12123', '123121', 'a', 'z', '1234123451234'], dmp._diff_halfMatch('121231234123451234123121', 'a1234123451234z'), 'diff_halfMatch: Multiple Matches #1.');
+  Expect.listEquals(['12123', '123121', 'a', 'z', '1234123451234'], dmp.test_diff_halfMatch('121231234123451234123121', 'a1234123451234z'), 'diff_halfMatch: Multiple Matches #1.');
 
-  Expect.listEquals(['', '-=-=-=-=-=', 'x', '', 'x-=-=-=-=-=-=-='], dmp._diff_halfMatch('x-=-=-=-=-=-=-=-=-=-=-=-=', 'xx-=-=-=-=-=-=-='), 'diff_halfMatch: Multiple Matches #2.');
+  Expect.listEquals(['', '-=-=-=-=-=', 'x', '', 'x-=-=-=-=-=-=-='], dmp.test_diff_halfMatch('x-=-=-=-=-=-=-=-=-=-=-=-=', 'xx-=-=-=-=-=-=-='), 'diff_halfMatch: Multiple Matches #2.');
 
-  Expect.listEquals(['-=-=-=-=-=', '', '', 'y', '-=-=-=-=-=-=-=y'], dmp._diff_halfMatch('-=-=-=-=-=-=-=-=-=-=-=-=y', '-=-=-=-=-=-=-=yy'), 'diff_halfMatch: Multiple Matches #3.');
+  Expect.listEquals(['-=-=-=-=-=', '', '', 'y', '-=-=-=-=-=-=-=y'], dmp.test_diff_halfMatch('-=-=-=-=-=-=-=-=-=-=-=-=y', '-=-=-=-=-=-=-=yy'), 'diff_halfMatch: Multiple Matches #3.');
 
   // Optimal diff would be -q+x=H-i+e=lloHe+Hu=llo-Hew+y not -qHillo+x=HelloHe-w+Hulloy
-  Expect.listEquals(['qHillo', 'w', 'x', 'Hulloy', 'HelloHe'], dmp._diff_halfMatch('qHilloHelloHew', 'xHelloHeHulloy'), 'diff_halfMatch: Non-optimal halfmatch.');
+  Expect.listEquals(['qHillo', 'w', 'x', 'Hulloy', 'HelloHe'], dmp.test_diff_halfMatch('qHilloHelloHew', 'xHelloHeHulloy'), 'diff_halfMatch: Non-optimal halfmatch.');
 
   dmp.Diff_Timeout = 0.0;
-  Expect.isNull(dmp._diff_halfMatch('qHilloHelloHew', 'xHelloHeHulloy'), 'diff_halfMatch: Optimal no halfmatch.');
+  Expect.isNull(dmp.test_diff_halfMatch('qHilloHelloHew', 'xHelloHeHulloy'), 'diff_halfMatch: Optimal no halfmatch.');
 }
 
 void testDiffLinesToChars() {
@@ -175,11 +169,11 @@ void testDiffLinesToChars() {
   }
 
   // Convert lines down to characters.
-  assertLinesToCharsResultEquals({'chars1': '\u0001\u0002\u0001', 'chars2': '\u0002\u0001\u0002', 'lineArray': ['', 'alpha\n', 'beta\n']}, dmp._diff_linesToChars('alpha\nbeta\nalpha\n', 'beta\nalpha\nbeta\n'), 'diff_linesToChars: Shared lines.');
+  assertLinesToCharsResultEquals({'chars1': '\u0001\u0002\u0001', 'chars2': '\u0002\u0001\u0002', 'lineArray': ['', 'alpha\n', 'beta\n']}, dmp.test_diff_linesToChars('alpha\nbeta\nalpha\n', 'beta\nalpha\nbeta\n'), 'diff_linesToChars: Shared lines.');
 
-  assertLinesToCharsResultEquals({'chars1': '', 'chars2': '\u0001\u0002\u0003\u0003', 'lineArray': ['', 'alpha\r\n', 'beta\r\n', '\r\n']}, dmp._diff_linesToChars('', 'alpha\r\nbeta\r\n\r\n\r\n'), 'diff_linesToChars: Empty string and blank lines.');
+  assertLinesToCharsResultEquals({'chars1': '', 'chars2': '\u0001\u0002\u0003\u0003', 'lineArray': ['', 'alpha\r\n', 'beta\r\n', '\r\n']}, dmp.test_diff_linesToChars('', 'alpha\r\nbeta\r\n\r\n\r\n'), 'diff_linesToChars: Empty string and blank lines.');
 
-  assertLinesToCharsResultEquals({'chars1': '\u0001', 'chars2': '\u0002', 'lineArray': ['', 'a', 'b']}, dmp._diff_linesToChars('a', 'b'), 'diff_linesToChars: No linebreaks.');
+  assertLinesToCharsResultEquals({'chars1': '\u0001', 'chars2': '\u0002', 'lineArray': ['', 'a', 'b']}, dmp.test_diff_linesToChars('a', 'b'), 'diff_linesToChars: No linebreaks.');
 
   // More than 256 to reveal any 8-bit limitations.
   int n = 300;
@@ -194,7 +188,7 @@ void testDiffLinesToChars() {
   String chars = charList.toString();
   Expect.equals(n, chars.length, 'Test initialization fail #2.');
   lineList.insert(0, '');
-  assertLinesToCharsResultEquals({'chars1': chars, 'chars2': '', 'lineArray': lineList}, dmp._diff_linesToChars(lines, ''), 'diff_linesToChars: More than 256.');
+  assertLinesToCharsResultEquals({'chars1': chars, 'chars2': '', 'lineArray': lineList}, dmp.test_diff_linesToChars(lines, ''), 'diff_linesToChars: More than 256.');
 }
 
 void testDiffCharsToLines() {
@@ -205,7 +199,7 @@ void testDiffCharsToLines() {
 
   // Convert chars up to lines.
   List<Diff> diffs = [new Diff(Operation.equal, '\u0001\u0002\u0001'), new Diff(Operation.insert, '\u0002\u0001\u0002')];
-  dmp._diff_charsToLines(diffs, ['', 'alpha\n', 'beta\n']);
+  dmp.test_diff_charsToLines(diffs, ['', 'alpha\n', 'beta\n']);
   Expect.listEquals([new Diff(Operation.equal, 'alpha\nbeta\nalpha\n'), new Diff(Operation.insert, 'beta\nalpha\nbeta\n')], diffs, 'diff_charsToLines: Shared lines.');
 
   // More than 256 to reveal any 8-bit limitations.
@@ -222,7 +216,7 @@ void testDiffCharsToLines() {
   Expect.equals(n, chars.length, 'Test initialization fail #4.');
   lineList.insert(0, '');
   diffs = [new Diff(Operation.delete, chars)];
-  dmp._diff_charsToLines(diffs, lineList);
+  dmp.test_diff_charsToLines(diffs, lineList);
   Expect.listEquals([new Diff(Operation.delete, lines)], diffs, 'diff_charsToLines: More than 256.');
 
   // More than 65536 to verify any 16-bit limitation.
@@ -231,9 +225,9 @@ void testDiffCharsToLines() {
     lineList.add('$i\n');
   }
   chars = lineList.join();
-  final results = dmp._diff_linesToChars(chars, '');
+  final results = dmp.test_diff_linesToChars(chars, '');
   diffs = [new Diff(Operation.insert, results['chars1'])];
-  dmp._diff_charsToLines(diffs, results['lineArray']);
+  dmp.test_diff_charsToLines(diffs, results['lineArray']);
   Expect.equals(chars, diffs[0].text, 'diff_charsToLines: More than 65536.');
 }
 
@@ -299,35 +293,35 @@ void testDiffCleanupMerge() {
 void testDiffCleanupSemanticLossless() {
   // Slide diffs to match logical boundaries.
   List<Diff> diffs = [];
-  dmp._diff_cleanupSemanticLossless(diffs);
+  dmp.test_diff_cleanupSemanticLossless(diffs);
   Expect.listEquals([], diffs, 'diff_cleanupSemanticLossless: Null case.');
 
   diffs = [new Diff(Operation.equal, 'AAA\r\n\r\nBBB'), new Diff(Operation.insert, '\r\nDDD\r\n\r\nBBB'), new Diff(Operation.equal, '\r\nEEE')];
-  dmp._diff_cleanupSemanticLossless(diffs);
+  dmp.test_diff_cleanupSemanticLossless(diffs);
   Expect.listEquals([new Diff(Operation.equal, 'AAA\r\n\r\n'), new Diff(Operation.insert, 'BBB\r\nDDD\r\n\r\n'), new Diff(Operation.equal, 'BBB\r\nEEE')], diffs, 'diff_cleanupSemanticLossless: Blank lines.');
 
   diffs = [new Diff(Operation.equal, 'AAA\r\nBBB'), new Diff(Operation.insert, ' DDD\r\nBBB'), new Diff(Operation.equal, ' EEE')];
-  dmp._diff_cleanupSemanticLossless(diffs);
+  dmp.test_diff_cleanupSemanticLossless(diffs);
   Expect.listEquals([new Diff(Operation.equal, 'AAA\r\n'), new Diff(Operation.insert, 'BBB DDD\r\n'), new Diff(Operation.equal, 'BBB EEE')], diffs, 'diff_cleanupSemanticLossless: Line boundaries.');
 
   diffs = [new Diff(Operation.equal, 'The c'), new Diff(Operation.insert, 'ow and the c'), new Diff(Operation.equal, 'at.')];
-  dmp._diff_cleanupSemanticLossless(diffs);
+  dmp.test_diff_cleanupSemanticLossless(diffs);
   Expect.listEquals([new Diff(Operation.equal, 'The '), new Diff(Operation.insert, 'cow and the '), new Diff(Operation.equal, 'cat.')], diffs, 'diff_cleanupSemanticLossless: Word boundaries.');
 
   diffs = [new Diff(Operation.equal, 'The-c'), new Diff(Operation.insert, 'ow-and-the-c'), new Diff(Operation.equal, 'at.')];
-  dmp._diff_cleanupSemanticLossless(diffs);
+  dmp.test_diff_cleanupSemanticLossless(diffs);
   Expect.listEquals([new Diff(Operation.equal, 'The-'), new Diff(Operation.insert, 'cow-and-the-'), new Diff(Operation.equal, 'cat.')], diffs, 'diff_cleanupSemanticLossless: Alphanumeric boundaries.');
 
   diffs = [new Diff(Operation.equal, 'a'), new Diff(Operation.delete, 'a'), new Diff(Operation.equal, 'ax')];
-  dmp._diff_cleanupSemanticLossless(diffs);
+  dmp.test_diff_cleanupSemanticLossless(diffs);
   Expect.listEquals([new Diff(Operation.delete, 'a'), new Diff(Operation.equal, 'aax')], diffs, 'diff_cleanupSemanticLossless: Hitting the start.');
 
   diffs = [new Diff(Operation.equal, 'xa'), new Diff(Operation.delete, 'a'), new Diff(Operation.equal, 'a')];
-  dmp._diff_cleanupSemanticLossless(diffs);
+  dmp.test_diff_cleanupSemanticLossless(diffs);
   Expect.listEquals([new Diff(Operation.equal, 'xaa'), new Diff(Operation.delete, 'a')], diffs, 'diff_cleanupSemanticLossless: Hitting the end.');
 
   diffs = [new Diff(Operation.equal, 'The xxx. The '), new Diff(Operation.insert, 'zzz. The '), new Diff(Operation.equal, 'yyy.')];
-  dmp._diff_cleanupSemanticLossless(diffs);
+  dmp.test_diff_cleanupSemanticLossless(diffs);
   Expect.listEquals([new Diff(Operation.equal, 'The xxx.'), new Diff(Operation.insert, ' The zzz.'), new Diff(Operation.equal, ' The yyy.')], diffs, 'diff_cleanupSemanticLossless: Sentence boundaries.');
 }
 
@@ -462,6 +456,18 @@ void testDiffDelta() {
 
   // Convert delta string into a diff.
   Expect.listEquals(diffs, dmp.diff_fromDelta('', delta), 'diff_fromDelta: Unchanged characters.');
+
+  // 160 kb string.
+  var a = 'abcdefghij';
+  for (var i = 0; i < 14; i++) {
+    a += a;
+  }
+  diffs = [new Diff(Operation.insert, a)];
+  delta = dmp.diff_toDelta(diffs);
+  Expect.equals('+' + a, delta, 'diff_toDelta: 160kb string.');
+
+  // Convert delta string into a diff.
+  Expect.listEquals(diffs, dmp.diff_fromDelta('', delta), 'diff_fromDelta: 160kb string.');
 }
 
 void testDiffXIndex() {
@@ -494,13 +500,13 @@ void testDiffBisect() {
   List<Diff> diffs = [new Diff(Operation.delete, 'c'), new Diff(Operation.insert, 'm'), new Diff(Operation.equal, 'a'), new Diff(Operation.delete, 't'), new Diff(Operation.insert, 'p')];
   // One year should be sufficient.
   DateTime deadline = new DateTime.now().add(new Duration(days : 365));
-  Expect.listEquals(diffs, dmp._diff_bisect(a, b, deadline), 'diff_bisect: Normal.');
+  Expect.listEquals(diffs, dmp.test_diff_bisect(a, b, deadline), 'diff_bisect: Normal.');
 
   // Timeout.
   diffs = [new Diff(Operation.delete, 'cat'), new Diff(Operation.insert, 'map')];
   // Set deadline to one year ago.
   deadline = new DateTime.now().subtract(new Duration(days : 365));
-  Expect.listEquals(diffs, dmp._diff_bisect(a, b, deadline), 'diff_bisect: Timeout.');
+  Expect.listEquals(diffs, dmp.test_diff_bisect(a, b, deadline), 'diff_bisect: Timeout.');
 }
 
 void testDiffMain() {
@@ -593,55 +599,55 @@ void testDiffMain() {
 void testMatchAlphabet() {
   // Initialise the bitmasks for Bitap.
   Map<String, int> bitmask = {'a': 4, 'b': 2, 'c': 1};
-  Expect.mapEquals(bitmask, dmp._match_alphabet('abc'), 'match_alphabet: Unique.');
+  Expect.mapEquals(bitmask, dmp.test_match_alphabet('abc'), 'match_alphabet: Unique.');
 
   bitmask = {'a': 37, 'b': 18, 'c': 8};
-  Expect.mapEquals(bitmask, dmp._match_alphabet('abcaba'), 'match_alphabet: Duplicates.');
+  Expect.mapEquals(bitmask, dmp.test_match_alphabet('abcaba'), 'match_alphabet: Duplicates.');
 }
 
 void testMatchBitap() {
   // Bitap algorithm.
   dmp.Match_Distance = 100;
   dmp.Match_Threshold = 0.5;
-  Expect.equals(5, dmp._match_bitap('abcdefghijk', 'fgh', 5), 'match_bitap: Exact match #1.');
+  Expect.equals(5, dmp.test_match_bitap('abcdefghijk', 'fgh', 5), 'match_bitap: Exact match #1.');
 
-  Expect.equals(5, dmp._match_bitap('abcdefghijk', 'fgh', 0), 'match_bitap: Exact match #2.');
+  Expect.equals(5, dmp.test_match_bitap('abcdefghijk', 'fgh', 0), 'match_bitap: Exact match #2.');
 
-  Expect.equals(4, dmp._match_bitap('abcdefghijk', 'efxhi', 0), 'match_bitap: Fuzzy match #1.');
+  Expect.equals(4, dmp.test_match_bitap('abcdefghijk', 'efxhi', 0), 'match_bitap: Fuzzy match #1.');
 
-  Expect.equals(2, dmp._match_bitap('abcdefghijk', 'cdefxyhijk', 5), 'match_bitap: Fuzzy match #2.');
+  Expect.equals(2, dmp.test_match_bitap('abcdefghijk', 'cdefxyhijk', 5), 'match_bitap: Fuzzy match #2.');
 
-  Expect.equals(-1, dmp._match_bitap('abcdefghijk', 'bxy', 1), 'match_bitap: Fuzzy match #3.');
+  Expect.equals(-1, dmp.test_match_bitap('abcdefghijk', 'bxy', 1), 'match_bitap: Fuzzy match #3.');
 
-  Expect.equals(2, dmp._match_bitap('123456789xx0', '3456789x0', 2), 'match_bitap: Overflow.');
+  Expect.equals(2, dmp.test_match_bitap('123456789xx0', '3456789x0', 2), 'match_bitap: Overflow.');
 
-  Expect.equals(0, dmp._match_bitap('abcdef', 'xxabc', 4), 'match_bitap: Before start match.');
+  Expect.equals(0, dmp.test_match_bitap('abcdef', 'xxabc', 4), 'match_bitap: Before start match.');
 
-  Expect.equals(3, dmp._match_bitap('abcdef', 'defyy', 4), 'match_bitap: Beyond end match.');
+  Expect.equals(3, dmp.test_match_bitap('abcdef', 'defyy', 4), 'match_bitap: Beyond end match.');
 
-  Expect.equals(0, dmp._match_bitap('abcdef', 'xabcdefy', 0), 'match_bitap: Oversized pattern.');
+  Expect.equals(0, dmp.test_match_bitap('abcdef', 'xabcdefy', 0), 'match_bitap: Oversized pattern.');
 
   dmp.Match_Threshold = 0.4;
-  Expect.equals(4, dmp._match_bitap('abcdefghijk', 'efxyhi', 1), 'match_bitap: Threshold #1.');
+  Expect.equals(4, dmp.test_match_bitap('abcdefghijk', 'efxyhi', 1), 'match_bitap: Threshold #1.');
 
   dmp.Match_Threshold = 0.3;
-  Expect.equals(-1, dmp._match_bitap('abcdefghijk', 'efxyhi', 1), 'match_bitap: Threshold #2.');
+  Expect.equals(-1, dmp.test_match_bitap('abcdefghijk', 'efxyhi', 1), 'match_bitap: Threshold #2.');
 
   dmp.Match_Threshold = 0.0;
-  Expect.equals(1, dmp._match_bitap('abcdefghijk', 'bcdef', 1), 'match_bitap: Threshold #3.');
+  Expect.equals(1, dmp.test_match_bitap('abcdefghijk', 'bcdef', 1), 'match_bitap: Threshold #3.');
 
   dmp.Match_Threshold = 0.5;
-  Expect.equals(0, dmp._match_bitap('abcdexyzabcde', 'abccde', 3), 'match_bitap: Multiple select #1.');
+  Expect.equals(0, dmp.test_match_bitap('abcdexyzabcde', 'abccde', 3), 'match_bitap: Multiple select #1.');
 
-  Expect.equals(8, dmp._match_bitap('abcdexyzabcde', 'abccde', 5), 'match_bitap: Multiple select #2.');
+  Expect.equals(8, dmp.test_match_bitap('abcdexyzabcde', 'abccde', 5), 'match_bitap: Multiple select #2.');
 
   dmp.Match_Distance = 10;  // Strict location.
-  Expect.equals(-1, dmp._match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdefg', 24), 'match_bitap: Distance test #1.');
+  Expect.equals(-1, dmp.test_match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdefg', 24), 'match_bitap: Distance test #1.');
 
-  Expect.equals(0, dmp._match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdxxefg', 1), 'match_bitap: Distance test #2.');
+  Expect.equals(0, dmp.test_match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdxxefg', 1), 'match_bitap: Distance test #2.');
 
   dmp.Match_Distance = 1000;  // Loose location.
-  Expect.equals(0, dmp._match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdefg', 24), 'match_bitap: Distance test #3.');
+  Expect.equals(0, dmp.test_match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdefg', 24), 'match_bitap: Distance test #3.');
 }
 
 void testMatchMain() {
@@ -713,19 +719,19 @@ void testPatchAddContext() {
   dmp.Patch_Margin = 4;
   Patch p;
   p = dmp.patch_fromText('@@ -21,4 +21,10 @@\n-jump\n+somersault\n')[0];
-  dmp._patch_addContext(p, 'The quick brown fox jumps over the lazy dog.');
+  dmp.test_patch_addContext(p, 'The quick brown fox jumps over the lazy dog.');
   Expect.equals('@@ -17,12 +17,18 @@\n fox \n-jump\n+somersault\n s ov\n', p.toString(), 'patch_addContext: Simple case.');
 
   p = dmp.patch_fromText('@@ -21,4 +21,10 @@\n-jump\n+somersault\n')[0];
-  dmp._patch_addContext(p, 'The quick brown fox jumps.');
+  dmp.test_patch_addContext(p, 'The quick brown fox jumps.');
   Expect.equals('@@ -17,10 +17,16 @@\n fox \n-jump\n+somersault\n s.\n', p.toString(), 'patch_addContext: Not enough trailing context.');
 
   p = dmp.patch_fromText('@@ -3 +3,2 @@\n-e\n+at\n')[0];
-  dmp._patch_addContext(p, 'The quick brown fox jumps.');
+  dmp.test_patch_addContext(p, 'The quick brown fox jumps.');
   Expect.equals('@@ -1,7 +1,8 @@\n Th\n-e\n+at\n  qui\n', p.toString(), 'patch_addContext: Not enough leading context.');
 
   p = dmp.patch_fromText('@@ -3 +3,2 @@\n-e\n+at\n')[0];
-  dmp._patch_addContext(p, 'The quick brown fox jumps.  The quick brown fox crashes.');
+  dmp.test_patch_addContext(p, 'The quick brown fox jumps.  The quick brown fox crashes.');
   Expect.equals('@@ -1,27 +1,28 @@\n Th\n-e\n+at\n  quick brown fox jumps. \n', p.toString(), 'patch_addContext: Ambiguity.');
 }
 

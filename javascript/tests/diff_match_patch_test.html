@@ -50,11 +50,13 @@
         if (expected === actual) {
           document.write('<FONT COLOR="#009900">Ok</FONT><BR>');
           test_good++;
+          return true;
         } else {
           document.write('<FONT COLOR="#990000"><BIG>Fail!</BIG></FONT><BR>');
           msg = msg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           document.write('<code>' + msg + '</code><BR>');
           test_bad++;
+          return false;
         }
       }
 
@@ -62,9 +64,9 @@
         if (typeof actual == 'undefined') {
           // msg is optional.
           actual = msg;
-          assertEquals(true, actual);
+          return assertEquals(true, actual);
         } else {
-          assertEquals(msg, true, actual);
+          return assertEquals(msg, true, actual);
         }
       }
 
@@ -72,9 +74,9 @@
         if (typeof actual == 'undefined') {
           // msg is optional.
           actual = msg;
-          assertEquals(false, actual);
+          return assertEquals(false, actual);
         } else {
-          assertEquals(msg, false, actual);
+          return assertEquals(msg, false, actual);
         }
       }
 

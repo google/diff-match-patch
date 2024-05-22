@@ -172,9 +172,9 @@ class DiffTest(DiffMatchPatchTest):
       lineList.append(str(i) + "\n")
     chars = "".join(lineList)
     results = self.dmp.diff_linesToChars(chars, "")
-    diffs = [(self.dmp.DIFF_INSERT, results[0])];
-    self.dmp.diff_charsToLines(diffs, results[2]);
-    self.assertEquals(chars, diffs[0][1]);
+    diffs = [(self.dmp.DIFF_INSERT, results[0])]
+    self.dmp.diff_charsToLines(diffs, results[2])
+    self.assertEquals(chars, diffs[0][1])
 
   def testDiffCleanupMerge(self):
     # Cleanup a messy diff.
@@ -451,6 +451,17 @@ class DiffTest(DiffMatchPatchTest):
 
     # Convert delta string into a diff.
     self.assertEquals(diffs, self.dmp.diff_fromDelta("", delta))
+
+    # 160 kb string.
+    a = "abcdefghij"
+    for i in range(14):
+      a += a
+    diffs = [(self.dmp.DIFF_INSERT, a)]
+    delta = self.dmp.diff_toDelta(diffs);
+    self.assertEquals('+' + a, delta);
+
+    # Convert delta string into a diff.
+    self.assertEquals(diffs, self.dmp.diff_fromDelta("", delta));
 
   def testDiffXIndex(self):
     # Translate a location in text1 to text2.

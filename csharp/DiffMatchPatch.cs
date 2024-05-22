@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace DiffMatchPatch {
   internal static class CompatibilityExtensions {
@@ -128,9 +129,9 @@ namespace DiffMatchPatch {
     public int length2;
 
     /**
-     * Emmulate GNU diff's format.
+     * Emulate GNU diff's format.
      * Header: @@ -382,8 +481,9 @@
-     * Indicies are printed as 1-based, not 0-based.
+     * Indices are printed as 1-based, not 0-based.
      * @return The GNU diff string.
      */
     public override string ToString() {
@@ -166,11 +167,9 @@ namespace DiffMatchPatch {
             break;
         }
 
-        text.Append(Uri.EscapeDataString(aDiff.text).Replace('+', ' ')).Append("\n");
+        text.Append(diff_match_patch.encodeURI(aDiff.text)).Append("\n");
       }
-
-      return diff_match_patch.unescapeForEncodeUriCompatability(
-          text.ToString());
+      return text.ToString();
     }
   }
 
@@ -662,8 +661,8 @@ namespace DiffMatchPatch {
       StringBuilder text;
       foreach (Diff diff in diffs) {
         text = new StringBuilder();
-        for (int y = 0; y < diff.text.Length; y++) {
-          text.Append(lineArray[diff.text[y]]);
+        for (int j = 0; j < diff.text.Length; j++) {
+          text.Append(lineArray[diff.text[j]]);
         }
         diff.text = text.ToString();
       }
@@ -851,7 +850,7 @@ namespace DiffMatchPatch {
       // Stack of indices where equalities are found.
       Stack<int> equalities = new Stack<int>();
       // Always equal to equalities[equalitiesLength-1][1]
-      string lastequality = null;
+      string lastEquality = null;
       int pointer = 0;  // Index of current position.
       // Number of characters that changed prior to the equality.
       int length_insertions1 = 0;
@@ -866,7 +865,7 @@ namespace DiffMatchPatch {
           length_deletions1 = length_deletions2;
           length_insertions2 = 0;
           length_deletions2 = 0;
-          lastequality = diffs[pointer].text;
+          lastEquality = diffs[pointer].text;
         } else {  // an insertion or deletion
           if (diffs[pointer].operation == Operation.INSERT) {
             length_insertions2 += diffs[pointer].text.Length;
@@ -875,13 +874,13 @@ namespace DiffMatchPatch {
           }
           // Eliminate an equality that is smaller or equal to the edits on both
           // sides of it.
-          if (lastequality != null && (lastequality.Length
+          if (lastEquality != null && (lastEquality.Length
               <= Math.Max(length_insertions1, length_deletions1))
-              && (lastequality.Length
+              && (lastEquality.Length
                   <= Math.Max(length_insertions2, length_deletions2))) {
             // Duplicate record.
             diffs.Insert(equalities.Peek(),
-                         new Diff(Operation.DELETE, lastequality));
+                         new Diff(Operation.DELETE, lastEquality));
             // Change second copy to insert.
             diffs[equalities.Peek() + 1].operation = Operation.INSERT;
             // Throw away the equality we just deleted.
@@ -894,7 +893,7 @@ namespace DiffMatchPatch {
             length_deletions1 = 0;
             length_insertions2 = 0;
             length_deletions2 = 0;
-            lastequality = null;
+            lastEquality = null;
             changes = true;
           }
         }
@@ -1026,7 +1025,7 @@ namespace DiffMatchPatch {
     }
 
     /**
-     * Given two strings, comAdde a score representing whether the internal
+     * Given two strings, compute a score representing whether the internal
      * boundary falls on logical boundaries.
      * Scores range from 6 (best) to 0 (worst).
      * @param one First string.
@@ -1088,7 +1087,7 @@ namespace DiffMatchPatch {
       // Stack of indices where equalities are found.
       Stack<int> equalities = new Stack<int>();
       // Always equal to equalities[equalitiesLength-1][1]
-      string lastequality = string.Empty;
+      string lastEquality = string.Empty;
       int pointer = 0;  // Index of current position.
       // Is there an insertion operation before the last equality.
       bool pre_ins = false;
@@ -1106,11 +1105,11 @@ namespace DiffMatchPatch {
             equalities.Push(pointer);
             pre_ins = post_ins;
             pre_del = post_del;
-            lastequality = diffs[pointer].text;
+            lastEquality = diffs[pointer].text;
           } else {
             // Not a candidate, and can never become one.
             equalities.Clear();
-            lastequality = string.Empty;
+            lastEquality = string.Empty;
           }
           post_ins = post_del = false;
         } else {  // An insertion or deletion.
@@ -1127,18 +1126,18 @@ namespace DiffMatchPatch {
            * <ins>A</del>X<ins>C</ins><del>D</del>
            * <ins>A</ins><del>B</del>X<del>C</del>
            */
-          if ((lastequality.Length != 0)
+          if ((lastEquality.Length != 0)
               && ((pre_ins && pre_del && post_ins && post_del)
-              || ((lastequality.Length < this.Diff_EditCost / 2)
+              || ((lastEquality.Length < this.Diff_EditCost / 2)
               && ((pre_ins ? 1 : 0) + (pre_del ? 1 : 0) + (post_ins ? 1 : 0)
               + (post_del ? 1 : 0)) == 3))) {
             // Duplicate record.
             diffs.Insert(equalities.Peek(),
-                         new Diff(Operation.DELETE, lastequality));
+                         new Diff(Operation.DELETE, lastEquality));
             // Change second copy to insert.
             diffs[equalities.Peek() + 1].operation = Operation.INSERT;
             equalities.Pop();  // Throw away the equality we just deleted.
-            lastequality = string.Empty;
+            lastEquality = string.Empty;
             if (pre_ins && pre_del) {
               // No changes made which could affect previous entry, keep going.
               post_ins = post_del = true;
@@ -1292,7 +1291,7 @@ namespace DiffMatchPatch {
     }
 
     /**
-     * loc is a location in text1, comAdde and return the equivalent location in
+     * loc is a location in text1, compute and return the equivalent location in
      * text2.
      * e.g. "The cat" vs "The big cat", 1->1, 5->8
      * @param diffs List of Diff objects.
@@ -1431,7 +1430,7 @@ namespace DiffMatchPatch {
       foreach (Diff aDiff in diffs) {
         switch (aDiff.operation) {
           case Operation.INSERT:
-            text.Append("+").Append(Uri.EscapeDataString(aDiff.text).Replace('+', ' ')).Append("\t");
+            text.Append("+").Append(encodeURI(aDiff.text)).Append("\t");
             break;
           case Operation.DELETE:
             text.Append("-").Append(aDiff.text.Length).Append("\t");
@@ -1445,14 +1444,13 @@ namespace DiffMatchPatch {
       if (delta.Length != 0) {
         // Strip off trailing tab character.
         delta = delta.Substring(0, delta.Length - 1);
-        delta = unescapeForEncodeUriCompatability(delta);
       }
       return delta;
     }
 
     /**
      * Given the original text1, and an encoded string which describes the
-     * operations required to transform text1 into text2, comAdde the full diff.
+     * operations required to transform text1 into text2, compute the full diff.
      * @param text1 Source string for the diff.
      * @param delta Delta text.
      * @return Array of Diff objects or null if invalid.
@@ -1476,7 +1474,7 @@ namespace DiffMatchPatch {
             // decode would change all "+" to " "
             param = param.Replace("+", "%2b");
 
-            param = Uri.UnescapeDataString(param);
+            param = HttpUtility.UrlDecode(param);
             //} catch (UnsupportedEncodingException e) {
             //  // Not likely on modern system.
             //  throw new Error("This system does not support UTF-8.", e);
@@ -1765,7 +1763,7 @@ namespace DiffMatchPatch {
      */
     public List<Patch> patch_make(string text1, string text2) {
       // Check for null inputs not needed since null can't be passed in C#.
-      // No diffs provided, comAdde our own.
+      // No diffs provided, compute our own.
       List<Diff> diffs = diff_main(text1, text2, true);
       if (diffs.Count > 2) {
         diff_cleanupSemantic(diffs);
@@ -1782,7 +1780,7 @@ namespace DiffMatchPatch {
      */
     public List<Patch> patch_make(List<Diff> diffs) {
       // Check for null inputs not needed since null can't be passed in C#.
-      // No origin string provided, comAdde our own.
+      // No origin string provided, compute our own.
       string text1 = diff_text1(diffs);
       return patch_make(text1, diffs);
     }
@@ -2251,7 +2249,7 @@ namespace DiffMatchPatch {
           }
           line = text[textPointer].Substring(1);
           line = line.Replace("+", "%2b");
-          line = Uri.UnescapeDataString(line);
+          line = HttpUtility.UrlDecode(line);
           if (sign == '-') {
             // Deletion.
             patch.diffs.Add(new Diff(Operation.DELETE, line));
@@ -2275,33 +2273,24 @@ namespace DiffMatchPatch {
       return patches;
     }
 
-    private static Regex HEXCODE = new Regex("%[0-9A-F][0-9A-F]");
-
     /**
-     * Unescape selected chars for compatibility with JavaScript's encodeURI.
-     * In speed critical applications this could be dropped since the
-     * receiving application will certainly decode these fine.
-     * Note that this function is case-sensitive.  Thus "%3F" would not be
-     * unescaped.  But this is ok because it is only called with the output of
-     * Uri.EscapeDataString which returns lowercase hex.
+     * Encodes a string with URI-style % escaping.
+     * Compatible with JavaScript's encodeURI function.
      *
-     * Example: "%3f" -> "?", "%24" -> "$", etc.
-     *
-     * @param str The string to escape.
-     * @return The escaped string.
+     * @param str The string to encode.
+     * @return The encoded string.
      */
-    public static string unescapeForEncodeUriCompatability(string str) {
-      str = str.Replace("%20", " ").Replace("%21", "!").Replace("%2A", "*")
-          .Replace("%27", "'").Replace("%28", "(").Replace("%29", ")")
-          .Replace("%3B", ";").Replace("%2F", "/").Replace("%3F", "?")
-          .Replace("%3A", ":").Replace("%40", "@").Replace("%26", "&")
-          .Replace("%3D", "=").Replace("%2B", "+").Replace("%24", "$")
-          .Replace("%2C", ",").Replace("%23", "#");
-      return HEXCODE.Replace(str, new MatchEvaluator(lowerHex));
-    }
-
-    private static string lowerHex(Match m) {
-      return m.ToString().ToLower();
+    public static string encodeURI(string str) {
+        // C# is overzealous in the replacements.  Walk back on a few.
+        return new StringBuilder(HttpUtility.UrlEncode(str))
+            .Replace('+', ' ').Replace("%20", " ").Replace("%21", "!")
+            .Replace("%2a", "*").Replace("%27", "'").Replace("%28", "(")
+            .Replace("%29", ")").Replace("%3b", ";").Replace("%2f", "/")
+            .Replace("%3f", "?").Replace("%3a", ":").Replace("%40", "@")
+            .Replace("%26", "&").Replace("%3d", "=").Replace("%2b", "+")
+            .Replace("%24", "$").Replace("%2c", ",").Replace("%23", "#")
+            .Replace("%7e", "~")
+            .ToString();
     }
   }
 }

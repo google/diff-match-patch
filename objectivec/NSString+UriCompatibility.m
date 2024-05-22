@@ -28,7 +28,6 @@
  * Escape excluding selected chars for compatability with JavaScript's encodeURI.
  * This method produces uppercase hex.
  *
- * @param str The CFStringRef to escape.
  * @return The escaped CFStringRef.
  */
 - (NSString *)diff_stringByAddingPercentEscapesForEncodeUriCompatibility {
