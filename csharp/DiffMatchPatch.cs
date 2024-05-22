@@ -1334,18 +1334,18 @@ namespace DiffMatchPatch {
      * @param diffs List of Diff objects.
      * @return HTML representation.
      */
-    public string diff_prettyHtml(List<Diff> diffs) {
+    public string diff_prettyHtml(List<Diff> diffs, string insertColor="e6ffe6", string deleteColor="ffe6e6") {
       StringBuilder html = new StringBuilder();
       foreach (Diff aDiff in diffs) {
         string text = aDiff.text.Replace("&", "&amp;").Replace("<", "&lt;")
           .Replace(">", "&gt;").Replace("\n", "&para;<br>");
         switch (aDiff.operation) {
           case Operation.INSERT:
-            html.Append("<ins style=\"background:#e6ffe6;\">").Append(text)
+            html.Append($"<ins style=\"background:#{insertColor};\">").Append(text)
                 .Append("</ins>");
             break;
           case Operation.DELETE:
-            html.Append("<del style=\"background:#ffe6e6;\">").Append(text)
+            html.Append($"<del style=\"background:#{deleteColor};\">").Append(text)
                 .Append("</del>");
             break;
           case Operation.EQUAL:
