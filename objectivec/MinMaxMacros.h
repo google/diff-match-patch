@@ -19,22 +19,28 @@
  * ObjC port: jan@geheimwerk.de (Jan Weiß)
  */
 
-#if !defined(MIN)
-  #define MIN(A,B) \
-    ({__typeof__(A) a = (A); \
-      __typeof__(B) b = (B); \
-      (a < b) ? a : b; })
+#if !defined( MIN )
+    #define MIN( A, B ) \
+        ( { \
+            __typeof__( A ) a = ( A ); \
+            __typeof__( B ) b = ( B ); \
+            ( a < b ) ? a : b; \
+        } )
 #endif
 
-#if !defined(MAX)
-  #define MAX(A,B) \
-    ({__typeof__(A) a = (A); \
-      __typeof__(B) b = (B); \
-      (a > b) ? a : b; })
+#if !defined( MAX )
+    #define MAX( A, B ) \
+        ( { \
+            __typeof__( A ) a = ( A ); \
+            __typeof__( B ) b = ( B ); \
+            ( a > b ) ? a : b; \
+        } )
 #endif
 
-#if !defined(ABS)
-  #define ABS(A) \
-    ({__typeof__(A) a = (A); \
-      (a > 0) ? a : -a; })
+#if !defined( ABS )
+    #define ABS( A ) \
+        ( { \
+            __typeof__( A ) a = ( A ); \
+            ( a > 0 ) ? a : -a; \
+        } )
 #endif

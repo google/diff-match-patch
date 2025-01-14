@@ -22,27 +22,29 @@
 #ifndef _DIFFMATCHPATCHCFUTILITIES_H
 #define _DIFFMATCHPATCHCFUTILITIES_H
 
-CFStringRef diff_CFStringCreateFromUnichar(UniChar ch);
-CFStringRef diff_CFStringCreateJavaSubstring(CFStringRef s, CFIndex begin, CFIndex end);
+CFStringRef diff_CFStringCreateFromUnichar( UniChar ch );
+CFStringRef diff_CFStringCreateJavaSubstring( CFStringRef s, CFIndex begin, CFIndex end );
 
-CFIndex diff_commonPrefix(CFStringRef text1, CFStringRef text2);
-CFIndex diff_commonSuffix(CFStringRef text1, CFStringRef text2);
-CFIndex diff_commonOverlap(CFStringRef text1, CFStringRef text2);
-CFArrayRef diff_halfMatchCreate(CFStringRef text1, CFStringRef text2, const float diffTimeout);
-CFArrayRef diff_halfMatchICreate(CFStringRef longtext, CFStringRef shorttext, CFIndex i);
+CFIndex diff_commonPrefix( CFStringRef text1, CFStringRef text2 );
+CFIndex diff_commonSuffix( CFStringRef text1, CFStringRef text2 );
+CFIndex diff_commonOverlap( CFStringRef text1, CFStringRef text2 );
+CFArrayRef diff_halfMatchCreate( CFStringRef text1, CFStringRef text2, const float diffTimeout );
+CFArrayRef diff_halfMatchICreate( CFStringRef longtext, CFStringRef shorttext, CFIndex i );
 
-CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArrayRef lineArray, CFMutableDictionaryRef lineHash, CFIndex maxLines);
+CFStringRef diff_linesToCharsMungeCFStringCreate( CFStringRef text, CFMutableArrayRef lineArray, CFMutableDictionaryRef lineHash, CFIndex maxLines );
 
-CFIndex diff_cleanupSemanticScore(CFStringRef one, CFStringRef two);
+CFIndex diff_cleanupSemanticScore( CFStringRef one, CFStringRef two );
 
-CF_INLINE void diff_CFStringPrepareUniCharBuffer(CFStringRef string, const UniChar **string_chars, UniChar **string_buffer, CFRange string_range) {
-  *string_chars = CFStringGetCharactersPtr(string);
-  if (*string_chars == NULL) {
-    // Fallback in case CFStringGetCharactersPtr() didn’t work.
-    *string_buffer = malloc(string_range.length * sizeof(UniChar));
-    CFStringGetCharacters(string, string_range, *string_buffer);
-    *string_chars = *string_buffer;
-  }
+CF_INLINE void diff_CFStringPrepareUniCharBuffer( CFStringRef string, const UniChar **string_chars, UniChar **string_buffer, CFRange string_range )
+{
+    *string_chars = CFStringGetCharactersPtr( string );
+    if ( *string_chars == NULL )
+    {
+        // Fallback in case CFStringGetCharactersPtr() didn’t work.
+        *string_buffer = malloc( string_range.length * sizeof( UniChar ) );
+        CFStringGetCharacters( string, string_range, *string_buffer );
+        *string_chars = *string_buffer;
+    }
 }
 
-#endif //ifndef _DIFFMATCHPATCHCFUTILITIES_H
+#endif   //ifndef _DIFFMATCHPATCHCFUTILITIES_H
